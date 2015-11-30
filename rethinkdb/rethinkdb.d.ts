@@ -18,8 +18,6 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/add
     */
-    add(value, ...values):RNumberInterface;
-    add(value):RNumberInterface;
     add(number:number|RNumberInterface, ...numbers:Array<number>):RNumberInterface;
     add(number:number|RNumberInterface):RNumberInterface;
 
@@ -117,7 +115,6 @@ declare module rethinkdb {
     sub(number:number|RNumberInterface):RNumberInterface;
   }
   export interface RStringInterface extends RCoercable, RAnyInterface, RRunableInterface<string> {
-
     /**
     * Sum two or more numbers, or concatenate two or more strings or arrays.
     *
@@ -128,10 +125,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/add
     */
-    add(value, ...values):RStringInterface;
-    add(value):RStringInterface;
-    add(number:number|RNumberInterface, ...numbers:Array<number>):RStringInterface;
-    add(number:number|RNumberInterface):RStringInterface;
+    add(value:string, ...values:Array<string>):RStringInterface;
+    add(value:string):RStringInterface;
 
     /**
     * Lowercases a string.
@@ -178,7 +173,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/split
     */
-    split(separator?, max_splits?):RArrayInterface;
+    split(separator?:string, max_splits?:number):RArrayInterface;
 
     /**
     * Uppercases a string.
