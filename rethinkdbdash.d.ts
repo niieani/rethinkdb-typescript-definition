@@ -1,36 +1,15 @@
 declare module rethinkdb {
   export interface RConnectionOptionsInterface {readMode?, timeFormat?, profile?, durability?, groupFormat?, noreply?, db?, arrayLimit?, binaryFormat?, minBatchRows?, maxBatchRows?, maxBatchBytes?, maxBatchSeconds?, firstBatchScaledownFactor?}
   export interface RRunableInterface<T> extends PromiseLike<T> {
-    run(connection:RConnectionInterface, cb:(err:Error, result:T)=>void):void;
-    run(connection:RConnectionInterface, options:RConnectionOptionsInterface, cb:(err:Error, result:T)=>void):void;
+    run(connection:RConnectionInterface, cb:CallbackFunction<T>):void;
+    run(connection:RConnectionInterface, options:RConnectionOptionsInterface, cb:CallbackFunction<T>):void;
     run(connection:RConnectionInterface, options?:RConnectionOptionsInterface):Promise<T>;
   }
-  export interface RRunableCursorInterface<T> extends PromiseLike<RCursorInterface<T>> {
-    run(connection:RConnectionInterface, cb:(err:Error, cursor:RCursorInterface<T>)=>void):void;
-    run(connection:RConnectionInterface, options:RConnectionOptionsInterface, cb:(err:Error, cursor:RCursorInterface<T>)=>void):void;
-    run(connection:RConnectionInterface, options?:RConnectionOptionsInterface):Promise<RCursorInterface<T>>;
-  }
-  
-  interface RMappableInterface<MappingT> {
-    /**
-    * Transform each element of one or more sequences by applying a mapping function to them. If `map` is run with two or more sequences, it will iterate for as many items as there are in the shortest sequence.
-    *
-    * sequence1.map([sequence2, ...], function) → streamarray1.map([array2, ...], function) → arrayr.map(sequence1[, sequence2, ...], function) → streamr.map(array1[, array2, ...], function) → array
-    * **Example:** Return the first five squares.
-    * 
-    *     r.expr([1, 2, 3, 4, 5]).map(function (val) {
-    *         return val.mul(val);
-    *     }).run(conn, callback);
-    *     // Result passed to callback
-    *     [1, 4, 9, 16, 25]
-    *
-    * http://rethinkdb.com/api/javascript/map
-    */
-    map(...arrays_and_then_a_function:Array<RArrayInterface|Array<any>|ExpressionFunction<RAnyInterface>>):MappingT;
-    map(a_function:ExpressionFunction<RAnyInterface>):MappingT;
-    map(array1:RArrayInterface|Array<any>, ...arrays_and_then_a_function:Array<RArrayInterface|Array<any>|ExpressionFunction<RAnyInterface>>):MappingT;
-    map(array1:RArrayInterface|Array<any>, a_function:ExpressionFunction<RAnyInterface>):MappingT;
-}
+    // export interface RRunableInterface<RCursorInterface<T>> extends PromiseLike<RCursorInterface<T>> {
+  //   run(connection:RConnectionInterface, cb:(err:Error, cursor:RCursorInterface<T>)=>void):void;
+  //   run(connection:RConnectionInterface, options:RConnectionOptionsInterface, cb:(err:Error, cursor:RCursorInterface<T>)=>void):void;
+  //   run(connection:RConnectionInterface, options?:RConnectionOptionsInterface):Promise<RCursorInterface<T>>;
+  // }
 
   export interface RNumberInterface extends RAnyInterface, RRunableInterface<number> {
 
@@ -233,7 +212,7 @@ declare module rethinkdb {
     */
     upcase():RStringInterface;
   }
-  export interface RArrayInterface extends RSequenceInterface<Array<any>>, RRunableCursorInterface<Array<any>>, RMappableInterface<RArrayInterface>, RAnyInterface {
+  export interface RArrayInterface extends RSequenceArrayInterface, RAnyInterface {
 
     /**
     * Sum two or more numbers, or concatenate two or more strings or arrays.
@@ -275,34 +254,6 @@ declare module rethinkdb {
     changeAt(index:number, value):RArrayInterface;
 
     /**
-    * Convert a value of one type into another.
-    *
-    * sequence.coerceTo('array') → arrayvalue.coerceTo('string') → stringstring.coerceTo('number') → numberarray.coerceTo('object') → objectsequence.coerceTo('object') → objectobject.coerceTo('array') → arraybinary.coerceTo('string') → stringstring.coerceTo('binary') → binary
-    * **Example:** Coerce a stream to an array.
-    * 
-    *     r.table('posts').map(function (post) {
-    *         post.merge({ comments: r.table('comments').getAll(post('id'), {index: 'postId'}).coerceTo('array')});
-    *     }).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/coerce_to
-    */
-    coerceTo<T extends RAnyInterface>(type:string):T;
-
-    /**
-    * Concatenate one or more elements into a single sequence using a mapping function.
-    *
-    * stream.concatMap(function) → streamarray.concatMap(function) → array
-    * **Example:** Construct a sequence of all monsters defeated by Marvel heroes. The field "defeatedMonsters" is an array of one or more monster names.
-    * 
-    *     r.table('marvel').concatMap(function(hero) {
-    *         return hero('defeatedMonsters')
-    *     }).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/concat_map
-    */
-    concatMap(concatFunction:ExpressionFunction<RAnyInterface>):RArrayInterface;
-
-    /**
     * Remove one or more elements from an array at a given index. Returns the modified array.
     *
     * array.deleteAt(index [,endIndex]) → array
@@ -328,66 +279,7 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/difference
     */
     difference(array:RArrayInterface|Array<any>):RArrayInterface;
-
-    /**
-    * Join tables using a field or function on the left-hand sequence matching primary keys or secondary indexes on the right-hand table. `eqJoin` is more efficient than other ReQL join types, and operates much faster. Documents in the result set consist of pairs of left-hand and right-hand documents, matched when the field on the left-hand side exists and is non-null and an entry with that field's value exists in the specified index on the right-hand side.
-    * 
-    * **Example:** Match players with the games they've played against one another.
-    * 
-    * `js r.table('players').eqJoin('gameId', r.table('games')).run(conn, callback)`
-    *
-    * sequence.eqJoin(leftField, rightTable[, {index:'id'}]) → sequencesequence.eqJoin(predicate_function, rightTable[, {index:'id'}]) → sequence
-    * 
-    *
-    * http://rethinkdb.com/api/javascript/eq_join
-    */
-    eqJoin(leftField:string, rightTable:RTableInterface, options?:{ index? }):RArrayInterface;
-    eqJoin(predicate_function:ExpressionFunction<RAnyInterface>, rightTable:RTableInterface, options?:{ index? }):RArrayInterface;
-    eqJoin(predicate_function:ExpressionFunction<RAnyInterface>, rightTable:RTableInterface):RArrayInterface;
-
-    /**
-    * Get all the documents for which the given predicate is true.
-    * 
-    * `filter` can be called on a sequence, selection, or a field containing an array of elements. The return type is the same as the type on which the function was called on.
-    * 
-    * The body of every filter is wrapped in an implicit `.default(false)`, which means that if a non-existence errors is thrown (when you try to access a field that does not exist in a document), RethinkDB will just ignore the document. The `default` value can be changed by passing an object with a `default` field. Setting this optional argument to `r.error()` will cause any non-existence errors to return a `ReqlRuntimeError`.
-    *
-    * selection.filter(predicate_function[, {default: false}]) → selectionstream.filter(predicate_function[, {default: false}]) → streamarray.filter(predicate_function[, {default: false}]) → array
-    * **Example:** Get all the users that are 30 years old.
-    * 
-    *     r.table('users').filter({age: 30}).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/filter
-    */
-    filter(predicate_function:ExpressionFunction<RBoolInterface>, options?:{ default? }):RArrayInterface;
-    filter(filterByObject:Object):RArrayInterface;
-
-    /**
-    * Test if an object has one or more fields. An object has a field if it has that key and the key has a non-null value. For instance, the object `{'a': 1,'b': 2,'c': null}` has the fields `a` and `b`.
-    *
-    * sequence.hasFields([selector1, selector2...]) → streamarray.hasFields([selector1, selector2...]) → arrayobject.hasFields([selector1, selector2...]) → boolean
-    * **Example:** Return the players who have won games.
-    * 
-    *     r.table('players').hasFields('games_won').run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/has_fields
-    */
-    hasFields(...selectors:Array<string>):RArrayInterface;
-
-    /**
-    * Returns an inner join of two sequences.
-    *
-    * sequence.innerJoin(otherSequence, predicate_function) → streamarray.innerJoin(otherSequence, predicate_function) → array
-    * **Example:** Return a list of all matchups between Marvel and DC heroes in which the DC hero could beat the Marvel hero in a fight.
-    * 
-    *     r.table('marvel').innerJoin(r.table('dc'), function(marvelRow, dcRow) {
-    *         return marvelRow('strength').lt(dcRow('strength'))
-    *     }).zip().run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/inner_join
-    */
-    innerJoin(otherSequence:RSequenceInterface<any>, predicate_function:ExpressionFunction<RBoolInterface>):RArrayInterface;
-
+    
     /**
     * Insert a value in to an array at a given index. Returns the modified array.
     *
@@ -399,35 +291,6 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/insert_at
     */
     insertAt(index:number, value):RArrayInterface;
-
-    /**
-    * End the sequence after the given number of elements.
-    *
-    * sequence.limit(n) → streamarray.limit(n) → array
-    * **Example:** Only so many can fit in our Pantheon of heroes.
-    * 
-    *     r.table('marvel').orderBy('belovedness').limit(10).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/limit
-    */
-    limit(n:number):RArrayInterface;
-    
-    // HACK: MAP
-
-    /**
-    * Merge two or more objects together to construct a new object with properties from all. When there is a conflict between field names, preference is given to fields in the rightmost object in the argument list.
-    *
-    * singleSelection.merge([object | function, object | function, ...]) → objectobject.merge([object | function, object | function, ...]) → objectsequence.merge([object | function, object | function, ...]) → streamarray.merge([object | function, object | function, ...]) → array
-    * **Example:** Equip Thor for battle.
-    * 
-    *     r.table('marvel').get('thor').merge(
-    *         r.table('equipment').get('hammer'),
-    *         r.table('equipment').get('pimento_sandwich')
-    *     ).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/merge
-    */
-    merge(...object_or_functions:Array<Object|ExpressionFunction<RAnyInterface>|RValueInterface<any>>):RArrayInterface;
 
     /**
     * Multiply two numbers, or make a periodic array.
@@ -443,56 +306,6 @@ declare module rethinkdb {
     mul(number:number):RArrayInterface;
 
     /**
-    * Sort the sequence by document values of the given key(s). To specify the ordering, wrap the attribute with either `r.asc` or `r.desc` (defaults to ascending).
-    * 
-    * Sorting without an index requires the server to hold the sequence in memory, and is limited to 100,000 documents (or the setting of the `arrayLimit` option for [run](/api/javascript/run)). Sorting with an index can be done on arbitrarily large tables, or after a `between` command using the same index.
-    *
-    * table.orderBy([key | function...], {index: index_name}) → table_sliceselection.orderBy(key | function[, ...]) → selection<array>sequence.orderBy(key | function[, ...]) → array</array>
-    * **Example:** Order all the posts using the index `date`.
-    * 
-    *     r.table('posts').orderBy({index: 'date'}).run(conn, callback)
-    * 
-    * The index must have been previously created with [indexCreate](/api/javascript/index_create/).
-    * 
-    *     r.table('posts').indexCreate('date').run(conn, callback)
-    * 
-    * You can also select a descending ordering:
-    * 
-    *     r.table('posts').orderBy({index: r.desc('date')}).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/order_by
-    */
-    orderBy(keys_or_functions:string|ExpressionFunction<RAnyInterface>, ...more:Array<string|ExpressionFunction<RAnyInterface>>):RArrayInterface;
-    orderBy(keys_or_functions:string|ExpressionFunction<RAnyInterface>, options?:{index?:string}):RArrayInterface;
-    orderBy(options:{index?:string}):RArrayInterface;
-
-    /**
-    * Returns a left outer join of two sequences.
-    *
-    * sequence.outerJoin(otherSequence, predicate_function) → streamarray.outerJoin(otherSequence, predicate_function) → array
-    * **Example:** Return a list of all Marvel heroes, paired with any DC heroes who could beat them in a fight.
-    * 
-    *     r.table('marvel').outerJoin(r.table('dc'), function(marvelRow, dcRow) {
-    *         return marvelRow('strength').lt(dcRow('strength'))
-    *     }).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/outer_join
-    */
-    outerJoin(otherSequence:RSequenceInterface<any>, predicate_function:ExpressionFunction<RBoolInterface>):RArrayInterface;
-
-    /**
-    * Plucks out one or more attributes from either an object or a sequence of objects (projection).
-    *
-    * sequence.pluck([selector1, selector2...]) → streamarray.pluck([selector1, selector2...]) → arrayobject.pluck([selector1, selector2...]) → objectsingleSelection.pluck([selector1, selector2...]) → object
-    * **Example:** We just need information about IronMan's reactor and not the rest of the document.
-    * 
-    *     r.table('marvel').get('IronMan').pluck('reactorState', 'reactorPower').run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/pluck
-    */
-    pluck(...selectors:Array<string>):RArrayInterface;
-
-    /**
     * Prepend a value to an array.
     *
     * array.prepend(value) → array
@@ -503,18 +316,6 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/prepend
     */
     prepend(value):RArrayInterface;
-
-    /**
-    * Select a given number of elements from a sequence with uniform random distribution. Selection is done without replacement.
-    *
-    * sequence.sample(number) → selectionstream.sample(number) → arrayarray.sample(number) → array
-    * **Example:** Select 3 random heroes.
-    * 
-    *     r.table('marvel').sample(3).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/sample
-    */
-    sample(number:number):RArrayInterface;
 
     /**
     * Remove the elements of one array from another and return them as a set (an array with distinct values).
@@ -565,33 +366,6 @@ declare module rethinkdb {
     setUnion(array:RArrayInterface|Array<any>):RArrayInterface;
 
     /**
-    * Skip a number of elements from the head of the sequence.
-    *
-    * sequence.skip(n) → streamarray.skip(n) → array
-    * **Example:** Here in conjunction with `orderBy` we choose to ignore the most successful heroes.
-    * 
-    *     r.table('marvel').orderBy('successMetric').skip(10).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/skip
-    */
-    skip(n:number):RArrayInterface;
-
-    /**
-    * Return the elements of a sequence within the specified range.
-    * 
-    * **Example:** Return the fourth, fifth and sixth youngest players. (The youngest player is at index 0, so those are elements 3–5.)
-    * 
-    * `js r.table('players').orderBy({index: 'age'}).slice(3,6).run(conn, callback)`
-    *
-    * selection.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → selectionstream.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → streamarray.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → arraybinary.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → binary
-    * 
-    *
-    * http://rethinkdb.com/api/javascript/slice
-    */
-    slice(startIndex:number, endIndex:number, options?:{ leftBound?, rightBound? }):RArrayInterface;
-    slice(startIndex:number):RArrayInterface;
-
-    /**
     * Insert several values in to an array at a given index. Returns the modified array.
     *
     * array.spliceAt(index, array) → array
@@ -602,30 +376,6 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/splice_at
     */
     spliceAt(index:number, array:RArrayInterface|Array<any>):RArrayInterface;
-
-    /**
-    * Plucks one or more attributes from a sequence of objects, filtering out any objects in the sequence that do not have the specified fields. Functionally, this is identical to `hasFields` followed by `pluck` on a sequence.
-    *
-    * sequence.withFields([selector1, selector2...]) → streamarray.withFields([selector1, selector2...]) → array
-    * **Example:** Get a list of users and their posts, excluding any users who have not made any posts.
-    * 
-    *     r.table('users').withFields('id', 'username', 'posts').run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/with_fields
-    */
-    withFields(...selectors:Array<string>):RArrayInterface;
-
-    /**
-    * The opposite of pluck; takes an object or a sequence of objects, and returns them with the specified paths removed.
-    *
-    * sequence.without([selector1, selector2...]) → streamarray.without([selector1, selector2...]) → arraysingleSelection.without([selector1, selector2...]) → objectobject.without([selector1, selector2...]) → object
-    * **Example:** Since we don't need it for this computation we'll save bandwidth and leave out the list of IronMan's romantic conquests.
-    * 
-    *     r.table('marvel').get('IronMan').without('personalVictoriesList').run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/without
-    */
-    without(...selectors:Array<string>):RArrayInterface;
 
     /**
     * Used to 'zip' up the result of a join by merging the 'right' fields into 'left' fields of each member of the sequence.
@@ -1044,7 +794,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/db_create
     */
-    dbCreate(dbName:string):RObjectInterface<any>;
+    dbCreate(dbName:string):RObjectInterface<CreateResult>;
 
     /**
     * Drop a database. The database, all its tables, and corresponding data will be deleted.
@@ -1058,7 +808,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/db_drop
     */
-    dbDrop(dbName:string):RObjectInterface<any>;
+    dbDrop(dbName:string):RObjectInterface<DropResult>;
 
     /**
     * List all database names in the system. The result is a list of strings.
@@ -1372,7 +1122,589 @@ declare module rethinkdb {
     */
     wait(options?:{ waitFor?, timeout? }):RObjectInterface<any>;
   }
-  export interface RSequenceInterface<RemoteT> extends RRunableCursorInterface<RemoteT>, RMappableInterface<RSequenceInterface<RemoteT>>, RAnyInterface {
+  export interface RSequenceArrayInterface extends RSequenceInterface, RRunableInterface<Array<any>> {
+    /**
+    * Concatenate one or more elements into a single sequence using a mapping function.
+    *
+    * stream.concatMap(function) → streamarray.concatMap(function) → array
+    * **Example:** Construct a sequence of all monsters defeated by Marvel heroes. The field "defeatedMonsters" is an array of one or more monster names.
+    * 
+    *     r.table('marvel').concatMap(function(hero) {
+    *         return hero('defeatedMonsters')
+    *     }).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/concat_map
+    */
+    concatMap(concatFunction:ExpressionFunction<RAnyInterface|Object>):RArrayInterface;
+    
+    /**
+    * Join tables using a field or function on the left-hand sequence matching primary keys or secondary indexes on the right-hand table. `eqJoin` is more efficient than other ReQL join types, and operates much faster. Documents in the result set consist of pairs of left-hand and right-hand documents, matched when the field on the left-hand side exists and is non-null and an entry with that field's value exists in the specified index on the right-hand side.
+    * 
+    * **Example:** Match players with the games they've played against one another.
+    * 
+    * `js r.table('players').eqJoin('gameId', r.table('games')).run(conn, callback)`
+    *
+    * sequence.eqJoin(leftField, rightTable[, {index:'id'}]) → sequencesequence.eqJoin(predicate_function, rightTable[, {index:'id'}]) → sequence
+    * 
+    *
+    * http://rethinkdb.com/api/javascript/eq_join
+    */
+    eqJoin(leftField:string, rightTable:RTableInterface<any>, options?:{ index? }):RArrayInterface;
+    eqJoin(predicate_function:ExpressionFunction<RAnyInterface|Object>, rightTable:RTableInterface<any>, options?:{ index? }):RArrayInterface;
+    eqJoin(predicate_function:ExpressionFunction<RAnyInterface|Object>, rightTable:RTableInterface<any>):RArrayInterface;
+
+    /**
+    * Get all the documents for which the given predicate is true.
+    * 
+    * `filter` can be called on a sequence, selection, or a field containing an array of elements. The return type is the same as the type on which the function was called on.
+    * 
+    * The body of every filter is wrapped in an implicit `.default(false)`, which means that if a non-existence errors is thrown (when you try to access a field that does not exist in a document), RethinkDB will just ignore the document. The `default` value can be changed by passing an object with a `default` field. Setting this optional argument to `r.error()` will cause any non-existence errors to return a `ReqlRuntimeError`.
+    *
+    * selection.filter(predicate_function[, {default: false}]) → selectionstream.filter(predicate_function[, {default: false}]) → streamarray.filter(predicate_function[, {default: false}]) → array
+    * **Example:** Get all the users that are 30 years old.
+    * 
+    *     r.table('users').filter({age: 30}).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/filter
+    */
+    filter(predicate_function:ExpressionFunction<RBoolInterface>, options?:{ default? }):RArrayInterface;
+    filter(filterByObject:Object):RArrayInterface;
+
+    /**
+    * Remove duplicate elements from the sequence.
+    *
+    * sequence.distinct() → arraytable.distinct([{index: <indexname>}]) → stream</indexname>
+    * **Example:** Which unique villains have been vanquished by marvel heroes?
+    * 
+    *     r.table('marvel').concatMap(function(hero) {
+    *         return hero('villainList')
+    *     }).distinct().run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/distinct
+    */
+    distinct(options?:{index?:string}):RArrayInterface;
+    
+    /**
+    * Test if an object has one or more fields. An object has a field if it has that key and the key has a non-null value. For instance, the object `{'a': 1,'b': 2,'c': null}` has the fields `a` and `b`.
+    *
+    * sequence.hasFields([selector1, selector2...]) → streamarray.hasFields([selector1, selector2...]) → arrayobject.hasFields([selector1, selector2...]) → boolean
+    * **Example:** Return the players who have won games.
+    * 
+    *     r.table('players').hasFields('games_won').run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/has_fields
+    */
+    hasFields(...selectors:Array<string>):RArrayInterface;
+
+    /**
+    * Returns an inner join of two sequences.
+    *
+    * sequence.innerJoin(otherSequence, predicate_function) → streamarray.innerJoin(otherSequence, predicate_function) → array
+    * **Example:** Return a list of all matchups between Marvel and DC heroes in which the DC hero could beat the Marvel hero in a fight.
+    * 
+    *     r.table('marvel').innerJoin(r.table('dc'), function(marvelRow, dcRow) {
+    *         return marvelRow('strength').lt(dcRow('strength'))
+    *     }).zip().run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/inner_join
+    */
+    innerJoin(otherSequence:RSequenceInterface, predicate_function:ExpressionFunction<RBoolInterface>):RArrayInterface;
+
+    /**
+    * End the sequence after the given number of elements.
+    *
+    * sequence.limit(n) → streamarray.limit(n) → array
+    * **Example:** Only so many can fit in our Pantheon of heroes.
+    * 
+    *     r.table('marvel').orderBy('belovedness').limit(10).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/limit
+    */
+    limit(n:number):RArrayInterface;
+    
+    // HACK: MAP
+
+    /**
+    * Merge two or more objects together to construct a new object with properties from all. When there is a conflict between field names, preference is given to fields in the rightmost object in the argument list.
+    *
+    * singleSelection.merge([object | function, object | function, ...]) → objectobject.merge([object | function, object | function, ...]) → objectsequence.merge([object | function, object | function, ...]) → streamarray.merge([object | function, object | function, ...]) → array
+    * **Example:** Equip Thor for battle.
+    * 
+    *     r.table('marvel').get('thor').merge(
+    *         r.table('equipment').get('hammer'),
+    *         r.table('equipment').get('pimento_sandwich')
+    *     ).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/merge
+    */
+    merge(...object_or_functions:Array<Object|ExpressionFunction<RAnyInterface|Object>|RValueInterface<any>>):RArrayInterface;
+
+    /**
+    * Sort the sequence by document values of the given key(s). To specify the ordering, wrap the attribute with either `r.asc` or `r.desc` (defaults to ascending).
+    * 
+    * Sorting without an index requires the server to hold the sequence in memory, and is limited to 100,000 documents (or the setting of the `arrayLimit` option for [run](/api/javascript/run)). Sorting with an index can be done on arbitrarily large tables, or after a `between` command using the same index.
+    *
+    * table.orderBy([key | function...], {index: index_name}) → table_sliceselection.orderBy(key | function[, ...]) → selection<array>sequence.orderBy(key | function[, ...]) → array</array>
+    * **Example:** Order all the posts using the index `date`.
+    * 
+    *     r.table('posts').orderBy({index: 'date'}).run(conn, callback)
+    * 
+    * The index must have been previously created with [indexCreate](/api/javascript/index_create/).
+    * 
+    *     r.table('posts').indexCreate('date').run(conn, callback)
+    * 
+    * You can also select a descending ordering:
+    * 
+    *     r.table('posts').orderBy({index: r.desc('date')}).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/order_by
+    */
+    orderBy(keys_or_functions:string|ExpressionFunction<RAnyInterface|Object>, ...more:Array<string|ExpressionFunction<RAnyInterface|Object>>):RArrayInterface;
+    orderBy(keys_or_functions:string|ExpressionFunction<RAnyInterface|Object>, options?:{index?:string}):RArrayInterface;
+    orderBy(options:{index?:string}):RArrayInterface;
+
+    /**
+    * Returns a left outer join of two sequences.
+    *
+    * sequence.outerJoin(otherSequence, predicate_function) → streamarray.outerJoin(otherSequence, predicate_function) → array
+    * **Example:** Return a list of all Marvel heroes, paired with any DC heroes who could beat them in a fight.
+    * 
+    *     r.table('marvel').outerJoin(r.table('dc'), function(marvelRow, dcRow) {
+    *         return marvelRow('strength').lt(dcRow('strength'))
+    *     }).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/outer_join
+    */
+    outerJoin(otherSequence:RSequenceInterface, predicate_function:ExpressionFunction<RBoolInterface>):RArrayInterface;
+
+    /**
+    * Plucks out one or more attributes from either an object or a sequence of objects (projection).
+    *
+    * sequence.pluck([selector1, selector2...]) → streamarray.pluck([selector1, selector2...]) → arrayobject.pluck([selector1, selector2...]) → objectsingleSelection.pluck([selector1, selector2...]) → object
+    * **Example:** We just need information about IronMan's reactor and not the rest of the document.
+    * 
+    *     r.table('marvel').get('IronMan').pluck('reactorState', 'reactorPower').run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/pluck
+    */
+    pluck(...selectors:Array<string>):RArrayInterface;
+
+    /**
+    * Select a given number of elements from a sequence with uniform random distribution. Selection is done without replacement.
+    *
+    * sequence.sample(number) → selectionstream.sample(number) → arrayarray.sample(number) → array
+    * **Example:** Select 3 random heroes.
+    * 
+    *     r.table('marvel').sample(3).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/sample
+    */
+    sample(number:number):RArrayInterface;
+
+    /**
+    * Skip a number of elements from the head of the sequence.
+    *
+    * sequence.skip(n) → streamarray.skip(n) → array
+    * **Example:** Here in conjunction with `orderBy` we choose to ignore the most successful heroes.
+    * 
+    *     r.table('marvel').orderBy('successMetric').skip(10).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/skip
+    */
+    skip(n:number):RArrayInterface;
+
+    /**
+    * Return the elements of a sequence within the specified range.
+    * 
+    * **Example:** Return the fourth, fifth and sixth youngest players. (The youngest player is at index 0, so those are elements 3–5.)
+    * 
+    * `js r.table('players').orderBy({index: 'age'}).slice(3,6).run(conn, callback)`
+    *
+    * selection.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → selectionstream.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → streamarray.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → arraybinary.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → binary
+    * 
+    *
+    * http://rethinkdb.com/api/javascript/slice
+    */
+    slice(startIndex:number, endIndex:number, options?:{ leftBound?, rightBound? }):RArrayInterface;
+    slice(startIndex:number):RArrayInterface;
+
+    /**
+    * Merge two or more sequences. (Note that ordering is not guaranteed by `union`.)
+    *
+    * stream.union(sequence[, sequence, ...]) → streamarray.union(sequence[, sequence, ...]) → array
+    * **Example:** Construct a stream of all heroes.
+    * 
+    *     r.table('marvel').union(r.table('dc')).run(conn, callback);
+    *
+    * http://rethinkdb.com/api/javascript/union
+    */
+    union(sequence:RSequenceInterface, ...sequences:Array<RSequenceInterface>):RArrayInterface;
+    union(sequence:RSequenceInterface):RArrayInterface;
+    
+    /**
+    * Plucks one or more attributes from a sequence of objects, filtering out any objects in the sequence that do not have the specified fields. Functionally, this is identical to `hasFields` followed by `pluck` on a sequence.
+    *
+    * sequence.withFields([selector1, selector2...]) → streamarray.withFields([selector1, selector2...]) → array
+    * **Example:** Get a list of users and their posts, excluding any users who have not made any posts.
+    * 
+    *     r.table('users').withFields('id', 'username', 'posts').run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/with_fields
+    */
+    withFields(...selectors:Array<string>):RArrayInterface;
+
+    /**
+    * The opposite of pluck; takes an object or a sequence of objects, and returns them with the specified paths removed.
+    *
+    * sequence.without([selector1, selector2...]) → streamarray.without([selector1, selector2...]) → arraysingleSelection.without([selector1, selector2...]) → objectobject.without([selector1, selector2...]) → object
+    * **Example:** Since we don't need it for this computation we'll save bandwidth and leave out the list of IronMan's romantic conquests.
+    * 
+    *     r.table('marvel').get('IronMan').without('personalVictoriesList').run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/without
+    */
+    without(...selectors:Array<string>):RArrayInterface;
+  }
+  export interface RSequenceStream<RemoteT> extends RSequenceInterface {
+    /**
+    * Get a single field from an object or a single element from a sequence.
+    *
+    * sequence(attr) → sequence
+    singleSelection(attr) → value
+    object(attr) → value
+    array(index) → value
+    * **Example:** What was Iron Man's first appearance in a comic?
+    * 
+    *     r.table('marvel').get('IronMan')('firstAppearance').run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/bracket
+    */
+    (attr:string):RStreamInterface<any>;
+
+    /**
+    * Concatenate one or more elements into a single sequence using a mapping function.
+    *
+    * stream.concatMap(function) → streamarray.concatMap(function) → array
+    * **Example:** Construct a sequence of all monsters defeated by Marvel heroes. The field "defeatedMonsters" is an array of one or more monster names.
+    * 
+    *     r.table('marvel').concatMap(function(hero) {
+    *         return hero('defeatedMonsters')
+    *     }).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/concat_map
+    */
+    concatMap(mapFunction:ExpressionFunction<RAnyInterface|Object>):RStreamInterface<any>;
+
+    /**
+    * Remove duplicate elements from the sequence.
+    *
+    * sequence.distinct() → arraytable.distinct([{index: <indexname>}]) → stream</indexname>
+    * **Example:** Which unique villains have been vanquished by marvel heroes?
+    * 
+    *     r.table('marvel').concatMap(function(hero) {
+    *         return hero('villainList')
+    *     }).distinct().run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/distinct
+    */
+    distinct(options?:{index?:string}):RStreamInterface<RemoteT>;
+
+    /**
+    * Join tables using a field or function on the left-hand sequence matching primary keys or secondary indexes on the right-hand table. `eqJoin` is more efficient than other ReQL join types, and operates much faster. Documents in the result set consist of pairs of left-hand and right-hand documents, matched when the field on the left-hand side exists and is non-null and an entry with that field's value exists in the specified index on the right-hand side.
+    * 
+    * **Example:** Match players with the games they've played against one another.
+    * 
+    * `js r.table('players').eqJoin('gameId', r.table('games')).run(conn, callback)`
+    *
+    * sequence.eqJoin(leftField, rightTable[, {index:'id'}]) → sequence
+    * sequence.eqJoin(predicate_function, rightTable[, {index:'id'}]) → sequence
+    * 
+    *
+    * http://rethinkdb.com/api/javascript/eq_join
+    */
+    eqJoin<RightT>(leftField:string, rightTable:RTableInterface<RightT>, options?:{ index? }):RStreamInterface<JoinResult<RemoteT, RightT>>;
+    eqJoin<RightT>(predicate_function:ExpressionFunction<RAnyInterface|Object>, rightTable:RTableInterface<RightT>, options?:{ index? }):RStreamInterface<JoinResult<RemoteT, RightT>>;
+    eqJoin<RightT>(predicate_function:ExpressionFunction<RAnyInterface|Object>, rightTable:RTableInterface<RightT>):RStreamInterface<JoinResult<RemoteT, RightT>>;
+
+    /**
+    * Get all the documents for which the given predicate is true.
+    * 
+    * `filter` can be called on a sequence, selection, or a field containing an array of elements. The return type is the same as the type on which the function was called on.
+    * 
+    * The body of every filter is wrapped in an implicit `.default(false)`, which means that if a non-existence errors is thrown (when you try to access a field that does not exist in a document), RethinkDB will just ignore the document. The `default` value can be changed by passing an object with a `default` field. Setting this optional argument to `r.error()` will cause any non-existence errors to return a `ReqlRuntimeError`.
+    *
+    * selection.filter(predicate_function[, {default: false}]) → selection
+    * stream.filter(predicate_function[, {default: false}]) → stream
+    * array.filter(predicate_function[, {default: false}]) → array
+    * **Example:** Get all the users that are 30 years old.
+    * 
+    *     r.table('users').filter({age: 30}).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/filter
+    */
+    filter(predicate_function:ExpressionFunction<RBoolInterface>, options?:{ default? }):RStreamInterface<RemoteT>;
+    filter(filterByObject:Object):RStreamInterface<RemoteT>;
+
+    /**
+    * Get a single field from an object. If called on a sequence, gets that field from every object in the sequence, skipping objects that lack it.
+    *
+    * sequence.getField(attr) → sequence
+    * singleSelection.getField(attr) → value
+    * object.getField(attr) → value
+    * **Example:** What was Iron Man's first appearance in a comic?
+    * 
+    *     r.table('marvel').get('IronMan').getField('firstAppearance').run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/get_field
+    */
+    getField(attr:string):RStreamInterface<any>;
+
+    /**
+    * Test if an object has one or more fields. An object has a field if it has that key and the key has a non-null value. For instance, the object `{'a': 1,'b': 2,'c': null}` has the fields `a` and `b`.
+    *
+    * sequence.hasFields([selector1, selector2...]) → stream
+    array.hasFields([selector1, selector2...]) → array
+    object.hasFields([selector1, selector2...]) → boolean
+    * **Example:** Return the players who have won games.
+    * 
+    *     r.table('players').hasFields('games_won').run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/has_fields
+    */
+    hasFields(...selectors:Array<string>):RStreamInterface<RemoteT>;
+
+    /**
+    * Tests whether a geometry object is completely contained within another. When applied to a sequence of geometry objects, `includes` acts as a [filter](/api/javascript/filter), returning a sequence of objects from the sequence that include the argument.
+    *
+    * sequence.includes(geometry) → sequence
+    geometry.includes(geometry) → bool
+    * **Example:** Is `point2` included within a 2000-meter circle around `point1`?
+    * 
+    *     var point1 = r.point(-117.220406,32.719464);
+    *     var point2 = r.point(-117.206201,32.725186);
+    *     r.circle(point1, 2000).includes(point2).run(conn, callback);
+    *     // result returned to callback 
+    *     true
+    *
+    * http://rethinkdb.com/api/javascript/includes
+    */
+    includes(geometry):RStreamInterface<RemoteT>;
+
+    /**
+    * Returns an inner join of two sequences.
+    *
+    * sequence.innerJoin(otherSequence, predicate_function) → streamarray.innerJoin(otherSequence, predicate_function) → array
+    * **Example:** Return a list of all matchups between Marvel and DC heroes in which the DC hero could beat the Marvel hero in a fight.
+    * 
+    *     r.table('marvel').innerJoin(r.table('dc'), function(marvelRow, dcRow) {
+    *         return marvelRow('strength').lt(dcRow('strength'))
+    *     }).zip().run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/inner_join
+    */
+    innerJoin(otherSequence:RSequenceInterface, predicate_function:ExpressionFunction<RBoolInterface>):RStreamInterface<JoinResult<RemoteT, any>>;
+
+    /**
+    * Tests whether two geometry objects intersect with one another. When applied to a sequence of geometry objects, `intersects` acts as a [filter](/api/javascript/filter), returning a sequence of objects from the sequence that intersect with the argument.
+    *
+    * sequence.intersects(geometry) → sequence
+    geometry.intersects(geometry) → bool
+    r.intersects(sequence, geometry) → sequence
+    r.intersects(geometry, geometry) → bool
+    * **Example:** Is `point2` within a 2000-meter circle around `point1`?
+    * 
+    *     var point1 = r.point(-117.220406,32.719464);
+    *     var point2 = r.point(-117.206201,32.725186);
+    *     r.circle(point1, 2000).intersects(point2).run(conn, callback);
+    *     // result returned to callback 
+    *     true
+    *
+    * http://rethinkdb.com/api/javascript/intersects
+    */
+    intersects(geometry):RStreamInterface<RemoteT>;
+
+    /**
+    * End the sequence after the given number of elements.
+    *
+    * sequence.limit(n) → stream
+    array.limit(n) → array
+    * **Example:** Only so many can fit in our Pantheon of heroes.
+    * 
+    *     r.table('marvel').orderBy('belovedness').limit(10).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/limit
+    */
+    limit(n:number):RStreamInterface<RemoteT>;
+    
+    /**
+    * Transform each element of one or more sequences by applying a mapping function to them. If `map` is run with two or more sequences, it will iterate for as many items as there are in the shortest sequence.
+    *
+    * sequence1.map([sequence2, ...], function) → stream
+    array1.map([array2, ...], function) → array
+    r.map(sequence1[, sequence2, ...], function) → stream
+    r.map(array1[, array2, ...], function) → array
+    * **Example:** Return the first five squares.
+    * 
+    *     r.expr([1, 2, 3, 4, 5]).map(function (val) {
+    *         return val.mul(val);
+    *     }).run(conn, callback);
+    *     // Result passed to callback
+    *     [1, 4, 9, 16, 25]
+    *
+    * http://rethinkdb.com/api/javascript/map
+    */
+    map(...arrays_and_then_a_function:Array<RArrayInterface|Array<any>|ExpressionFunction<RAnyInterface|Object>>):RStreamInterface<any>;
+    map(...sequences_and_then_a_function:Array<RSequenceInterface|Array<any>|ExpressionFunction<RAnyInterface|Object>>):RStreamInterface<any>;
+    map(a_function:ExpressionFunction<RAnyInterface|Object>):RStreamInterface<any>;
+    map(array1:RArrayInterface|Array<any>, ...arrays_and_then_a_function:Array<RArrayInterface|Array<any>|ExpressionFunction<RAnyInterface|Object>>):RStreamInterface<any>;
+    map(array1:RArrayInterface|Array<any>, a_function:ExpressionFunction<RAnyInterface|Object>):RStreamInterface<any>;
+
+    /**
+    * Merge two or more objects together to construct a new object with properties from all. When there is a conflict between field names, preference is given to fields in the rightmost object in the argument list.
+    *
+    * singleSelection.merge([object | function, object | function, ...]) → object
+    object.merge([object | function, object | function, ...]) → object
+    sequence.merge([object | function, object | function, ...]) → stream
+    array.merge([object | function, object | function, ...]) → array
+    * **Example:** Equip Thor for battle.
+    * 
+    *     r.table('marvel').get('thor').merge(
+    *         r.table('equipment').get('hammer'),
+    *         r.table('equipment').get('pimento_sandwich')
+    *     ).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/merge
+    */
+    merge(...object_or_a_functions:Array<Object|Function>):RStreamInterface<any>;
+
+    /**
+    * Sort the sequence by document values of the given key(s). To specify the ordering, wrap the attribute with either `r.asc` or `r.desc` (defaults to ascending).
+    * 
+    * Sorting without an index requires the server to hold the sequence in memory, and is limited to 100,000 documents (or the setting of the `arrayLimit` option for [run](/api/javascript/run)). Sorting with an index can be done on arbitrarily large tables, or after a `between` command using the same index.
+    *
+    * table.orderBy([key | function...], {index: index_name}) → table_slice
+    selection.orderBy(key | function[, ...]) → selection<array>
+    sequence.orderBy(key | function[, ...]) → array</array>
+    * **Example:** Order all the posts using the index `date`.
+    * 
+    *     r.table('posts').orderBy({index: 'date'}).run(conn, callback)
+    * 
+    * The index must have been previously created with [indexCreate](/api/javascript/index_create/).
+    * 
+    *     r.table('posts').indexCreate('date').run(conn, callback)
+    * 
+    * You can also select a descending ordering:
+    * 
+    *     r.table('posts').orderBy({index: r.desc('date')}).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/order_by
+    */
+    orderBy(key_or_a_function, options?:{ index }):RStreamInterface<RemoteT>;
+    orderBy(key_or_a_function, ...more):RStreamInterface<RemoteT>;
+    orderBy(key_or_a_function):RStreamInterface<RemoteT>;
+    orderBy(options:{ index }):RStreamInterface<RemoteT>;
+
+    /**
+    * Returns a left outer join of two sequences.
+    *
+    * sequence.outerJoin(otherSequence, predicate_function) → streamarray.outerJoin(otherSequence, predicate_function) → array
+    * **Example:** Return a list of all Marvel heroes, paired with any DC heroes who could beat them in a fight.
+    * 
+    *     r.table('marvel').outerJoin(r.table('dc'), function(marvelRow, dcRow) {
+    *         return marvelRow('strength').lt(dcRow('strength'))
+    *     }).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/outer_join
+    */
+    outerJoin(otherSequence:RSequenceInterface, predicate_function:ExpressionFunction<RBoolInterface>):RStreamInterface<JoinResult<RemoteT, any>>;
+
+    /**
+    * Select a given number of elements from a sequence with uniform random distribution. Selection is done without replacement.
+    *
+    * sequence.sample(number) → selection
+    stream.sample(number) → array
+    array.sample(number) → array
+    * **Example:** Select 3 random heroes.
+    * 
+    *     r.table('marvel').sample(3).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/sample
+    */
+    // TODO
+    sample(number:number):RSelectionInterface<any>;
+
+    /**
+    * Skip a number of elements from the head of the sequence.
+    *
+    * sequence.skip(n) → stream
+    array.skip(n) → array
+    * **Example:** Here in conjunction with `orderBy` we choose to ignore the most successful heroes.
+    * 
+    *     r.table('marvel').orderBy('successMetric').skip(10).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/skip
+    */
+    skip(n:number):RStreamInterface<RemoteT>;
+
+    /**
+    * Return the elements of a sequence within the specified range.
+    * 
+    * **Example:** Return the fourth, fifth and sixth youngest players. (The youngest player is at index 0, so those are elements 3–5.)
+    * 
+    * `js r.table('players').orderBy({index: 'age'}).slice(3,6).run(conn, callback)`
+    *
+    * selection.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → selection
+    stream.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → stream
+    array.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → array
+    binary.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → binary
+    * 
+    *
+    * http://rethinkdb.com/api/javascript/slice
+    */
+    slice(startIndex:number, endIndex:number, options?:{ leftBound?, rightBound? }):RStreamInterface<RemoteT>;
+    slice(startIndex:number):RStreamInterface<RemoteT>;
+
+    /**
+    * Merge two or more sequences. (Note that ordering is not guaranteed by `union`.)
+    *
+    * stream.union(sequence[, sequence, ...]) → stream
+    array.union(sequence[, sequence, ...]) → array
+    * **Example:** Construct a stream of all heroes.
+    * 
+    *     r.table('marvel').union(r.table('dc')).run(conn, callback);
+    *
+    * http://rethinkdb.com/api/javascript/union
+    */
+    union(sequence:RSequenceInterface, ...sequences:Array<RSequenceInterface>):RStreamInterface<RemoteT>;
+    union(sequence:RSequenceInterface):RStreamInterface<RemoteT>;
+
+    /**
+    * Plucks one or more attributes from a sequence of objects, filtering out any objects in the sequence that do not have the specified fields. Functionally, this is identical to `hasFields` followed by `pluck` on a sequence.
+    *
+    * sequence.withFields([selector1, selector2...]) → stream
+    array.withFields([selector1, selector2...]) → array
+    * **Example:** Get a list of users and their posts, excluding any users who have not made any posts.
+    * 
+    *     r.table('users').withFields('id', 'username', 'posts').run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/with_fields
+    */
+    withFields(...selectors:Array<string>):RStreamInterface<RemoteT>;
+
+    /**
+    * The opposite of pluck; takes an object or a sequence of objects, and returns them with the specified paths removed.
+    *
+    * sequence.without([selector1, selector2...]) → streamarray.without([selector1, selector2...]) → arraysingleSelection.without([selector1, selector2...]) → objectobject.without([selector1, selector2...]) → object
+    * **Example:** Since we don't need it for this computation we'll save bandwidth and leave out the list of IronMan's romantic conquests.
+    * 
+    *     r.table('marvel').get('IronMan').without('personalVictoriesList').run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/without
+    */
+    without(...selectors:Array<string>):RStreamInterface<RemoteT>;
+  }
+  export interface RSequenceInterface extends RAnyInterface {
+  //<SelfT extends RSequenceInterface<any, any, any>, SelectionT extends RSequenceInterface<any, any, any>, ElementT extends RAnyInterface> extends RAnyInterface {
 
     /**
     * Averages all the elements of a sequence. If called with a field name, averages all the values of that field in the sequence, skipping elements of the sequence that lack that field. If called with a function, calls that function on every element of the sequence and averages the results, skipping elements of the sequence where that function returns `null` or a non-existence error.
@@ -1389,18 +1721,6 @@ declare module rethinkdb {
     avg(func:Function):RNumberInterface;
 
     /**
-    * Get a single field from an object or a single element from a sequence.
-    *
-    * sequence(attr) → sequencesingleSelection(attr) → valueobject(attr) → valuearray(index) → value
-    * **Example:** What was Iron Man's first appearance in a comic?
-    * 
-    *     r.table('marvel').get('IronMan')('firstAppearance').run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/bracket
-    */
-    (attr:string):RSequenceInterface<any>;
-
-    /**
     * Convert a value of one type into another.
     *
     * sequence.coerceTo('array') → arrayvalue.coerceTo('string') → stringstring.coerceTo('number') → numberarray.coerceTo('object') → objectsequence.coerceTo('object') → objectobject.coerceTo('array') → arraybinary.coerceTo('string') → stringstring.coerceTo('binary') → binary
@@ -1415,20 +1735,6 @@ declare module rethinkdb {
     coerceTo<T extends RAnyInterface>(type:string):T;
 
     /**
-    * Concatenate one or more elements into a single sequence using a mapping function.
-    *
-    * stream.concatMap(function) → streamarray.concatMap(function) → array
-    * **Example:** Construct a sequence of all monsters defeated by Marvel heroes. The field "defeatedMonsters" is an array of one or more monster names.
-    * 
-    *     r.table('marvel').concatMap(function(hero) {
-    *         return hero('defeatedMonsters')
-    *     }).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/concat_map
-    */
-    concatMap(mapFunction:ExpressionFunction<RAnyInterface>):RStreamInterface<any>;
-
-    /**
     * Returns whether or not a sequence contains all the specified values, or if functions are provided instead, returns whether or not a sequence contains values matching all the specified functions.
     *
     * sequence.contains([value | predicate_function, ...]) → bool
@@ -1438,7 +1744,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/contains
     */
-    contains(...functions:Array<ExpressionFunction<RAnyInterface>>):RBoolInterface;
+    contains(...functions:Array<ExpressionFunction<RAnyInterface|Object>>):RBoolInterface;
     contains(...values:Array<string>):RBoolInterface;
 
     /**
@@ -1451,7 +1757,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/count
     */
-    count(predicate_function:ExpressionFunction<RAnyInterface>):RNumberInterface;
+    count(predicate_function:ExpressionFunction<RAnyInterface|Object>):RNumberInterface;
     count(value:any):RNumberInterface;
 
     /**
@@ -1473,54 +1779,6 @@ declare module rethinkdb {
     default(predicate_function:ExpressionFunction<Object|RAnyInterface>):RAnyInterface;
 
     /**
-    * Remove duplicate elements from the sequence.
-    *
-    * sequence.distinct() → arraytable.distinct([{index: <indexname>}]) → stream</indexname>
-    * **Example:** Which unique villains have been vanquished by marvel heroes?
-    * 
-    *     r.table('marvel').concatMap(function(hero) {
-    *         return hero('villainList')
-    *     }).distinct().run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/distinct
-    */
-    distinct(options?:{index?:string}):RArrayInterface;
-
-    /**
-    * Join tables using a field or function on the left-hand sequence matching primary keys or secondary indexes on the right-hand table. `eqJoin` is more efficient than other ReQL join types, and operates much faster. Documents in the result set consist of pairs of left-hand and right-hand documents, matched when the field on the left-hand side exists and is non-null and an entry with that field's value exists in the specified index on the right-hand side.
-    * 
-    * **Example:** Match players with the games they've played against one another.
-    * 
-    * `js r.table('players').eqJoin('gameId', r.table('games')).run(conn, callback)`
-    *
-    * sequence.eqJoin(leftField, rightTable[, {index:'id'}]) → sequence
-    * sequence.eqJoin(predicate_function, rightTable[, {index:'id'}]) → sequence
-    * 
-    *
-    * http://rethinkdb.com/api/javascript/eq_join
-    */
-    eqJoin(leftField:string, rightTable:RTableInterface, options?:{ index? }):RStreamInterface<JoinResult<RemoteT, any>>;
-    eqJoin(predicate_function:ExpressionFunction<RAnyInterface>, rightTable:RTableInterface, options?:{ index? }):RStreamInterface<JoinResult<RemoteT, any>>;
-    eqJoin(predicate_function:ExpressionFunction<RAnyInterface>, rightTable:RTableInterface):RStreamInterface<JoinResult<RemoteT, any>>;
-
-    /**
-    * Get all the documents for which the given predicate is true.
-    * 
-    * `filter` can be called on a sequence, selection, or a field containing an array of elements. The return type is the same as the type on which the function was called on.
-    * 
-    * The body of every filter is wrapped in an implicit `.default(false)`, which means that if a non-existence errors is thrown (when you try to access a field that does not exist in a document), RethinkDB will just ignore the document. The `default` value can be changed by passing an object with a `default` field. Setting this optional argument to `r.error()` will cause any non-existence errors to return a `ReqlRuntimeError`.
-    *
-    * selection.filter(predicate_function[, {default: false}]) → selectionstream.filter(predicate_function[, {default: false}]) → streamarray.filter(predicate_function[, {default: false}]) → array
-    * **Example:** Get all the users that are 30 years old.
-    * 
-    *     r.table('users').filter({age: 30}).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/filter
-    */
-    filter(predicate_function:ExpressionFunction<RBoolInterface>, options?:{ default? }):RSelectionInterface<RemoteT>;
-    filter(filterByObject:Object):RSelectionInterface<RemoteT>;
-
-    /**
     * Loop over a sequence, evaluating the given write query for each element.
     *
     * sequence.forEach(write_function) → object
@@ -1533,18 +1791,6 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/for_each
     */
     forEach(write_function:ExpressionFunction<any>):RObjectInterface<any>;
-
-    /**
-    * Get a single field from an object. If called on a sequence, gets that field from every object in the sequence, skipping objects that lack it.
-    *
-    * sequence.getField(attr) → sequencesingleSelection.getField(attr) → valueobject.getField(attr) → value
-    * **Example:** What was Iron Man's first appearance in a comic?
-    * 
-    *     r.table('marvel').get('IronMan').getField('firstAppearance').run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/get_field
-    */
-    getField(attr:string):RSequenceInterface<any>;
 
     /**
     * Takes a stream and partitions it into multiple groups based on the fields or functions provided. Commands chained after `group` will be called on each of these grouped sub-streams, producing grouped data.
@@ -1560,64 +1806,6 @@ declare module rethinkdb {
     group(func:ExpressionFunction<any>, options?:{ index?, multi? }):RGroupedStreamInterface;
 
     /**
-    * Test if an object has one or more fields. An object has a field if it has that key and the key has a non-null value. For instance, the object `{'a': 1,'b': 2,'c': null}` has the fields `a` and `b`.
-    *
-    * sequence.hasFields([selector1, selector2...]) → streamarray.hasFields([selector1, selector2...]) → arrayobject.hasFields([selector1, selector2...]) → boolean
-    * **Example:** Return the players who have won games.
-    * 
-    *     r.table('players').hasFields('games_won').run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/has_fields
-    */
-    hasFields(...selectors:Array<string>):RStreamInterface<RemoteT>;
-
-    /**
-    * Tests whether a geometry object is completely contained within another. When applied to a sequence of geometry objects, `includes` acts as a [filter](/api/javascript/filter), returning a sequence of objects from the sequence that include the argument.
-    *
-    * sequence.includes(geometry) → sequencegeometry.includes(geometry) → bool
-    * **Example:** Is `point2` included within a 2000-meter circle around `point1`?
-    * 
-    *     var point1 = r.point(-117.220406,32.719464);
-    *     var point2 = r.point(-117.206201,32.725186);
-    *     r.circle(point1, 2000).includes(point2).run(conn, callback);
-    *     // result returned to callback 
-    *     true
-    *
-    * http://rethinkdb.com/api/javascript/includes
-    */
-    includes(geometry):RSequenceInterface<RemoteT>;
-
-    /**
-    * Returns an inner join of two sequences.
-    *
-    * sequence.innerJoin(otherSequence, predicate_function) → streamarray.innerJoin(otherSequence, predicate_function) → array
-    * **Example:** Return a list of all matchups between Marvel and DC heroes in which the DC hero could beat the Marvel hero in a fight.
-    * 
-    *     r.table('marvel').innerJoin(r.table('dc'), function(marvelRow, dcRow) {
-    *         return marvelRow('strength').lt(dcRow('strength'))
-    *     }).zip().run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/inner_join
-    */
-    innerJoin(otherSequence:RSequenceInterface<any>, predicate_function:ExpressionFunction<RBoolInterface>):RStreamInterface<JoinResult<RemoteT, any>>;
-
-    /**
-    * Tests whether two geometry objects intersect with one another. When applied to a sequence of geometry objects, `intersects` acts as a [filter](/api/javascript/filter), returning a sequence of objects from the sequence that intersect with the argument.
-    *
-    * sequence.intersects(geometry) → sequencegeometry.intersects(geometry) → boolr.intersects(sequence, geometry) → sequencer.intersects(geometry, geometry) → bool
-    * **Example:** Is `point2` within a 2000-meter circle around `point1`?
-    * 
-    *     var point1 = r.point(-117.220406,32.719464);
-    *     var point2 = r.point(-117.206201,32.725186);
-    *     r.circle(point1, 2000).intersects(point2).run(conn, callback);
-    *     // result returned to callback 
-    *     true
-    *
-    * http://rethinkdb.com/api/javascript/intersects
-    */
-    intersects(geometry):RSequenceInterface<RemoteT>;
-
-    /**
     * Test if a sequence is empty.
     *
     * sequence.isEmpty() → bool
@@ -1628,20 +1816,6 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/is_empty
     */
     isEmpty():RBoolInterface;
-
-    /**
-    * End the sequence after the given number of elements.
-    *
-    * sequence.limit(n) → streamarray.limit(n) → array
-    * **Example:** Only so many can fit in our Pantheon of heroes.
-    * 
-    *     r.table('marvel').orderBy('belovedness').limit(10).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/limit
-    */
-    limit(n:number):RStreamInterface<RemoteT>;
-    
-    // HACK: MAP
 
     /**
     * Finds the maximum element of a sequence.
@@ -1655,21 +1829,6 @@ declare module rethinkdb {
     */
     max(field_or_a_function:string|Function):RValueInterface<any>;
     max(options?:{ index? }):RValueInterface<any>;
-
-    /**
-    * Merge two or more objects together to construct a new object with properties from all. When there is a conflict between field names, preference is given to fields in the rightmost object in the argument list.
-    *
-    * singleSelection.merge([object | function, object | function, ...]) → objectobject.merge([object | function, object | function, ...]) → objectsequence.merge([object | function, object | function, ...]) → streamarray.merge([object | function, object | function, ...]) → array
-    * **Example:** Equip Thor for battle.
-    * 
-    *     r.table('marvel').get('thor').merge(
-    *         r.table('equipment').get('hammer'),
-    *         r.table('equipment').get('pimento_sandwich')
-    *     ).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/merge
-    */
-    merge(...object_or_a_functions:Array<Object|Function>):RStreamInterface<any>;
 
     /**
     * Finds the minimum element of a sequence.
@@ -1709,56 +1868,6 @@ declare module rethinkdb {
     offsetsOf(datum_or_predicate_function:Function):RArrayInterface;
 
     /**
-    * Sort the sequence by document values of the given key(s). To specify the ordering, wrap the attribute with either `r.asc` or `r.desc` (defaults to ascending).
-    * 
-    * Sorting without an index requires the server to hold the sequence in memory, and is limited to 100,000 documents (or the setting of the `arrayLimit` option for [run](/api/javascript/run)). Sorting with an index can be done on arbitrarily large tables, or after a `between` command using the same index.
-    *
-    * table.orderBy([key | function...], {index: index_name}) → table_sliceselection.orderBy(key | function[, ...]) → selection<array>sequence.orderBy(key | function[, ...]) → array</array>
-    * **Example:** Order all the posts using the index `date`.
-    * 
-    *     r.table('posts').orderBy({index: 'date'}).run(conn, callback)
-    * 
-    * The index must have been previously created with [indexCreate](/api/javascript/index_create/).
-    * 
-    *     r.table('posts').indexCreate('date').run(conn, callback)
-    * 
-    * You can also select a descending ordering:
-    * 
-    *     r.table('posts').orderBy({index: r.desc('date')}).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/order_by
-    */
-    orderBy(key_or_a_function, options?:{ index? }):RStreamInterface<RemoteT>;
-    orderBy(key_or_a_function, ...more):RStreamInterface<RemoteT>;
-    orderBy(key_or_a_function):RStreamInterface<RemoteT>;
-
-    /**
-    * Returns a left outer join of two sequences.
-    *
-    * sequence.outerJoin(otherSequence, predicate_function) → streamarray.outerJoin(otherSequence, predicate_function) → array
-    * **Example:** Return a list of all Marvel heroes, paired with any DC heroes who could beat them in a fight.
-    * 
-    *     r.table('marvel').outerJoin(r.table('dc'), function(marvelRow, dcRow) {
-    *         return marvelRow('strength').lt(dcRow('strength'))
-    *     }).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/outer_join
-    */
-    outerJoin(otherSequence:RSequenceInterface<any>, predicate_function:ExpressionFunction<RBoolInterface>):RStreamInterface<JoinResult<RemoteT, any>>;
-
-    /**
-    * Plucks out one or more attributes from either an object or a sequence of objects (projection).
-    *
-    * sequence.pluck([selector1, selector2...]) → streamarray.pluck([selector1, selector2...]) → arrayobject.pluck([selector1, selector2...]) → objectsingleSelection.pluck([selector1, selector2...]) → object
-    * **Example:** We just need information about IronMan's reactor and not the rest of the document.
-    * 
-    *     r.table('marvel').get('IronMan').pluck('reactorState', 'reactorPower').run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/pluck
-    */
-    pluck(...selectors:Array<string>):RStreamInterface<any>;
-
-    /**
     * Produce a single value from a sequence through repeated application of a reduction function.
     *
     * sequence.reduce(function) → value
@@ -1775,45 +1884,6 @@ declare module rethinkdb {
     reduce(a_function:ReduceFunction<any>):RValueInterface<any>;
 
     /**
-    * Select a given number of elements from a sequence with uniform random distribution. Selection is done without replacement.
-    *
-    * sequence.sample(number) → selectionstream.sample(number) → arrayarray.sample(number) → array
-    * **Example:** Select 3 random heroes.
-    * 
-    *     r.table('marvel').sample(3).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/sample
-    */
-    sample(number:number):RSelectionInterface<any>;
-
-    /**
-    * Skip a number of elements from the head of the sequence.
-    *
-    * sequence.skip(n) → streamarray.skip(n) → array
-    * **Example:** Here in conjunction with `orderBy` we choose to ignore the most successful heroes.
-    * 
-    *     r.table('marvel').orderBy('successMetric').skip(10).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/skip
-    */
-    skip(n:number):RStreamInterface<RemoteT>;
-
-    /**
-    * Return the elements of a sequence within the specified range.
-    * 
-    * **Example:** Return the fourth, fifth and sixth youngest players. (The youngest player is at index 0, so those are elements 3–5.)
-    * 
-    * `js r.table('players').orderBy({index: 'age'}).slice(3,6).run(conn, callback)`
-    *
-    * selection.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → selectionstream.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → streamarray.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → arraybinary.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → binary
-    * 
-    *
-    * http://rethinkdb.com/api/javascript/slice
-    */
-    slice(startIndex:number, endIndex:number, options?:{ leftBound?, rightBound? }):RStreamInterface<RemoteT>;
-    slice(startIndex:number):RStreamInterface<RemoteT>;
-
-    /**
     * Sums all the elements of a sequence. If called with a field name, sums all the values of that field in the sequence, skipping elements of the sequence that lack that field. If called with a function, calls that function on every element of the sequence and sums the results, skipping elements of the sequence where that function returns `null` or a non-existence error.
     *
     * sequence.sum([field | function]) → number
@@ -1824,47 +1894,10 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/sum
     */
     sum(field_or_a_function:string|Function):RNumberInterface;
-
-    /**
-    * Merge two or more sequences. (Note that ordering is not guaranteed by `union`.)
-    *
-    * stream.union(sequence[, sequence, ...]) → streamarray.union(sequence[, sequence, ...]) → array
-    * **Example:** Construct a stream of all heroes.
-    * 
-    *     r.table('marvel').union(r.table('dc')).run(conn, callback);
-    *
-    * http://rethinkdb.com/api/javascript/union
-    */
-    union(sequence:RSequenceInterface<any>, ...sequences:Array<RSequenceInterface<any>>):RArrayInterface;
-    union(sequence:RSequenceInterface<any>):RArrayInterface;
-
-    /**
-    * Plucks one or more attributes from a sequence of objects, filtering out any objects in the sequence that do not have the specified fields. Functionally, this is identical to `hasFields` followed by `pluck` on a sequence.
-    *
-    * sequence.withFields([selector1, selector2...]) → streamarray.withFields([selector1, selector2...]) → array
-    * **Example:** Get a list of users and their posts, excluding any users who have not made any posts.
-    * 
-    *     r.table('users').withFields('id', 'username', 'posts').run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/with_fields
-    */
-    withFields(...selectors:Array<string>):RStreamInterface<RemoteT>;
-
-    /**
-    * The opposite of pluck; takes an object or a sequence of objects, and returns them with the specified paths removed.
-    *
-    * sequence.without([selector1, selector2...]) → streamarray.without([selector1, selector2...]) → arraysingleSelection.without([selector1, selector2...]) → objectobject.without([selector1, selector2...]) → object
-    * **Example:** Since we don't need it for this computation we'll save bandwidth and leave out the list of IronMan's romantic conquests.
-    * 
-    *     r.table('marvel').get('IronMan').without('personalVictoriesList').run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/without
-    */
-    without(...selectors:Array<string>):RStreamInterface<RemoteT>;
   }
-  export interface RTableSliceInterface extends RTableInterface, RAnyInterface {
+  export interface RTableSliceInterface<RemoteT> extends RTableInterface<RemoteT> {
   }
-  export interface RTableInterface extends RSelectionInterface<any>, RStreamInterface<any>, RSequenceInterface<any>, RAnyInterface {
+  export interface RTableInterface<RemoteT> extends RSelectionInterface<RemoteT> {
 
     /**
     * Get all documents between two keys. Accepts three optional arguments: `index`, `left_bound`, and `right_bound`. If `index` is set to the name of a secondary index, `between` will return all documents where that index's value is in the specified range (it uses the primary key by default). `left_bound` or `right_bound` may be set to `open` or `closed` to indicate whether or not to include that endpoint of the range (by default, `left_bound` is closed and `right_bound` is open).
@@ -1876,8 +1909,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/between
     */
-    between(lowerKey, upperKey, options?):RTableSliceInterface;
-    between(lowerKey, upperKey):RTableSliceInterface;
+    between(lowerKey, upperKey, options?):RTableSliceInterface<RemoteT>;
+    between(lowerKey, upperKey):RTableSliceInterface<RemoteT>;
 
     /**
     * Query (read and/or update) the configurations for individual tables or databases.
@@ -1889,12 +1922,14 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/config
     */
-    config():RSingleSelectionInterface;
+    config():RSingleSelectionInterface<TableConfig>;
 
     /**
     * Delete one or more documents from a table.
     *
-    * table.delete([{durability: "hard", returnChanges: false}])→ objectselection.delete([{durability: "hard", returnChanges: false}])→ objectsingleSelection.delete([{durability: "hard", returnChanges: false}])→ object
+    * table.delete([{durability: "hard", returnChanges: false}])→ object
+    selection.delete([{durability: "hard", returnChanges: false}])→ object
+    singleSelection.delete([{durability: "hard", returnChanges: false}])→ object
     * **Example:** Delete a single document from the table `comments`.
     * 
     *     r.table("comments").get("7eab9e63-73f1-4f33-8ce4-95cbea626f59").delete().run(conn, callback)
@@ -1915,7 +1950,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/distinct
     */
-    distinct(options?:{ index? }):RStreamInterface<any>;
+    distinct(options?:{ index }):RStreamInterface<RemoteT>;
 
     /**
     * Get a document by primary key.
@@ -1929,7 +1964,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/get
     */
-    get(key:string):RSingleSelectionInterface;
+    get(key:string):RSingleSelectionInterface<RemoteT>;
 
     /**
     * Get all documents where the given value matches the value of the requested index.
@@ -2097,9 +2132,9 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/order_by
     */
-    orderBy(key:string, options?:{ index }):RTableSliceInterface;
-    orderBy(func:ExpressionFunction<RAnyInterface>, options?:{ index }):RTableSliceInterface;
-    orderBy(options:{ index }):RTableSliceInterface;
+    orderBy(key:string, options?:{ index }):RTableSliceInterface<RemoteT>;
+    orderBy(func:ExpressionFunction<RAnyInterface|Object>, options?:{ index }):RTableSliceInterface<RemoteT>;
+    orderBy(options:{ index }):RTableSliceInterface<RemoteT>;
 
     /**
     * Rebalances the shards of a table. When called on a database, all the tables in that database will be rebalanced.
@@ -2152,7 +2187,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/status
     */
-    status():RSingleSelectionInterface;
+    status():RSingleSelectionInterface<any>;
 
     /**
     * `sync` ensures that writes on a given table are written to permanent storage. Queries that specify soft durability (`{durability: 'soft'}`) do not give such guarantees, so `sync` can be used to ensure the state of these queries. A call to `sync` does not return until all previous writes to the table are persisted.
@@ -2373,20 +2408,7 @@ declare module rethinkdb {
     */
     toJSON():RStringInterface;
   }
-  export interface RSingleSelectionInterface extends RAnyInterface {
-
-    /**
-    * Get a single field from an object or a single element from a sequence.
-    *
-    * sequence(attr) → sequencesingleSelection(attr) → valueobject(attr) → valuearray(index) → value
-    * **Example:** What was Iron Man's first appearance in a comic?
-    * 
-    *     r.table('marvel').get('IronMan')('firstAppearance').run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/bracket
-    */
-    (attr:string):RValueInterface<any>;
-
+  export interface RObservableInterface<RemoteT> {
     /**
     * Return a changefeed, an infinite stream of objects representing changes to a query. A changefeed may return changes to a table or an individual document (a "point" changefeed), and document transformation commands such as `filter` or `map` may be used before the `changes` command to affect the output.
     *
@@ -2399,20 +2421,22 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/changes
     */
-    changes(options?):RStreamInterface<any>;
-
+    changes(options?:{squash:boolean|number, changefeedQueueSize:number, includeInitial:boolean, includeStates:boolean}):RStreamInterface<ChangesResult<RemoteT>>;
+  }
+  export interface RSingleSelectionInterface<RemoteT> extends RObjectInterface<RemoteT>, RObservableInterface<RemoteT> { //RObjectInterface<RemoteT>,  //RObservableInterface<RemoteT>, //RSelectionInterface<RemoteT>
     /**
-    * Delete one or more documents from a table.
+    * Get a single field from an object or a single element from a sequence.
     *
-    * table.delete([{durability: "hard", returnChanges: false}])→ objectselection.delete([{durability: "hard", returnChanges: false}])→ objectsingleSelection.delete([{durability: "hard", returnChanges: false}])→ object
-    * **Example:** Delete a single document from the table `comments`.
+    * sequence(attr) → sequence
+    singleSelection(attr) → value
+    object(attr) → valuearray(index) → value
+    * **Example:** What was Iron Man's first appearance in a comic?
     * 
-    *     r.table("comments").get("7eab9e63-73f1-4f33-8ce4-95cbea626f59").delete().run(conn, callback)
+    *     r.table('marvel').get('IronMan')('firstAppearance').run(conn, callback)
     *
-    * http://rethinkdb.com/api/javascript/delete
+    * http://rethinkdb.com/api/javascript/bracket
     */
-    delete(options?:{ durability?, returnChanges? }):RObjectInterface<any>;
-    delete():RObjectInterface<any>;
+    (attr:string):RValueInterface<any>;
 
     /**
     * Get a single field from an object. If called on a sequence, gets that field from every object in the sequence, skipping objects that lack it.
@@ -2439,27 +2463,10 @@ declare module rethinkdb {
     hasFields(...selectors:Array<string>):RBoolInterface;
 
     /**
-    * Insert JSON documents into a table. Accepts a single JSON document or an array of documents.
-    *
-    * table.insert(object | [object1, object2, ...][, {durability: "hard", returnChanges: false, conflict: "error"}]) → object
-    * **Example:** Insert a document into the table `posts`.
-    * 
-    *     r.table("posts").insert({
-    *         id: 1,
-    *         title: "Lorem ipsum",
-    *         content: "Dolor sit amet"
-    *     }).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/insert
-    */
-    insert(...objects_and_then_options:Array<Object|{durability?:string, returnChanges?:string, conflict?:string}>):RObjectInterface<WriteResult>;
-    insert(...objects:Array<Object>):RObjectInterface<WriteResult>;
-    insert(object:Object, options?:{durability?:string, returnChanges?:string, conflict?:string}):RObjectInterface<WriteResult>;
-
-    /**
     * Return an array containing all of an object's keys. Note that the keys will be sorted as described in [ReQL data types](/docs/data-types/#sorting-order) (for strings, lexicographically).
     *
-    * singleSelection.keys() → arrayobject.keys() → array
+    * singleSelection.keys() → array
+    object.keys() → array
     * **Example:** Get all the keys from a table row.
     * 
     *     // row: { id: 1, mail: "fred@example.com", name: "fred" }
@@ -2500,35 +2507,6 @@ declare module rethinkdb {
     pluck(...selectors:Array<string>):RObjectInterface<any>;
 
     /**
-    * Replace documents in a table. Accepts a JSON document or a ReQL expression, and replaces the original document with the new one. The new document must have the same primary key as the original document.
-    *
-    * table.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectselection.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectsingleSelection.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ object
-    * **Example:** Replace the document with the primary key `1`.
-    * 
-    *     r.table("posts").get(1).replace({
-    *         id: 1,
-    *         title: "Lorem ipsum",
-    *         content: "Aleas jacta est",
-    *         status: "draft"
-    *     }).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/replace
-    */
-    replace(object_or_a_function:Object|Function, options?:{ durability?, returnChanges?, nonAtomic? }):RObjectInterface<WriteResult>;
-
-    /**
-    * Update JSON documents in a table. Accepts a JSON document, a ReQL expression, or a combination of the two. You can pass options like `returnChanges` that will return the old and new values of the row you have modified.
-    *
-    * table.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectselection.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectsingleSelection.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ object
-    * **Example:** Update the status of the post with `id` of `1` to `published`.
-    * 
-    *     r.table("posts").get(1).update({status: "published"}).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/update
-    */
-    update(object_or_a_function:Object|Function, options?:{ durability?, returnChanges?, nonAtomic? }):RObjectInterface<WriteResult>;
-
-    /**
     * # Command syntax
     * 
     * Return an array containing all of an object's values. `values()` guarantees the values will come out in the same order as [keys](/api/javascript/keys).
@@ -2557,8 +2535,148 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/without
     */
     without(...selectors:Array<string>):RObjectInterface<any>;
+    
+    //// HACK: UNABLE TO EXTEND, SO DUPLICATED FROM SELECTION INTERFACE:
+    
+    /**
+    * Delete one or more documents from a table.
+    *
+    * table.delete([{durability: "hard", returnChanges: false}])→ objectselection.delete([{durability: "hard", returnChanges: false}])→ objectsingleSelection.delete([{durability: "hard", returnChanges: false}])→ object
+    * **Example:** Delete a single document from the table `comments`.
+    * 
+    *     r.table("comments").get("7eab9e63-73f1-4f33-8ce4-95cbea626f59").delete().run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/delete
+    */
+    delete(options?:{ durability?, returnChanges? }):RObjectInterface<WriteResult>;
+
+    /**
+    * Insert JSON documents into a table. Accepts a single JSON document or an array of documents.
+    *
+    * table.insert(object | [object1, object2, ...][, {durability: "hard", returnChanges: false, conflict: "error"}]) → object
+    * **Example:** Insert a document into the table `posts`.
+    * 
+    *     r.table("posts").insert({
+    *         id: 1,
+    *         title: "Lorem ipsum",
+    *         content: "Dolor sit amet"
+    *     }).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/insert
+    */
+    insert(...objects_and_then_options:Array<Object|{durability?:string, returnChanges?:string, conflict?:string}>):RObjectInterface<WriteResult>;
+    insert(...objects:Array<Object>):RObjectInterface<WriteResult>;
+    insert(object:Object, options?:{durability?:string, returnChanges?:string, conflict?:string}):RObjectInterface<WriteResult>;
+
+    /**
+    * Replace documents in a table. Accepts a JSON document or a ReQL expression, and replaces the original document with the new one. The new document must have the same primary key as the original document.
+    *
+    * table.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectselection.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectsingleSelection.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ object
+    * **Example:** Replace the document with the primary key `1`.
+    * 
+    *     r.table("posts").get(1).replace({
+    *         id: 1,
+    *         title: "Lorem ipsum",
+    *         content: "Aleas jacta est",
+    *         status: "draft"
+    *     }).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/replace
+    */
+    replace(object_or_a_function:Object|Function, options?:{ durability?, returnChanges?, nonAtomic? }):RObjectInterface<WriteResult>;
+
+    /**
+    * Update JSON documents in a table. Accepts a JSON document, a ReQL expression, or a combination of the two. You can pass options like `returnChanges` that will return the old and new values of the row you have modified.
+    *
+    * table.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectselection.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectsingleSelection.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ object
+    * **Example:** Update the status of the post with `id` of `1` to `published`.
+    * 
+    *     r.table("posts").get(1).update({status: "published"}).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/update
+    */
+    update(object_or_a_function:Object|Function, options?:{ durability?, returnChanges?, nonAtomic? }):RObjectInterface<WriteResult>;
   }
-  export interface RObjectInterface<RemoteT> extends RValueInterface<RemoteT>, RAnyInterface {
+  export interface RSelectionInterface<RemoteT> extends RStreamInterface<RemoteT> {
+    /**
+    * Delete one or more documents from a table.
+    *
+    * table.delete([{durability: "hard", returnChanges: false}])→ objectselection.delete([{durability: "hard", returnChanges: false}])→ objectsingleSelection.delete([{durability: "hard", returnChanges: false}])→ object
+    * **Example:** Delete a single document from the table `comments`.
+    * 
+    *     r.table("comments").get("7eab9e63-73f1-4f33-8ce4-95cbea626f59").delete().run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/delete
+    */
+    delete(options?:{ durability?, returnChanges? }):RObjectInterface<WriteResult>;
+
+    /**
+    * Insert JSON documents into a table. Accepts a single JSON document or an array of documents.
+    *
+    * table.insert(object | [object1, object2, ...][, {durability: "hard", returnChanges: false, conflict: "error"}]) → object
+    * **Example:** Insert a document into the table `posts`.
+    * 
+    *     r.table("posts").insert({
+    *         id: 1,
+    *         title: "Lorem ipsum",
+    *         content: "Dolor sit amet"
+    *     }).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/insert
+    */
+    insert(...objects_and_then_options:Array<Object|{durability?:string, returnChanges?:string, conflict?:string}>):RObjectInterface<WriteResult>;
+    insert(...objects:Array<Object>):RObjectInterface<WriteResult>;
+    insert(object:Object, options?:{durability?:string, returnChanges?:string, conflict?:string}):RObjectInterface<WriteResult>;
+
+    /**
+    * Replace documents in a table. Accepts a JSON document or a ReQL expression, and replaces the original document with the new one. The new document must have the same primary key as the original document.
+    *
+    * table.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectselection.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectsingleSelection.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ object
+    * **Example:** Replace the document with the primary key `1`.
+    * 
+    *     r.table("posts").get(1).replace({
+    *         id: 1,
+    *         title: "Lorem ipsum",
+    *         content: "Aleas jacta est",
+    *         status: "draft"
+    *     }).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/replace
+    */
+    replace(object_or_a_function:Object|Function, options?:{ durability?, returnChanges?, nonAtomic? }):RObjectInterface<WriteResult>;
+
+    /**
+    * Update JSON documents in a table. Accepts a JSON document, a ReQL expression, or a combination of the two. You can pass options like `returnChanges` that will return the old and new values of the row you have modified.
+    *
+    * table.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectselection.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectsingleSelection.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ object
+    * **Example:** Update the status of the post with `id` of `1` to `published`.
+    * 
+    *     r.table("posts").get(1).update({status: "published"}).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/update
+    */
+    update(object_or_a_function:Object|Function, options?:{ durability?, returnChanges?, nonAtomic? }):RObjectInterface<WriteResult>;
+    
+    /**
+    * Get all the documents for which the given predicate is true.
+    * 
+    * `filter` can be called on a sequence, selection, or a field containing an array of elements. The return type is the same as the type on which the function was called on.
+    * 
+    * The body of every filter is wrapped in an implicit `.default(false)`, which means that if a non-existence errors is thrown (when you try to access a field that does not exist in a document), RethinkDB will just ignore the document. The `default` value can be changed by passing an object with a `default` field. Setting this optional argument to `r.error()` will cause any non-existence errors to return a `ReqlRuntimeError`.
+    *
+    * selection.filter(predicate_function[, {default: false}]) → selection
+    * stream.filter(predicate_function[, {default: false}]) → stream
+    * array.filter(predicate_function[, {default: false}]) → array
+    * **Example:** Get all the users that are 30 years old.
+    * 
+    *     r.table('users').filter({age: 30}).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/filter
+    */
+    filter(predicate_function:ExpressionFunction<RBoolInterface>, options?:{ default? }):RSelectionInterface<RemoteT>;
+    filter(filterByObject:Object):RSelectionInterface<RemoteT>;
+  }
+  export interface RObjectInterface<RemoteT> extends RRunableInterface<RemoteT>, RAnyInterface {
 
     /**
     * Get a single field from an object or a single element from a sequence.
@@ -2724,49 +2842,33 @@ declare module rethinkdb {
     */
     typeOf():RStringInterface;
   }
-  export interface RStreamInterface<RemoteT> extends RRunableCursorInterface<RemoteT>, RAnyInterface {
-
+  export interface RStreamInterface<RemoteT> extends RObservableInterface<RemoteT>, RSequenceStream<RemoteT>, RRunableInterface<RCursorInterface<RemoteT>> {
     /**
-    * Return a changefeed, an infinite stream of objects representing changes to a query. A changefeed may return changes to a table or an individual document (a "point" changefeed), and document transformation commands such as `filter` or `map` may be used before the `changes` command to affect the output.
+    * Plucks out one or more attributes from either an object or a sequence of objects (projection).
     *
-    * stream.changes([options]) → streamsingleSelection.changes([options]) → stream
-    * **Example:** Subscribe to the changes on a table.
+    * sequence.pluck([selector1, selector2...]) → streamarray.pluck([selector1, selector2...]) → arrayobject.pluck([selector1, selector2...]) → objectsingleSelection.pluck([selector1, selector2...]) → object
+    * **Example:** We just need information about IronMan's reactor and not the rest of the document.
     * 
-    *     r.table('games').changes().run(conn, function(err, cursor) {
-    *       cursor.each(console.log)
-    *     })
+    *     r.table('marvel').get('IronMan').pluck('reactorState', 'reactorPower').run(conn, callback)
     *
-    * http://rethinkdb.com/api/javascript/changes
+    * http://rethinkdb.com/api/javascript/pluck
     */
-    changes(options?:{squash:boolean|number, changefeedQueueSize:number, includeInitial:boolean, includeStates:boolean}):RStreamInterface<ChangesResult<RemoteT>>;
-
-    /**
-    * Get all the documents for which the given predicate is true.
-    * 
-    * `filter` can be called on a sequence, selection, or a field containing an array of elements. The return type is the same as the type on which the function was called on.
-    * 
-    * The body of every filter is wrapped in an implicit `.default(false)`, which means that if a non-existence errors is thrown (when you try to access a field that does not exist in a document), RethinkDB will just ignore the document. The `default` value can be changed by passing an object with a `default` field. Setting this optional argument to `r.error()` will cause any non-existence errors to return a `ReqlRuntimeError`.
-    *
-    * selection.filter(predicate_function[, {default: false}]) → selectionstream.filter(predicate_function[, {default: false}]) → streamarray.filter(predicate_function[, {default: false}]) → array
-    * **Example:** Get all the users that are 30 years old.
-    * 
-    *     r.table('users').filter({age: 30}).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/filter
-    */
-    filter(predicate_function:Function, options?:{ default? }):RStreamInterface<RemoteT>;
+    pluck(...selectors:Array<string>):RStreamInterface<RemoteT>;
 
     /**
     * Select a given number of elements from a sequence with uniform random distribution. Selection is done without replacement.
     *
-    * sequence.sample(number) → selectionstream.sample(number) → arrayarray.sample(number) → array
+    * sequence.sample(number) → selection // TODO: this is a mistake, isn't it?
+    stream.sample(number) → array
+    array.sample(number) → array
     * **Example:** Select 3 random heroes.
     * 
     *     r.table('marvel').sample(3).run(conn, callback)
     *
     * http://rethinkdb.com/api/javascript/sample
     */
-    sample(number:number):RArrayInterface;
+    // TODO ? was: RArrayInterface;
+    sample(number:number):RSelectionInterface<RemoteT>;
 
     /**
     * Used to 'zip' up the result of a join by merging the 'right' fields into 'left' fields of each member of the sequence.
@@ -2848,8 +2950,7 @@ declare module rethinkdb {
     */
     toGeojson():RObjectInterface<any>;
   }
-  export interface RCursorInterface<RemoteT> extends RAnyInterface {
-
+  export interface RCursorInterface<RemoteT> {
     /**
     * Close a cursor. Closing a cursor cancels the corresponding query and frees the memory associated with the open request.
     *
@@ -2875,7 +2976,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/each
     */
-    each(callback:CallbackFunction<RemoteT>, onFinishedCallback:CallbackFunction<RemoteT>):void;
+    each(callback:CallbackFunction<RemoteT>, onFinishedCallback?:CallbackFunction<RemoteT>):void;
 
     /**
     * Lazily iterate over a result set one element at a time in an identical fashion to [each](/api/javascript/each/), returning a Promise that will be resolved once all rows are returned.
@@ -2927,41 +3028,42 @@ declare module rethinkdb {
     toArray(callback:CallbackFunction<Array<RemoteT>>):void;
     toArray():Promise<Array<RemoteT>>;
   }
-  export interface RConnectionInterface extends RAnyInterface {
+  export interface RConnectionInterface {
 
     /**
     * Close an open connection.
     * 
     * If no callback is provided, a promise will be returned.
     *
-    * conn.close([{noreplyWait: true}, ]callback)conn.close([{noreplyWait: true}]) → promise
+    * conn.close([{noreplyWait: true}, ]callback)
+    conn.close([{noreplyWait: true}]) → promise
     * **Example:** Close an open connection, waiting for noreply writes to finish.
     * 
     *     conn.close(function(err) { if (err) throw err; })
     *
     * http://rethinkdb.com/api/javascript/close
     */
-    close(options:{ noreplyWait? }, callback:Function):void;
-    close(callback:Function):void;
-    close(options?:{ noreplyWait? }):void;
-    close():void;
+    close(options:{ noreplyWait? }, callback:CallbackFunction<void>):void;
+    close(callback:CallbackFunction<void>):void;
+    close(options?:{ noreplyWait? }):Promise<void>;
+    close():Promise<void>;
 
     /**
     * Close and reopen a connection.
     * 
     * If no callback is provided, a promise will be returned.
     *
-    * conn.reconnect([{noreplyWait: true}, ]callback)conn.reconnect([{noreplyWait: true}]) → promise
+    * conn.reconnect([{noreplyWait: true}, ]callback)
+    conn.reconnect([{noreplyWait: true}]) → promise
     * **Example:** Cancel outstanding requests/queries that are no longer needed.
     * 
     *     conn.reconnect({noreplyWait: false}, function(error, connection) { ... })
     *
     * http://rethinkdb.com/api/javascript/reconnect
     */
-    reconnect(options:{ noreplyWait? }, callback:Function):void;
-    reconnect(callback:Function):void;
-    reconnect(options?:{ noreplyWait? }):void;
-    reconnect():void;
+    reconnect(options:{ noreplyWait? }, callback:CallbackFunction<RConnectionInterface>):void;
+    reconnect(callback:CallbackFunction<RConnectionInterface>):void;
+    reconnect(options?:{ noreplyWait? }):Promise<RConnectionInterface>;
 
     /**
     * Change the default database on this connection.
@@ -2981,19 +3083,21 @@ declare module rethinkdb {
     /**
     * Query (read and/or update) the configurations for individual tables or databases.
     *
-    * table.config() → selection<object>database.config() → selection<object>
+    * table.config() → selection<object>
+    database.config() → selection<object>
     * **Example:** Get the configuration for the `users` table.
     * 
     *     > r.table('users').config().run(conn, callback);
     *
     * http://rethinkdb.com/api/javascript/config
     */
-    config():RSingleSelectionInterface;
+    config():RSingleSelectionInterface<any>;
 
     /**
     * Rebalances the shards of a table. When called on a database, all the tables in that database will be rebalanced.
     *
-    * table.rebalance() → objectdatabase.rebalance() → object
+    * table.rebalance() → object
+    database.rebalance() → object
     * **Example:** Rebalance a table.
     * 
     *     > r.table('superheroes').rebalance().run(conn, callback);
@@ -3005,7 +3109,8 @@ declare module rethinkdb {
     /**
     * Reconfigure a table's sharding and replication.
     *
-    * table.reconfigure({shards: <s>, replicas: <r>[, primaryReplicaTag: <t>, dryRun: false}]) → objectdatabase.reconfigure({shards: <s>, replicas: <r>[, primaryReplicaTag: <t>, dryRun: false}]) → object</t></r></s></t></r></s>
+    * table.reconfigure({shards: <s>, replicas: <r>[, primaryReplicaTag: <t>, dryRun: false}]) → object
+    database.reconfigure({shards: <s>, replicas: <r>[, primaryReplicaTag: <t>, dryRun: false}]) → object</t></r></s></t></r></s>
     * **Example:** Reconfigure a table.
     * 
     *     > r.table('superheroes').reconfigure({shards: 2, replicas: 1}).run(conn, callback);
@@ -3040,21 +3145,20 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/table
     */
-    table(name:string, options?:{ readMode?, identifierFormat? }):RTableInterface;
-    table(name:string):RTableInterface;
+    table<T>(name:string, options?:{ readMode?, identifierFormat? }):RTableInterface<T>;
 
     /**
     * Create a table. A RethinkDB table is a collection of JSON documents.
     *
-    * db.tableCreate(tableName[, options]) → objectr.tableCreate(tableName[, options]) → object
+    * db.tableCreate(tableName[, options]) → object
+    r.tableCreate(tableName[, options]) → object
     * **Example:** Create a table named 'dc_universe' with the default settings.
     * 
     *     r.db('heroes').tableCreate('dc_universe').run(conn, callback)
     *
     * http://rethinkdb.com/api/javascript/table_create
     */
-    tableCreate(tableName:string, options):RTableInterface;
-    tableCreate(tableName:string):RTableInterface;
+    tableCreate(tableName:string, options?):RObjectInterface<any>;
 
     /**
     * Drop a table. The table and all its data will be deleted.
@@ -3066,7 +3170,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/table_drop
     */
-    tableDrop(tableName:string):RObjectInterface<any>;
+    tableDrop(tableName:string):RObjectInterface<DropResult>;
 
     /**
     * List all table names in a database. The result is a list of strings.
@@ -3079,66 +3183,6 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/table_list
     */
     tableList():RArrayInterface;
-  }
-  export interface RSelectionInterface<T> extends RRunableCursorInterface<T>, RAnyInterface {
-
-    /**
-    * Delete one or more documents from a table.
-    *
-    * table.delete([{durability: "hard", returnChanges: false}])→ objectselection.delete([{durability: "hard", returnChanges: false}])→ objectsingleSelection.delete([{durability: "hard", returnChanges: false}])→ object
-    * **Example:** Delete a single document from the table `comments`.
-    * 
-    *     r.table("comments").get("7eab9e63-73f1-4f33-8ce4-95cbea626f59").delete().run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/delete
-    */
-    delete(options?:{ durability?, returnChanges? }):RObjectInterface<WriteResult>;
-
-    /**
-    * Insert JSON documents into a table. Accepts a single JSON document or an array of documents.
-    *
-    * table.insert(object | [object1, object2, ...][, {durability: "hard", returnChanges: false, conflict: "error"}]) → object
-    * **Example:** Insert a document into the table `posts`.
-    * 
-    *     r.table("posts").insert({
-    *         id: 1,
-    *         title: "Lorem ipsum",
-    *         content: "Dolor sit amet"
-    *     }).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/insert
-    */
-    insert(...objects_and_then_options):RObjectInterface<WriteResult>;
-    insert(...objects:Array<Object>):RObjectInterface<WriteResult>;
-
-    /**
-    * Replace documents in a table. Accepts a JSON document or a ReQL expression, and replaces the original document with the new one. The new document must have the same primary key as the original document.
-    *
-    * table.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectselection.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectsingleSelection.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ object
-    * **Example:** Replace the document with the primary key `1`.
-    * 
-    *     r.table("posts").get(1).replace({
-    *         id: 1,
-    *         title: "Lorem ipsum",
-    *         content: "Aleas jacta est",
-    *         status: "draft"
-    *     }).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/replace
-    */
-    replace(object_or_a_function:Object|Function, options?:{ durability?, returnChanges?, nonAtomic? }):RObjectInterface<WriteResult>;
-
-    /**
-    * Update JSON documents in a table. Accepts a JSON document, a ReQL expression, or a combination of the two. You can pass options like `returnChanges` that will return the old and new values of the row you have modified.
-    *
-    * table.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectselection.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectsingleSelection.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ object
-    * **Example:** Update the status of the post with `id` of `1` to `published`.
-    * 
-    *     r.table("posts").get(1).update({status: "published"}).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/update
-    */
-    update(object_or_a_function:Object|Function, options?:{ durability?, returnChanges?, nonAtomic? }):RObjectInterface<WriteResult>;
   }
   export interface RPolygonInterface extends RAnyInterface {
 
@@ -3192,7 +3236,7 @@ declare module rethinkdb {
     */
     fill():RPolygonInterface;
   }
-  export interface RGroupedStreamInterface extends RArrayInterface, RValueInterface<GroupResult>, RAnyInterface {
+  export interface RGroupedStreamInterface extends RStreamInterface<GroupResult> { //RValueInterface<GroupResult>, RAnyInterface
 
     /**
     * Takes a grouped stream or grouped data and turns it into an array of objects representing the groups. Any commands chained after `ungroup` will operate on this array, rather than operating on each group individually. This is useful if you want to e.g. order the groups by the value of their reduction.
@@ -3214,7 +3258,7 @@ declare module rethinkdb {
   }
   
   interface ExpressionFunction<U> {
-    (doc:RValueInterface<any>):U;
+    (doc:RObjectInterface<any>):U;
   }
   
   interface CallbackFunction<U> {
@@ -3250,6 +3294,23 @@ declare module rethinkdb {
     skipped: number;
     first_error?: Error;
     generated_keys?: string[]; // only for insert
+  }
+  
+  interface TableConfig {
+    id:string;
+    name:string;
+    db:string;
+    primary_key:string;
+    shards:Array<Shard>;
+    indexes:Array<string>;
+    write_acks:string;
+    durability:string;
+  }
+  
+  interface Shard {
+    primary_replica:string;
+    replicas:Array<string>;
+    nonvoting_replicas:Array<string>;
   }
   
   interface GroupResult {
