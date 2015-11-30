@@ -3241,7 +3241,11 @@ declare module rethinkdb {
     name:string;
   }
   
-  export interface RConnectionOptionsInterface {readMode?, timeFormat?, profile?, durability?, groupFormat?, noreply?, db?, arrayLimit?, binaryFormat?, minBatchRows?, maxBatchRows?, maxBatchBytes?, maxBatchSeconds?, firstBatchScaledownFactor?}
+  export interface RConnectionOptionsInterface {
+    port?:number;
+    host?:string; 
+    readMode?, timeFormat?, profile?, durability?, groupFormat?, noreply?, db?, arrayLimit?, binaryFormat?, minBatchRows?, maxBatchRows?, maxBatchBytes?, maxBatchSeconds?, firstBatchScaledownFactor?
+  }
   export interface RRunableInterface<T> extends PromiseLike<T> {
     run(connection:RConnectionInterface, cb:CallbackFunction<T>):void;
     run(connection:RConnectionInterface, options:RConnectionOptionsInterface, cb:CallbackFunction<T>):void;

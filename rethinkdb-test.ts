@@ -1,4 +1,4 @@
-/// <reference path="rethinkdbdash.d.ts" />
+/// <reference path="rethinkdb.d.ts" />
 
 import * as r from 'rethinkdb';
 
@@ -749,3 +749,46 @@ r.table('marvel').map(
         r.row<string>('name').add(' is very nice')
     )
 ).run(conn, callback);
+
+/// DefinitelyTyped originals (with the corrected mistake of "between" after "filter"):
+
+r.connect({host:"localhost", port: 28015}, function(err, conn) {
+    console.log("HI", err, conn)
+    var testDb = r.db('test')
+    testDb.tableCreate('users').run(conn, function(err, stuff) {
+        var users = testDb.table('users')
+
+        users.insert({name: "bob"}).run(conn, function() {})
+
+        users
+        .between("james", "beth")
+        .filter(function(doc?) {
+            return doc("henry").eq("bob")
+        })
+        .limit(4)
+        .run(conn, function() {
+
+        })
+
+    })
+})
+
+// use promises instead of callbacks
+r.connect({host:"localhost", port: 28015}).then(function(conn) {
+    console.log("HI", conn)
+    var testDb = r.db('test')
+    testDb.tableCreate('users').run(conn).then(function(stuff) {
+        var users = testDb.table('users')
+
+        users.insert({name: "bob"}).run(conn, function() {})
+
+        users
+        .between("james", "beth")
+        .filter(function(doc?) {
+            return doc("henry").eq("bob")
+        })
+        .limit(4)
+        .run(conn);
+
+    })
+})
