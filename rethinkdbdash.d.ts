@@ -1,6 +1,5 @@
 declare module rethinkdb {
-  export interface RNumberInterface extends RAnyInterface, RRunableInterface<number> {
-
+  export interface RNumberInterface extends RValueInterface<number>, RRunableInterface<number> {
     /**
     * Sum two or more numbers, or concatenate two or more strings or arrays.
     *
@@ -13,8 +12,8 @@ declare module rethinkdb {
     */
     add(value, ...values):RNumberInterface;
     add(value):RNumberInterface;
-    add(number:number, ...numbers:Array<number>):RNumberInterface;
-    add(number:number):RNumberInterface;
+    add(number:number|RNumberInterface, ...numbers:Array<number>):RNumberInterface;
+    add(number:number|RNumberInterface):RNumberInterface;
 
     /**
     * Rounds the given value up, returning the smallest integer value greater than or equal to the given value (the value's ceiling).
@@ -40,8 +39,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/div
     */
-    div(number:number, ...numbers:Array<number>):RNumberInterface;
-    div(number:number):RNumberInterface;
+    div(number:number|RNumberInterface, ...numbers:Array<number>):RNumberInterface;
+    div(number:number|RNumberInterface):RNumberInterface;
 
     /**
     * Rounds the given value down, returning the largest integer value less than or equal to the given value (the value's floor).
@@ -67,7 +66,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/mod
     */
-    mod(number:number):RNumberInterface;
+    mod(number:number|RNumberInterface):RNumberInterface;
 
     /**
     * Multiply two numbers, or make a periodic array.
@@ -79,8 +78,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/mul
     */
-    mul(number:number, ...numbers:Array<number>):RNumberInterface;
-    mul(number:number):RNumberInterface;
+    mul(number:number|RNumberInterface, ...numbers:Array<number>):RNumberInterface;
+    mul(number:number|RNumberInterface):RNumberInterface;
 
     /**
     * Rounds the given value to the nearest whole integer.
@@ -106,10 +105,10 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/sub
     */
-    sub(number:number, ...numbers:Array<number>):RNumberInterface;
-    sub(number:number):RNumberInterface;
+    sub(number:number|RNumberInterface, ...numbers:Array<number>):RNumberInterface;
+    sub(number:number|RNumberInterface):RNumberInterface;
   }
-  export interface RStringInterface extends RCoercable, RAnyInterface {
+  export interface RStringInterface extends RCoercable, RAnyInterface, RRunableInterface<string> {
 
     /**
     * Sum two or more numbers, or concatenate two or more strings or arrays.
@@ -123,8 +122,8 @@ declare module rethinkdb {
     */
     add(value, ...values):RStringInterface;
     add(value):RStringInterface;
-    add(number:number, ...numbers:Array<number>):RStringInterface;
-    add(number:number):RStringInterface;
+    add(number:number|RNumberInterface, ...numbers:Array<number>):RStringInterface;
+    add(number:number|RNumberInterface):RStringInterface;
 
     /**
     * Lowercases a string.
@@ -171,8 +170,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/split
     */
-    split([separator, max_splits]):RArrayInterface;
-    split([separator, ]):RArrayInterface;
+    split(separator?, max_splits?):RArrayInterface;
 
     /**
     * Uppercases a string.
@@ -200,8 +198,8 @@ declare module rethinkdb {
     */
     add(value, ...values):RArrayInterface;
     add(value):RArrayInterface;
-    add(number:number, ...numbers:Array<number>):RArrayInterface;
-    add(number:number):RArrayInterface;
+    add(number:number|RNumberInterface, ...numbers:Array<number>):RArrayInterface;
+    add(number:number|RNumberInterface):RArrayInterface;
 
     /**
     * Append a value to an array.
@@ -225,7 +223,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/change_at
     */
-    changeAt(index:number, value):RArrayInterface;
+    changeAt(index:number|RNumberInterface, value):RArrayInterface;
 
     /**
     * Remove one or more elements from an array at a given index. Returns the modified array.
@@ -239,8 +237,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/delete_at
     */
-    deleteAt(index:number, endIndex:number):RArrayInterface;
-    deleteAt(index:number):RArrayInterface;
+    deleteAt(index:number|RNumberInterface, endIndex:number|RNumberInterface):RArrayInterface;
+    deleteAt(index:number|RNumberInterface):RArrayInterface;
 
     /**
     * Remove the elements of one array from another array.
@@ -264,8 +262,31 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/insert_at
     */
-    insertAt(index:number, value):RArrayInterface;
+    insertAt(index:number|RNumberInterface, value):RArrayInterface;
 
+    /**
+    * Transform each element of one or more sequences by applying a mapping function to them. If `map` is run with two or more sequences, it will iterate for as many items as there are in the shortest sequence.
+    *
+    * sequence1.map([sequence2, ...], function) → stream
+    array1.map([array2, ...], function) → array
+    r.map(sequence1[, sequence2, ...], function) → stream
+    r.map(array1[, array2, ...], function) → array
+    * **Example:** Return the first five squares.
+    * 
+    *     r.expr([1, 2, 3, 4, 5]).map(function (val) {
+    *         return val.mul(val);
+    *     }).run(conn, callback);
+    *     // Result passed to callback
+    *     [1, 4, 9, 16, 25]
+    *
+    * http://rethinkdb.com/api/javascript/map
+    */
+    map(...arrays_and_then_a_function:Array<RArrayInterface|Array<any>|ExpressionFunction<RValueInterface<any>, RAnyInterface|Object>>):RArrayInterface;
+    map(...sequences_and_then_a_function:Array<RSequenceInterface|Array<any>|ExpressionFunction<RValueInterface<any>, RAnyInterface|Object>>):RArrayInterface;
+    map(a_function:ExpressionFunction<RValueInterface<any>, RAnyInterface|Object>):RArrayInterface;
+    map(array1:RArrayInterface|Array<any>, ...arrays_and_then_a_function:Array<RArrayInterface|Array<any>|ExpressionFunction<RValueInterface<any>, RAnyInterface|Object>>):RArrayInterface;
+    map(array1:RArrayInterface|Array<any>, a_function:ExpressionFunction<RValueInterface<any>, RAnyInterface|Object>):RArrayInterface;
+    
     /**
     * Multiply two numbers, or make a periodic array.
     *
@@ -276,8 +297,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/mul
     */
-    mul(number:number, ...numbers:Array<number>):RArrayInterface;
-    mul(number:number):RArrayInterface;
+    mul(number:number|RNumberInterface, ...numbers:Array<number>):RArrayInterface;
+    mul(number:number|RNumberInterface):RArrayInterface;
 
     /**
     * Prepend a value to an array.
@@ -349,7 +370,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/splice_at
     */
-    spliceAt(index:number, array:RArrayInterface|Array<any>):RArrayInterface;
+    spliceAt(index:number|RNumberInterface, array:RArrayInterface|Array<any>):RArrayInterface;
 
     /**
     * Used to 'zip' up the result of a join by merging the 'right' fields into 'left' fields of each member of the sequence.
@@ -469,7 +490,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/in_timezone
     */
-    inTimezone(timezone:string):RTimeInterface;
+    inTimezone(timezone:string|RStringInterface):RTimeInterface;
 
     /**
     * Return the minute in a time object as a number between 0 and 59.
@@ -594,7 +615,6 @@ declare module rethinkdb {
     year():RNumberInterface;
   }
   export interface RBoolInterface extends RValueInterface<boolean>, RAnyInterface {
-
     /**
     * Compute the logical "and" of one or more values.
     *
@@ -608,7 +628,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/and
     */
-    and(...bools:Array<boolean>):RBoolInterface;
+    and(...bools:Array<boolean|RBoolInterface>):RBoolInterface;
 
     /**
     * Compute the logical inverse (not) of an expression.
@@ -638,12 +658,11 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/or
     */
-    or(...bools:Array<boolean>):RBoolInterface;
+    or(...bools:Array<boolean|RBoolInterface>):RBoolInterface;
   }
   export interface RSpecialInterface extends RAnyInterface {
   }
-  export interface RInterface extends RDbInterface, RAnyInterface {
-
+  export interface RInterface extends RDbInterface, RExpressionInterface, RAnyInterface {
     /**
     * `r.args` is a special term that's used to splice an array of arguments into another term. This is useful when you want to call a variadic term such as `getAll` with a set of arguments produced at runtime.
     * 
@@ -697,13 +716,53 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/branch
     */
-    branch(test:RBoolInterface, true_action, test2:RBoolInterface, ...else_actions_and_then_false_action):RAnyInterface;
-    branch(test:RBoolInterface, true_action, false_action):RAnyInterface;
-
+    branch<T extends string, R extends RStringInterface>(test:RBoolInterface, true_action:T|R, false_action:T|R):RStringInterface;
+    branch<T extends boolean, R extends RBoolInterface>(test:RBoolInterface, true_action:T|R, false_action:T|R):RBoolInterface;
+    branch<T extends number, R extends RNumberInterface>(test:RBoolInterface, true_action:T|R, false_action:T|R):RNumberInterface;
+    branch<T extends Array<any>, R extends RArrayInterface>(test:RBoolInterface, true_action:T|R, false_action:T|R):RArrayInterface;
+    branch<T extends Date, R extends RTimeInterface>(test:RBoolInterface, true_action:T|R, false_action:T|R):RTimeInterface;
+    branch<T extends Object, R extends RObjectInterface<any>>(test:RBoolInterface, true_action:T|R, false_action:T|R):R;
+    
+    branch<T extends string, R extends RStringInterface>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, false_action:T|R):RStringInterface;
+    branch<T extends boolean, R extends RBoolInterface>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, false_action:T|R):RBoolInterface;
+    branch<T extends number, R extends RNumberInterface>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, false_action:T|R):RNumberInterface;
+    branch<T extends Array<any>, R extends RArrayInterface>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, false_action:T|R):RArrayInterface;
+    branch<T extends Date, R extends RTimeInterface>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, false_action:T|R):RTimeInterface;
+    branch<T extends Object, R extends RObjectInterface<any>>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, false_action:T|R):R;
+    
+    branch<T extends string, R extends RStringInterface>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, test3:RBoolInterface, true_action3:T|R, false_action:T|R):RStringInterface;
+    branch<T extends boolean, R extends RBoolInterface>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, test3:RBoolInterface, true_action3:T|R, false_action:T|R):RBoolInterface;
+    branch<T extends number, R extends RNumberInterface>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, test3:RBoolInterface, true_action3:T|R, false_action:T|R):RNumberInterface;
+    branch<T extends Array<any>, R extends RArrayInterface>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, test3:RBoolInterface, true_action3:T|R, false_action:T|R):RArrayInterface;
+    branch<T extends Date, R extends RTimeInterface>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, test3:RBoolInterface, true_action3:T|R, false_action:T|R):RTimeInterface;
+    branch<T extends Object, R extends RObjectInterface<any>>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, test3:RBoolInterface, true_action3:T|R, false_action:T|R):R;
+    
+    branch<T extends string, R extends RStringInterface>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, test3:RBoolInterface, true_action3:T|R, test4:RBoolInterface, true_action4:T|R, false_action:T|R):RStringInterface;
+    branch<T extends boolean, R extends RBoolInterface>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, test3:RBoolInterface, true_action3:T|R, test4:RBoolInterface, true_action4:T|R, false_action:T|R):RBoolInterface;
+    branch<T extends number, R extends RNumberInterface>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, test3:RBoolInterface, true_action3:T|R, test4:RBoolInterface, true_action4:T|R, false_action:T|R):RNumberInterface;
+    branch<T extends Array<any>, R extends RArrayInterface>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, test3:RBoolInterface, true_action3:T|R, test4:RBoolInterface, true_action4:T|R, false_action:T|R):RArrayInterface;
+    branch<T extends Date, R extends RTimeInterface>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, test3:RBoolInterface, true_action3:T|R, test4:RBoolInterface, true_action4:T|R, false_action:T|R):RTimeInterface;
+    branch<T extends Object, R extends RObjectInterface<any>>(test:RBoolInterface, true_action:T|R, test2:RBoolInterface, true_action2:T|R, test3:RBoolInterface, true_action3:T|R, test4:RBoolInterface, true_action4:T|R, false_action:T|R):R;
+    
+    /**
+    * Rounds the given value up, returning the smallest integer value greater than or equal to the given value (the value's ceiling).
+    *
+    * r.ceil(number) → numbernumber.ceil() → number
+    * **Example:** Return the ceiling of 12.345.
+    * 
+    *     > r.ceil(12.345).run(conn, callback);
+    * 
+    *     13.0
+    *
+    * http://rethinkdb.com/api/javascript/ceil
+    */
+    ceil(number:number|RNumberInterface):RNumberInterface;
+    
     /**
     * Construct a circular line or polygon. A circle in RethinkDB is a polygon or line _approximating_ a circle of a given radius around a given center, consisting of a specified number of vertices (default 32).
     *
-    * r.circle([longitude, latitude], radius[, {numVertices: 32, geoSystem: 'WGS84', unit: 'm', fill: true}]) → geometryr.circle(point, radius[, {numVertices: 32, geoSystem: 'WGS84', unit: 'm', fill: true}]) → geometry
+    * r.circle([longitude, latitude], radius[, {numVertices: 32, geoSystem: 'WGS84', unit: 'm', fill: true}]) → geometry
+    * r.circle(point, radius[, {numVertices: 32, geoSystem: 'WGS84', unit: 'm', fill: true}]) → geometry
     * **Example:** Define a circle.
     * 
     *     r.table('geo').insert({
@@ -714,10 +773,11 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/circle
     */
-    circle(longitudeAndlatitude:Array<number>|RArrayInterface, radius:number, options?:{ numVertices?, geoSystem?, unit?, fill? }):RGeometryInterface;
-    circle(longitudeAndlatitude:Array<number>|RArrayInterface, radius:number):RGeometryInterface;
-    circle(point:RPointInterface, radius:number, options?:{ numVertices?, geoSystem?, unit?, fill? }):RGeometryInterface;
-    circle(point:RPointInterface, radius:number):RGeometryInterface;
+    // TODO: return values for geometry?
+    circle(longitudeAndlatitude:Array<number>|RArrayInterface, radius:number|RNumberInterface, options?:{ numVertices?, geoSystem?, unit?, fill? }):RGeometryInterface<any>;
+    circle(longitudeAndlatitude:Array<number>|RArrayInterface, radius:number|RNumberInterface):RGeometryInterface<any>;
+    circle(point:RPointInterface, radius:number|RNumberInterface, options?:{ numVertices?, geoSystem?, unit?, fill? }):RGeometryInterface<any>;
+    circle(point:RPointInterface, radius:number|RNumberInterface):RGeometryInterface<any>;
 
     /**
     * Create a new connection to the database server.
@@ -738,9 +798,9 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/connect
     */
     connect(options:RConnectionOptionsInterface, callback:(err:Error, conn:RConnectionInterface)=>void):void;
-    connect(host:string, callback:(err:Error, conn:RConnectionInterface)=>void):void;
+    connect(host:string|RStringInterface, callback:(err:Error, conn:RConnectionInterface)=>void):void;
     connect(options:RConnectionOptionsInterface):Promise<RConnectionInterface>;
-    connect(host:string):Promise<RConnectionInterface>;
+    connect(host:string|RStringInterface):Promise<RConnectionInterface>;
 
     /**
     * Reference a database.
@@ -752,7 +812,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/db
     */
-    db(dbName:string):RDbInterface;
+    db(dbName:string|RStringInterface):RDbInterface;
 
     /**
     * Create a database. A RethinkDB database is a collection of tables, similar to relational databases.
@@ -768,7 +828,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/db_create
     */
-    dbCreate(dbName:string):RObjectInterface<CreateResult>;
+    dbCreate(dbName:string|RStringInterface):RObjectInterface<CreateResult>;
 
     /**
     * Drop a database. The database, all its tables, and corresponding data will be deleted.
@@ -782,7 +842,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/db_drop
     */
-    dbDrop(dbName:string):RObjectInterface<DropResult>;
+    dbDrop(dbName:string|RStringInterface):RObjectInterface<DropResult>;
 
     /**
     * List all database names in the system. The result is a list of strings.
@@ -797,6 +857,16 @@ declare module rethinkdb {
     dbList():RArrayInterface;
 
     /**
+     * To specify the ordering, wrap the attribute with either r.asc or r.desc (defaults to ascending).
+     */
+    desc<T>(func:T):T;
+    
+    /**
+     * To specify the ordering, wrap the attribute with either r.asc or r.desc (defaults to ascending).
+     */
+    asc<T>(func:T):T;
+
+    /**
     * Create a time object based on seconds since epoch. The first argument is a double and will be rounded to three decimal places (millisecond-precision).
     *
     * r.epochTime(epochTime) → time
@@ -807,7 +877,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/epoch_time
     */
-    epochTime(epochTime:number):RTimeInterface;
+    epochTime(epochTime:number|RNumberInterface):RTimeInterface;
 
     /**
     * Throw a runtime error. If called with no arguments inside the second argument to `default`, re-throw the current error.
@@ -823,7 +893,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/error
     */
-    error(message:string):Error;
+    error(message:string|RStringInterface):Error;
 
     /**
     * Construct a ReQL JSON object from a native object.
@@ -836,6 +906,32 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/expr
     */
     expr(value):RValueInterface<any>;
+    expr<T extends RNumberInterface>(value):RNumberInterface;
+    expr<T extends RStringInterface>(value):RStringInterface;
+    expr<T extends RArrayInterface>(value):RArrayInterface;
+    expr<T extends RBoolInterface>(value):RBoolInterface;
+    expr<T extends RTimeInterface>(value):RTimeInterface;
+    expr<T extends RObjectInterface<any>>(value):T;
+    expr<T extends number>(value):RNumberInterface;
+    expr<T extends string>(value):RStringInterface;
+    expr<T extends Array<any>>(value):RArrayInterface;
+    expr<T extends boolean>(value):RBoolInterface;
+    expr<T extends Date>(value):RTimeInterface;
+    expr<T>(value):RObjectInterface<T>;
+
+    /**
+    * Rounds the given value down, returning the largest integer value less than or equal to the given value (the value's floor).
+    *
+    * r.floor(number) → numbernumber.floor() → number
+    * **Example:** Return the floor of 12.345.
+    * 
+    *     > r.floor(12.345).run(conn, callback);
+    * 
+    *     12.0
+    *
+    * http://rethinkdb.com/api/javascript/floor
+    */
+    floor(number:number|RNumberInterface):RNumberInterface;
 
     /**
     * Convert a [GeoJSON](http://geojson.org) object to a ReQL geometry object.
@@ -855,7 +951,24 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/geojson
     */
-    geojson(geojson:Object):RGeometryInterface;
+    geojson(geojson:Object):RGeometryInterface<Object>;
+    
+    
+    /**
+    * Compute the distance between a point and another geometry object. At least one of the geometry objects specified must be a point.
+    *
+    * geometry.distance(geometry[, {geoSystem: 'WGS84', unit: 'm'}]) → numberr.distance(geometry, geometry[, {geoSystem: 'WGS84', unit: 'm'}]) → number
+    * **Example:** Compute the distance between two points on the Earth in kilometers.
+    * 
+    *     var point1 = r.point(-122.423246,37.779388);
+    *     var point2 = r.point(-117.220406,32.719464);
+    *     r.distance(point1, point2, {unit: 'km'}).run(conn, callback);
+    *     // result returned to callback 
+    *     734.1252496021841
+    *
+    * http://rethinkdb.com/api/javascript/distance
+    */
+    distance(geometry1:RGeometryInterface<any>, geometry2:RGeometryInterface<any>, options?:{ geoSystem?, unit? }):RNumberInterface;
 
     /**
     * Retrieve data from the specified URL over HTTP. The return type depends on the `resultFormat` option, which checks the `Content-Type` of the response by default.
@@ -867,6 +980,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/http
     */
+    http(url:string|RStringInterface, options?:{timeout:number, reattempts:number, redirects:number, verify:boolean, resultFormat:string})
 
     /**
     * Create a time object based on an ISO 8601 date-time string (e.g. '2013-01-01T01:01:01+00:00'). We support all valid ISO 8601 formats except for week dates. If you pass an ISO 8601 date-time without a time zone, you must specify the time zone with the `defaultTimezone` argument. Read more about the ISO 8601 format at [Wikipedia](http://en.wikipedia.org/wiki/ISO_8601).
@@ -878,7 +992,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/iso8601
     */
-    ISO8601(iso8601Date:string, options?:{defaultTimezone?:string}):RTimeInterface;
+    ISO8601(iso8601Date:string|RStringInterface, options?:{defaultTimezone?:string|RStringInterface}):RTimeInterface;
 
     /**
     * Create a javascript expression.
@@ -890,8 +1004,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/js
     */
-    js(jsString:string, options?:{ timeout?:number }):RValueInterface<any>;
-    js(jsString:string):RValueInterface<any>;
+    js(jsString:string|RStringInterface, options?:{ timeout?:number|RNumberInterface }):RValueInterface<any>;
+    js(jsString:string|RStringInterface):RValueInterface<any>;
 
     /**
     * Parse a JSON string on the server.
@@ -903,7 +1017,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/json
     */
-    json(json_string:string):RValueInterface<Object>;
+    json(json_string:string|RStringInterface):RValueInterface<Object>;
 
     /**
     * Construct a geometry object of type Line. The line can be specified in one of two ways:
@@ -978,7 +1092,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/point
     */
-    point(longitude:number, latitude:number):RPointInterface;
+    point(longitude:number|RNumberInterface, latitude:number|RNumberInterface):RPointInterface;
 
     /**
     * Construct a geometry object of type Polygon. The Polygon can be specified in one of two ways:
@@ -1015,8 +1129,8 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/random
     */
     random():RNumberInterface;
-    random(min:number, max:number, options?:{ float? }):RNumberInterface;
-    random(number:number, options?:{ float? }):RNumberInterface;
+    random(min:number|RNumberInterface, max:number|RNumberInterface, options?:{ float? }):RNumberInterface;
+    random(number:number|RNumberInterface, options?:{ float? }):RNumberInterface;
 
     /**
     * Generate a stream of sequential integers in a specified range.
@@ -1031,9 +1145,23 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/range
     */
     range():RStreamInterface<Array<number>>;
-    range(startValue:number, endValue:number):RStreamInterface<Array<number>>;
-    range(endValue:number):RStreamInterface<Array<number>>;
+    range(startValue:number|RNumberInterface, endValue:number|RNumberInterface):RStreamInterface<Array<number>>;
+    range(endValue:number|RNumberInterface):RStreamInterface<Array<number>>;
 
+    /**
+    * Rounds the given value to the nearest whole integer.
+    *
+    * r.round(number) → numbernumber.round() → number
+    * **Example:** Round 12.345 to the nearest integer.
+    * 
+    *     > r.round(12.345).run(conn, callback);
+    * 
+    *     12.0
+    *
+    * http://rethinkdb.com/api/javascript/round
+    */
+    round(number:number|RNumberInterface):RNumberInterface;
+    
     /**
     * Returns the currently visited document.
     *
@@ -1044,7 +1172,22 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/row
     */
-    row(name:string):RValueInterface<any>;
+    row(name:string|RStringInterface):RValueInterface<any>;
+    row<T extends RNumberInterface>(name:string|RStringInterface):RNumberInterface;
+    row<T extends RStringInterface>(name:string|RStringInterface):RStringInterface;
+    row<T extends RArrayInterface>(name:string|RStringInterface):RArrayInterface;
+    row<T extends RBoolInterface>(name:string|RStringInterface):RBoolInterface;
+    row<T extends RTimeInterface>(name:string|RStringInterface):RTimeInterface;
+    row<T extends RLineInterface>(name:string|RStringInterface):RLineInterface;
+    row<T extends RPointInterface>(name:string|RStringInterface):RPointInterface;
+    row<T extends RGeometryInterface<any>>(name:string|RStringInterface):RGeometryInterface<any>;
+    row<T extends RObjectInterface<any>>(name:string|RStringInterface):T;
+    row<T extends number>(name:string|RStringInterface):RNumberInterface;
+    row<T extends string>(name:string|RStringInterface):RStringInterface;
+    row<T extends Array<any>>(name:string|RStringInterface):RArrayInterface;
+    row<T extends boolean>(name:string|RStringInterface):RBoolInterface;
+    row<T extends Date>(name:string|RStringInterface):RTimeInterface;
+    row<T>(name:string|RStringInterface):RObjectInterface<T>;
 
     /**
     * Create a time object for a specific time.
@@ -1067,8 +1210,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/time
     */
-    time(year:number, month:number, day:number, hour:number, minute:number, second:number, timezone:string):RTimeInterface;
-    time(year:number, month:number, day:number, timezone:string):RTimeInterface;
+    time(year:number|RNumberInterface, month:number|RNumberInterface, day:number|RNumberInterface, hour:number|RNumberInterface, minute:number|RNumberInterface, second:number|RNumberInterface, timezone?:string|RStringInterface):RTimeInterface;
+    time(year:number|RNumberInterface, month:number|RNumberInterface, day:number|RNumberInterface, timezone?:string|RStringInterface):RTimeInterface;
 
     /**
     * Return a UUID (universally unique identifier), a string that can be used as a unique ID.
@@ -1082,7 +1225,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/uuid
     */
-    uuid(deterministicStringToHash?:string):RStringInterface;
+    uuid(deterministicStringToHash?:string|RStringInterface):RStringInterface;
 
     /**
     * Wait for a table or all the tables in a database to be ready. A table may be temporarily unavailable after creation, rebalancing or reconfiguring. The `wait` command blocks until the given table (or database) is fully up to date.
@@ -1095,6 +1238,51 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/wait
     */
     wait(options?:{ waitFor?, timeout? }):RObjectInterface<any>;
+    
+    /**
+    * Compute the logical "and" of one or more values.
+    *
+    * bool.and([bool, bool, ...]) → boolr.and([bool, bool, ...]) → bool
+    * **Example:** Return whether both `a` and `b` evaluate to true.
+    * 
+    *     var a = true, b = false;
+    *     r.expr(a).and(b).run(conn, callback);
+    *     // result passed to callback
+    *     false
+    *
+    * http://rethinkdb.com/api/javascript/and
+    */
+    and(...bools:Array<boolean|RBoolInterface>):RBoolInterface;
+
+    /**
+    * Compute the logical inverse (not) of an expression.
+    * 
+    * `not` can be called either via method chaining, immediately after an expression that evaluates as a boolean value, or by passing the expression as a parameter to `not`.
+    *
+    * bool.not() → boolnot(bool) → bool
+    * **Example:** Not true is false.
+    * 
+    *     r(true).not().run(conn, callback)
+    *     r.not(true).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/not
+    */
+    not(bool:boolean|RBoolInterface):RBoolInterface;
+
+    /**
+    * Compute the logical "or" of one or more values.
+    *
+    * bool.or([bool, bool, ...]) → boolr.or([bool, bool, ...]) → bool
+    * **Example:** Return whether either `a` or `b` evaluate to true.
+    * 
+    *     var a = true, b = false;
+    *     r.expr(a).or(b).run(conn, callback);
+    *     // result passed to callback
+    *     true
+    *
+    * http://rethinkdb.com/api/javascript/or
+    */
+    or(...bools:Array<boolean|RBoolInterface>):RBoolInterface;
   }
   export interface RSequenceArrayInterface extends RSequenceInterface, RRunableInterface<Array<any>> {
     /**
@@ -1109,7 +1297,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/concat_map
     */
-    concatMap(concatFunction:ExpressionFunction<RAnyInterface|Object>):RArrayInterface;
+    concatMap(concatFunction:ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>):RArrayInterface;
     
     /**
     * Join tables using a field or function on the left-hand sequence matching primary keys or secondary indexes on the right-hand table. `eqJoin` is more efficient than other ReQL join types, and operates much faster. Documents in the result set consist of pairs of left-hand and right-hand documents, matched when the field on the left-hand side exists and is non-null and an entry with that field's value exists in the specified index on the right-hand side.
@@ -1123,9 +1311,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/eq_join
     */
-    eqJoin(leftField:string, rightTable:RTableInterface<any>, options?:{ index? }):RArrayInterface;
-    eqJoin(predicate_function:ExpressionFunction<RAnyInterface|Object>, rightTable:RTableInterface<any>, options?:{ index? }):RArrayInterface;
-    eqJoin(predicate_function:ExpressionFunction<RAnyInterface|Object>, rightTable:RTableInterface<any>):RArrayInterface;
+    eqJoin(leftField:string|RStringInterface, rightTable:RTableInterface<any>, options?:{ index? }):RArrayInterface;
+    eqJoin(predicate_function:ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>, rightTable:RTableInterface<any>, options?:{ index? }):RArrayInterface;
 
     /**
     * Get all the documents for which the given predicate is true.
@@ -1134,14 +1321,16 @@ declare module rethinkdb {
     * 
     * The body of every filter is wrapped in an implicit `.default(false)`, which means that if a non-existence errors is thrown (when you try to access a field that does not exist in a document), RethinkDB will just ignore the document. The `default` value can be changed by passing an object with a `default` field. Setting this optional argument to `r.error()` will cause any non-existence errors to return a `ReqlRuntimeError`.
     *
-    * selection.filter(predicate_function[, {default: false}]) → selectionstream.filter(predicate_function[, {default: false}]) → streamarray.filter(predicate_function[, {default: false}]) → array
+    * selection.filter(predicate_function[, {default: false}]) → selection
+    * stream.filter(predicate_function[, {default: false}]) → streamarray.filter(predicate_function[, {default: false}]) → array
     * **Example:** Get all the users that are 30 years old.
     * 
     *     r.table('users').filter({age: 30}).run(conn, callback)
     *
     * http://rethinkdb.com/api/javascript/filter
     */
-    filter(predicate_function:ExpressionFunction<RBoolInterface>, options?:{ default? }):RArrayInterface;
+    filter(predicate_function:ExpressionFunction<RObjectInterface<any>, RBoolInterface>, options?:{ default?:boolean }):RArrayInterface;
+    filter(predicate_function:ExpressionFunction<RValueInterface<any>, RBoolInterface>, options?:{ default?:boolean }):RArrayInterface;
     filter(filterByObject:Object):RArrayInterface;
 
     /**
@@ -1156,7 +1345,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/distinct
     */
-    distinct(options?:{index?:string}):RArrayInterface;
+    distinct(options?:{index?:string|RStringInterface}):RArrayInterface;
     
     /**
     * Test if an object has one or more fields. An object has a field if it has that key and the key has a non-null value. For instance, the object `{'a': 1,'b': 2,'c': null}` has the fields `a` and `b`.
@@ -1182,7 +1371,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/inner_join
     */
-    innerJoin(otherSequence:RSequenceInterface, predicate_function:ExpressionFunction<RBoolInterface>):RArrayInterface;
+    innerJoin(otherSequence:RSequenceInterface, predicate_function:JoinFunction<RBoolInterface>):RArrayInterface;
 
     /**
     * End the sequence after the given number of elements.
@@ -1194,7 +1383,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/limit
     */
-    limit(n:number):RArrayInterface;
+    limit(n:number|RNumberInterface):RArrayInterface;
     
     // HACK: MAP
 
@@ -1211,7 +1400,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/merge
     */
-    merge(...object_or_functions:Array<Object|ExpressionFunction<RAnyInterface|Object>|RValueInterface<any>>):RArrayInterface;
+    merge(...object_or_functions:Array<Object|ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>|RValueInterface<any>>):RArrayInterface;
 
     /**
     * Sort the sequence by document values of the given key(s). To specify the ordering, wrap the attribute with either `r.asc` or `r.desc` (defaults to ascending).
@@ -1233,9 +1422,9 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/order_by
     */
-    orderBy(keys_or_functions:string|ExpressionFunction<RAnyInterface|Object>, ...more:Array<string|ExpressionFunction<RAnyInterface|Object>>):RArrayInterface;
-    orderBy(keys_or_functions:string|ExpressionFunction<RAnyInterface|Object>, options?:{index?:string}):RArrayInterface;
-    orderBy(options:{index?:string}):RArrayInterface;
+    orderBy(keys_or_functions:string|RStringInterface|ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>, ...more:Array<string|ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>>):RArrayInterface;
+    orderBy(keys_or_functions:string|RStringInterface|ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>, options?:{index?:string|RStringInterface}):RArrayInterface;
+    orderBy(options:{index:string|RStringInterface}):RArrayInterface;
 
     /**
     * Returns a left outer join of two sequences.
@@ -1249,7 +1438,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/outer_join
     */
-    outerJoin(otherSequence:RSequenceInterface, predicate_function:ExpressionFunction<RBoolInterface>):RArrayInterface;
+    outerJoin(otherSequence:RSequenceInterface, predicate_function:JoinFunction<RBoolInterface>):RArrayInterface;
 
     /**
     * Plucks out one or more attributes from either an object or a sequence of objects (projection).
@@ -1273,7 +1462,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/sample
     */
-    sample(number:number):RArrayInterface;
+    sample(number:number|RNumberInterface):RArrayInterface;
 
     /**
     * Skip a number of elements from the head of the sequence.
@@ -1285,7 +1474,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/skip
     */
-    skip(n:number):RArrayInterface;
+    skip(n:number|RNumberInterface):RArrayInterface;
 
     /**
     * Return the elements of a sequence within the specified range.
@@ -1299,8 +1488,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/slice
     */
-    slice(startIndex:number, endIndex:number, options?:{ leftBound?, rightBound? }):RArrayInterface;
-    slice(startIndex:number):RArrayInterface;
+    slice(startIndex:number|RNumberInterface, endIndex:number|RNumberInterface, options?:{ leftBound?, rightBound? }):RArrayInterface;
+    slice(startIndex:number|RNumberInterface):RArrayInterface;
 
     /**
     * Merge two or more sequences. (Note that ordering is not guaranteed by `union`.)
@@ -1353,7 +1542,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/bracket
     */
-    (attr:string):RStreamInterface<any>;
+    (attr:string|RStringInterface):RStreamInterface<any>;
 
     /**
     * Concatenate one or more elements into a single sequence using a mapping function.
@@ -1367,7 +1556,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/concat_map
     */
-    concatMap(mapFunction:ExpressionFunction<RAnyInterface|Object>):RStreamInterface<any>;
+    concatMap(mapFunction:ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>):RStreamInterface<any>;
 
     /**
     * Remove duplicate elements from the sequence.
@@ -1381,7 +1570,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/distinct
     */
-    distinct(options?:{index?:string}):RStreamInterface<RemoteT>;
+    distinct(options?:{index?:string|RStringInterface}):RStreamInterface<RemoteT>;
 
     /**
     * Join tables using a field or function on the left-hand sequence matching primary keys or secondary indexes on the right-hand table. `eqJoin` is more efficient than other ReQL join types, and operates much faster. Documents in the result set consist of pairs of left-hand and right-hand documents, matched when the field on the left-hand side exists and is non-null and an entry with that field's value exists in the specified index on the right-hand side.
@@ -1396,9 +1585,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/eq_join
     */
-    eqJoin<RightT>(leftField:string, rightTable:RTableInterface<RightT>, options?:{ index? }):RStreamInterface<JoinResult<RemoteT, RightT>>;
-    eqJoin<RightT>(predicate_function:ExpressionFunction<RAnyInterface|Object>, rightTable:RTableInterface<RightT>, options?:{ index? }):RStreamInterface<JoinResult<RemoteT, RightT>>;
-    eqJoin<RightT>(predicate_function:ExpressionFunction<RAnyInterface|Object>, rightTable:RTableInterface<RightT>):RStreamInterface<JoinResult<RemoteT, RightT>>;
+    eqJoin<RightT>(leftField:string|RStringInterface, rightTable:RTableInterface<RightT>, options?:{ index? }):RStreamInterface<JoinResult<RemoteT, RightT>>;
+    eqJoin<RightT>(predicate_function:ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>, rightTable:RTableInterface<RightT>, options?:{ index? }):RStreamInterface<JoinResult<RemoteT, RightT>>;
 
     /**
     * Get all the documents for which the given predicate is true.
@@ -1416,7 +1604,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/filter
     */
-    filter(predicate_function:ExpressionFunction<RBoolInterface>, options?:{ default? }):RStreamInterface<RemoteT>;
+    filter(predicate_function:ExpressionFunction<RObjectInterface<any>, RBoolInterface>, options?:{ default?:boolean }):RStreamInterface<RemoteT>;
     filter(filterByObject:Object):RStreamInterface<RemoteT>;
 
     /**
@@ -1431,7 +1619,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/get_field
     */
-    getField(attr:string):RStreamInterface<any>;
+    getField(attr:string|RStringInterface):RStreamInterface<any>;
 
     /**
     * Test if an object has one or more fields. An object has a field if it has that key and the key has a non-null value. For instance, the object `{'a': 1,'b': 2,'c': null}` has the fields `a` and `b`.
@@ -1451,7 +1639,7 @@ declare module rethinkdb {
     * Tests whether a geometry object is completely contained within another. When applied to a sequence of geometry objects, `includes` acts as a [filter](/api/javascript/filter), returning a sequence of objects from the sequence that include the argument.
     *
     * sequence.includes(geometry) → sequence
-    geometry.includes(geometry) → bool
+    * geometry.includes(geometry) → bool
     * **Example:** Is `point2` included within a 2000-meter circle around `point1`?
     * 
     *     var point1 = r.point(-117.220406,32.719464);
@@ -1467,7 +1655,8 @@ declare module rethinkdb {
     /**
     * Returns an inner join of two sequences.
     *
-    * sequence.innerJoin(otherSequence, predicate_function) → streamarray.innerJoin(otherSequence, predicate_function) → array
+    * sequence.innerJoin(otherSequence, predicate_function) → stream
+    * array.innerJoin(otherSequence, predicate_function) → array
     * **Example:** Return a list of all matchups between Marvel and DC heroes in which the DC hero could beat the Marvel hero in a fight.
     * 
     *     r.table('marvel').innerJoin(r.table('dc'), function(marvelRow, dcRow) {
@@ -1476,13 +1665,13 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/inner_join
     */
-    innerJoin(otherSequence:RSequenceInterface, predicate_function:ExpressionFunction<RBoolInterface>):RStreamInterface<JoinResult<RemoteT, any>>;
+    innerJoin(otherSequence:RSequenceInterface, predicate_function:JoinFunction<RBoolInterface>):RStreamInterface<JoinResult<RemoteT, any>>;
 
     /**
     * Tests whether two geometry objects intersect with one another. When applied to a sequence of geometry objects, `intersects` acts as a [filter](/api/javascript/filter), returning a sequence of objects from the sequence that intersect with the argument.
     *
     * sequence.intersects(geometry) → sequence
-    geometry.intersects(geometry) → bool
+    * geometry.intersects(geometry) → bool
     r.intersects(sequence, geometry) → sequence
     r.intersects(geometry, geometry) → bool
     * **Example:** Is `point2` within a 2000-meter circle around `point1`?
@@ -1508,7 +1697,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/limit
     */
-    limit(n:number):RStreamInterface<RemoteT>;
+    limit(n:number|RNumberInterface):RStreamInterface<RemoteT>;
     
     /**
     * Transform each element of one or more sequences by applying a mapping function to them. If `map` is run with two or more sequences, it will iterate for as many items as there are in the shortest sequence.
@@ -1527,11 +1716,11 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/map
     */
-    map(...arrays_and_then_a_function:Array<RArrayInterface|Array<any>|ExpressionFunction<RAnyInterface|Object>>):RStreamInterface<any>;
-    map(...sequences_and_then_a_function:Array<RSequenceInterface|Array<any>|ExpressionFunction<RAnyInterface|Object>>):RStreamInterface<any>;
-    map(a_function:ExpressionFunction<RAnyInterface|Object>):RStreamInterface<any>;
-    map(array1:RArrayInterface|Array<any>, ...arrays_and_then_a_function:Array<RArrayInterface|Array<any>|ExpressionFunction<RAnyInterface|Object>>):RStreamInterface<any>;
-    map(array1:RArrayInterface|Array<any>, a_function:ExpressionFunction<RAnyInterface|Object>):RStreamInterface<any>;
+    map(...arrays_and_then_a_function:Array<RArrayInterface|Array<any>|ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>|RAnyInterface>):RStreamInterface<any>;
+    map(...sequences_and_then_a_function:Array<RSequenceInterface|Array<any>|ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>|RAnyInterface>):RStreamInterface<any>;
+    map(a_function:ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>|RAnyInterface):RStreamInterface<any>;
+    map(array1:RArrayInterface|Array<any>, ...arrays_and_then_a_function:Array<RArrayInterface|Array<any>|ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>|RAnyInterface>):RStreamInterface<any>;
+    map(array1:RArrayInterface|Array<any>, a_function:ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>|RAnyInterface):RStreamInterface<any>;
 
     /**
     * Merge two or more objects together to construct a new object with properties from all. When there is a conflict between field names, preference is given to fields in the rightmost object in the argument list.
@@ -1590,7 +1779,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/outer_join
     */
-    outerJoin(otherSequence:RSequenceInterface, predicate_function:ExpressionFunction<RBoolInterface>):RStreamInterface<JoinResult<RemoteT, any>>;
+    outerJoin(otherSequence:RSequenceInterface, predicate_function:JoinFunction<RBoolInterface>):RStreamInterface<JoinResult<RemoteT, any>>;
 
     /**
     * Select a given number of elements from a sequence with uniform random distribution. Selection is done without replacement.
@@ -1605,7 +1794,7 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/sample
     */
     // TODO
-    sample(number:number):RSelectionInterface<any>;
+    sample(number:number|RNumberInterface):RSelectionInterface<any>;
 
     /**
     * Skip a number of elements from the head of the sequence.
@@ -1618,7 +1807,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/skip
     */
-    skip(n:number):RStreamInterface<RemoteT>;
+    skip(n:number|RNumberInterface):RStreamInterface<RemoteT>;
 
     /**
     * Return the elements of a sequence within the specified range.
@@ -1635,8 +1824,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/slice
     */
-    slice(startIndex:number, endIndex:number, options?:{ leftBound?, rightBound? }):RStreamInterface<RemoteT>;
-    slice(startIndex:number):RStreamInterface<RemoteT>;
+    slice(startIndex:number|RNumberInterface, endIndex:number|RNumberInterface, options?:{ leftBound?, rightBound? }):RStreamInterface<RemoteT>;
+    slice(startIndex:number|RNumberInterface):RStreamInterface<RemoteT>;
 
     /**
     * Merge two or more sequences. (Note that ordering is not guaranteed by `union`.)
@@ -1677,9 +1866,7 @@ declare module rethinkdb {
     */
     without(...selectors:Array<string>):RStreamInterface<RemoteT>;
   }
-  export interface RSequenceInterface extends RCoercable, RAnyInterface {
-  //<SelfT extends RSequenceInterface<any, any, any>, SelectionT extends RSequenceInterface<any, any, any>, ElementT extends RAnyInterface> extends RAnyInterface {
-
+  export interface RSequenceInterface extends RCoercable, RToJSONInterface, RAnyInterface {
     /**
     * Averages all the elements of a sequence. If called with a field name, averages all the values of that field in the sequence, skipping elements of the sequence that lack that field. If called with a function, calls that function on every element of the sequence and averages the results, skipping elements of the sequence where that function returns `null` or a non-existence error.
     *
@@ -1691,7 +1878,7 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/avg
     */
     avg():RNumberInterface;
-    avg(field:string):RNumberInterface;
+    avg(field:string|RStringInterface):RNumberInterface;
     avg(func:Function):RNumberInterface;
 
     /**
@@ -1704,7 +1891,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/contains
     */
-    contains(...functions:Array<ExpressionFunction<RAnyInterface|Object>>):RBoolInterface;
+    contains(...functions:Array<ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>>):RBoolInterface;
     contains(...values:Array<string>):RBoolInterface;
 
     /**
@@ -1717,8 +1904,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/count
     */
-    count(predicate_function:ExpressionFunction<RAnyInterface|Object>):RNumberInterface;
-    count(value:any):RNumberInterface;
+    count(predicate_function:ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>):RNumberInterface;
+    count(value?:any):RNumberInterface;
 
     /**
     * Provide a default value in case of non-existence errors. The `default` command evaluates its first argument (the value it's chained to). If that argument returns `null` or a non-existence error is thrown in evaluation, then `default` returns its second argument. The second argument is usually a default value, but it can be a function that returns a value.
@@ -1736,7 +1923,7 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/default
     */
     default(default_value):RAnyInterface;
-    default(predicate_function:ExpressionFunction<Object|RAnyInterface>):RAnyInterface;
+    default(predicate_function:ExpressionFunction<RObjectInterface<any>, Object|RAnyInterface>):RAnyInterface;
 
     /**
     * Loop over a sequence, evaluating the given write query for each element.
@@ -1750,7 +1937,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/for_each
     */
-    forEach(write_function:ExpressionFunction<any>):RObjectInterface<any>;
+    forEach(write_function:ExpressionFunction<RObjectInterface<any>, any>):RObjectInterface<any>;
 
     /**
     * Takes a stream and partitions it into multiple groups based on the fields or functions provided. Commands chained after `group` will be called on each of these grouped sub-streams, producing grouped data.
@@ -1762,8 +1949,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/group
     */
-    group(field:string, options?:{ index?, multi? }):RGroupedStreamInterface;
-    group(func:ExpressionFunction<any>, options?:{ index?, multi? }):RGroupedStreamInterface;
+    group(field:string|RStringInterface, options?:{ index?, multi? }):RGroupedStreamInterface;
+    group(func:ExpressionFunction<RObjectInterface<any>, any>, options?:{ index?, multi? }):RGroupedStreamInterface;
 
     /**
     * Test if a sequence is empty.
@@ -1787,7 +1974,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/max
     */
-    max(field_or_a_function:string|Function):RValueInterface<any>;
+    max(field_or_a_function:string|RStringInterface|Function):RValueInterface<any>;
     max(options?:{ index? }):RValueInterface<any>;
 
     /**
@@ -1800,7 +1987,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/min
     */
-    min(field_or_a_function:string|Function):RValueInterface<any>;
+    min(field_or_a_function:string|RStringInterface|Function):RValueInterface<any>;
     min(options?:{ index? }):RValueInterface<any>;
 
     /**
@@ -1813,7 +2000,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/nth
     */
-    nth(index:number):RObjectInterface<any>;
+    nth(index:number|RNumberInterface):RObjectInterface<any>;
 
     /**
     * Get the indexes of an element in a sequence. If the argument is a predicate, get the indexes of all elements matching it.
@@ -1825,7 +2012,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/offsets_of
     */
-    offsetsOf(datum_or_predicate_function:Function):RArrayInterface;
+    offsetsOf(predicate_function:Function):RArrayInterface; // TODO
+    offsetsOf(datum:string|RStringInterface):RArrayInterface;
 
     /**
     * Produce a single value from a sequence through repeated application of a reduction function.
@@ -1853,12 +2041,11 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/sum
     */
-    sum(field_or_a_function:string|Function):RNumberInterface;
+    sum(field_or_a_function?:string|RStringInterface|Function):RNumberInterface;
   }
   export interface RTableSliceInterface<RemoteT> extends RTableInterface<RemoteT> {
   }
-  export interface RTableInterface<RemoteT> extends RSelectionInterface<RemoteT>, ROperationsInterface {
-
+  export interface RTableInterface<RemoteT> extends RSelectionInterface<RemoteT>, RConfigurableInterface, ROperationsInterface {
     /**
     * Get all documents between two keys. Accepts three optional arguments: `index`, `left_bound`, and `right_bound`. If `index` is set to the name of a secondary index, `between` will return all documents where that index's value is in the specified range (it uses the primary key by default). `left_bound` or `right_bound` may be set to `open` or `closed` to indicate whether or not to include that endpoint of the range (by default, `left_bound` is closed and `right_bound` is open).
     *
@@ -1871,19 +2058,7 @@ declare module rethinkdb {
     */
     between(lowerKey, upperKey, options?):RTableSliceInterface<RemoteT>;
     between(lowerKey, upperKey):RTableSliceInterface<RemoteT>;
-
-    /**
-    * Query (read and/or update) the configurations for individual tables or databases.
-    *
-    * table.config() → selection<object>database.config() → selection<object>
-    * **Example:** Get the configuration for the `users` table.
-    * 
-    *     > r.table('users').config().run(conn, callback);
-    *
-    * http://rethinkdb.com/api/javascript/config
-    */
-    config():RSingleSelectionInterface<TableConfig>;
-
+    
     /**
     * Remove duplicate elements from the sequence.
     *
@@ -1910,7 +2085,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/get
     */
-    get(key:string):RSingleSelectionInterface<RemoteT>;
+    get(key:string|RStringInterface):RSingleSelectionInterface<RemoteT>;
 
     /**
     * Get all documents where the given value matches the value of the requested index.
@@ -1922,9 +2097,10 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/get_all
     */
-    getAll(key:string, ...keys_and_then_options:Array<string|{ index? }>):RSelectionInterface<any>;
-    getAll(key:string, options?:{ index? }):RSelectionInterface<any>;
-    getAll(key:string, ...keys:Array<string>):RSelectionInterface<any>;
+    getAll(key:string|RStringInterface, ...keys_and_then_options:Array<string|{ index? }>):RSelectionInterface<any>;
+    getAll(key:string|RStringInterface, options?:{ index? }):RSelectionInterface<any>;
+    getAll(key:string|RStringInterface, ...keys:Array<string>):RSelectionInterface<any>;
+    getAll(args:RSpecialInterface); // TODO: add this everywhere!
 
     /**
     * Get all documents where the given geometry object intersects the geometry object of the requested geospatial index.
@@ -1937,7 +2113,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/get_intersecting
     */
-    getIntersecting(geometry:RGeometryInterface, options?:{ index? }):RStreamInterface<any>;
+    getIntersecting(geometry:RGeometryInterface<any>, options?:{ index? }):RStreamInterface<any>;
 
     /**
     * Get all documents where the specified geospatial index is within a certain distance of the specified point (default 100 kilometers).
@@ -1952,7 +2128,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/get_nearest
     */
-    getNearest(point:RPointInterface, options?:{index:string, maxResults:number, maxDist:number, unit:string, geoSystem:string}):RArrayInterface;
+    getNearest(point:RPointInterface, options?:{index:string|RStringInterface, maxResults?:number|RNumberInterface, maxDist?:number|RNumberInterface, unit?:string|RStringInterface, geoSystem?:string|RStringInterface}):RArrayInterface;
 
     /**
     * Create a new secondary index on a table.
@@ -1964,10 +2140,10 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/index_create
     */
-    indexCreate(indexName:string, indexFunction:Function, options?:{ multi?, geo? }):RObjectInterface<any>;
-    indexCreate(indexName:string, options?:{ multi?, geo? }):RObjectInterface<any>;
-    indexCreate(indexName:string, indexFunction:Function):RObjectInterface<any>;
-    indexCreate(indexName:string):RObjectInterface<any>;
+    indexCreate(indexName:string|RStringInterface, indexFunction:Function, options?:{ multi?, geo? }):RObjectInterface<any>;
+    indexCreate(indexName:string|RStringInterface, options?:{ multi?, geo? }):RObjectInterface<any>;
+    indexCreate(indexName:string|RStringInterface, indexFunction:Function):RObjectInterface<any>;
+    indexCreate(indexName:string|RStringInterface):RObjectInterface<any>;
 
     /**
     * Delete a previously created secondary index of this table.
@@ -1979,7 +2155,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/index_drop
     */
-    indexDrop(indexName:string):RObjectInterface<any>;
+    indexDrop(indexName:string|RStringInterface):RObjectInterface<any>;
 
     /**
     * List all the secondary indexes of this table.
@@ -2003,8 +2179,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/index_rename
     */
-    indexRename(oldIndexName:string, newIndexName:string, options?:{ overwrite? }):RObjectInterface<any>;
-    indexRename(oldIndexName:string, newIndexName:string):RObjectInterface<any>;
+    indexRename(oldIndexName:string|RStringInterface, newIndexName:string|RStringInterface, options?:{ overwrite? }):RObjectInterface<any>;
+    indexRename(oldIndexName:string|RStringInterface, newIndexName:string|RStringInterface):RObjectInterface<any>;
 
     /**
     * Get the status of the specified indexes on this table, or the status of all indexes on this table if no indexes are specified.
@@ -2060,33 +2236,9 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/order_by
     */
-    orderBy(key:string, options?:{ index }):RTableSliceInterface<RemoteT>;
-    orderBy(func:ExpressionFunction<RAnyInterface|Object>, options?:{ index }):RTableSliceInterface<RemoteT>;
+    orderBy(key:string|RStringInterface, options?:{ index }):RTableSliceInterface<RemoteT>;
+    orderBy(func:ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>, options?:{ index }):RTableSliceInterface<RemoteT>;
     orderBy(options:{ index }):RTableSliceInterface<RemoteT>;
-
-    /**
-    * Rebalances the shards of a table. When called on a database, all the tables in that database will be rebalanced.
-    *
-    * table.rebalance() → objectdatabase.rebalance() → object
-    * **Example:** Rebalance a table.
-    * 
-    *     > r.table('superheroes').rebalance().run(conn, callback);
-    *
-    * http://rethinkdb.com/api/javascript/rebalance
-    */
-    rebalance():RObjectInterface<any>;
-
-    /**
-    * Reconfigure a table's sharding and replication.
-    *
-    * table.reconfigure({shards: <s>, replicas: <r>[, primaryReplicaTag: <t>, dryRun: false}]) → objectdatabase.reconfigure({shards: <s>, replicas: <r>[, primaryReplicaTag: <t>, dryRun: false}]) → object</t></r></s></t></r></s>
-    * **Example:** Reconfigure a table.
-    * 
-    *     > r.table('superheroes').reconfigure({shards: 2, replicas: 1}).run(conn, callback);
-    *
-    * http://rethinkdb.com/api/javascript/reconfigure
-    */
-    reconfigure(options:{shards:any, replicas:any, primaryReplicaTag?:any, dryRun?:boolean}):RObjectInterface<any>;
 
     /**
     * Return the status of a table.
@@ -2111,18 +2263,6 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/sync
     */
     sync():RObjectInterface<any>;
-
-    /**
-    * Wait for a table or all the tables in a database to be ready. A table may be temporarily unavailable after creation, rebalancing or reconfiguring. The `wait` command blocks until the given table (or database) is fully up to date.
-    *
-    * table.wait([{waitFor: 'ready_for_writes', timeout: <sec>}]) → objectdatabase.wait([{waitFor: 'ready_for_writes', timeout: <sec>}]) → objectr.wait([{waitFor: 'ready_for_writes', timeout: <sec>}]) → object</sec></sec></sec>
-    * **Example:** Wait for a table to be ready.
-    * 
-    *     > r.table('superheroes').wait().run(conn, callback);
-    *
-    * http://rethinkdb.com/api/javascript/wait
-    */
-    wait(options?:{ waitFor?:string, timeout?:number }):RObjectInterface<any>;
   }
   export interface RBinaryInterface extends RCoercable, RAnyInterface {
     /**
@@ -2149,10 +2289,39 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/slice
     */
-    slice(startIndex:number, endIndex:number, options?:{ leftBound?, rightBound? }):RBinaryInterface;
-    slice(startIndex:number):RBinaryInterface;
+    slice(startIndex:number|RNumberInterface, endIndex:number|RNumberInterface, options?:{ leftBound?, rightBound? }):RBinaryInterface;
+    slice(startIndex:number|RNumberInterface):RBinaryInterface;
   }
-  export interface RValueInterface<RemoteT> extends RCoercable, RRunableInterface<RemoteT>, RAnyInterface {
+  export interface RToJSONInterface extends RAnyInterface {
+    /**
+    * Convert a ReQL value or object to a JSON string. You may use either `toJsonString` or `toJSON`.
+    *
+    * value.toJsonString() → stringvalue.toJSON() → string
+    * **Example:** Get a ReQL document as a JSON string.
+    * 
+    *     > r.table('hero').get(1).toJSON()
+    *     // result returned to callback
+    *     '{"id": 1, "name": "Batman", "city": "Gotham", "powers": ["martial arts", "cinematic entrances"]}'
+    *
+    * http://rethinkdb.com/api/javascript/to_json_string
+    */
+    toJsonString():RStringInterface;
+
+    /**
+    * Convert a ReQL value or object to a JSON string. You may use either `toJsonString` or `toJSON`.
+    *
+    * value.toJsonString() → stringvalue.toJSON() → string
+    * **Example:** Get a ReQL document as a JSON string.
+    * 
+    *     > r.table('hero').get(1).toJSON()
+    *     // result returned to callback
+    *     '{"id": 1, "name": "Batman", "city": "Gotham", "powers": ["martial arts", "cinematic entrances"]}'
+    *
+    * http://rethinkdb.com/api/javascript/to_json_string
+    */
+    toJSON():RStringInterface;
+  }
+  export interface RValueInterface<RemoteT> extends RCoercable, RRunableInterface<RemoteT>, RToJSONInterface, RAnyInterface {
     /**
     * Provide a default value in case of non-existence errors. The `default` command evaluates its first argument (the value it's chained to). If that argument returns `null` or a non-existence error is thrown in evaluation, then `default` returns its second argument. The second argument is usually a default value, but it can be a function that returns a value.
     *
@@ -2169,7 +2338,7 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/default
     */
     default(default_value):RAnyInterface;
-    default(predicate_function:ExpressionFunction<Object|RAnyInterface>):RAnyInterface;
+    default(predicate_function:ExpressionFunction<RValueInterface<RemoteT>, Object|RAnyInterface>):RAnyInterface;
 
     /**
     * Test if two or more values are equal.
@@ -2248,36 +2417,8 @@ declare module rethinkdb {
     */
     ne(value, ...values):RBoolInterface;
     ne(value):RBoolInterface;
-
-    /**
-    * Convert a ReQL value or object to a JSON string. You may use either `toJsonString` or `toJSON`.
-    *
-    * value.toJsonString() → stringvalue.toJSON() → string
-    * **Example:** Get a ReQL document as a JSON string.
-    * 
-    *     > r.table('hero').get(1).toJSON()
-    *     // result returned to callback
-    *     '{"id": 1, "name": "Batman", "city": "Gotham", "powers": ["martial arts", "cinematic entrances"]}'
-    *
-    * http://rethinkdb.com/api/javascript/to_json_string
-    */
-    toJsonString():RStringInterface;
-
-    /**
-    * Convert a ReQL value or object to a JSON string. You may use either `toJsonString` or `toJSON`.
-    *
-    * value.toJsonString() → stringvalue.toJSON() → string
-    * **Example:** Get a ReQL document as a JSON string.
-    * 
-    *     > r.table('hero').get(1).toJSON()
-    *     // result returned to callback
-    *     '{"id": 1, "name": "Batman", "city": "Gotham", "powers": ["martial arts", "cinematic entrances"]}'
-    *
-    * http://rethinkdb.com/api/javascript/to_json_string
-    */
-    toJSON():RStringInterface;
   }
-  export interface RSingleSelectionInterface<RemoteT> extends RObjectInterface<RemoteT>, ROperationsInterface, RObservableInterface<RemoteT> { //RObjectInterface<RemoteT>,  //RObservableInterface<RemoteT>, //RSelectionInterface<RemoteT>
+  export interface RSingleSelectionInterface<RemoteT> extends RObjectInterface<RemoteT>, RValueInterface<RemoteT>, ROperationsInterface, RObservableInterface<RemoteT> { //RObjectInterface<RemoteT>,  //RObservableInterface<RemoteT>, //RSelectionInterface<RemoteT>
     //// HACK: UNABLE TO EXTEND, SO DUPLICATED FROM SELECTION INTERFACE:
     
   }
@@ -2298,11 +2439,25 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/filter
     */
-    filter(predicate_function:ExpressionFunction<RBoolInterface>, options?:{ default? }):RSelectionInterface<RemoteT>;
+    filter(predicate_function:ExpressionFunction<RObjectInterface<RemoteT>, RBoolInterface>, options?:{ default?:boolean }):RSelectionInterface<RemoteT>;
     filter(filterByObject:Object):RSelectionInterface<RemoteT>;
   }
-  export interface RObjectInterface<RemoteT> extends RRunableInterface<RemoteT>, RCoercable, RAnyInterface {
-
+  export interface RExpressionInterface {
+    <T extends RNumberInterface>(expression:T):RNumberInterface;
+    <T extends RBoolInterface>(expression:T):RBoolInterface;
+    <T extends RStringInterface>(expression:T):RStringInterface;
+    <T extends RArrayInterface>(expression:T):RArrayInterface;
+    <T extends RObjectInterface<any>>(expression:T):T;
+    <T extends RTimeInterface>(expression:T):RTimeInterface;
+    <T extends RGeometryInterface<any>>(expression:T):RGeometryInterface<any>;
+    <T extends number>(expression:T):RNumberInterface;
+    <T extends boolean>(expression:T):RBoolInterface;
+    <T extends string>(expression:T):RStringInterface;
+    <T extends Array<any>>(expression:T):RArrayInterface;
+    <T extends Date>(expression:T):RTimeInterface;
+    <T>(expression:T):RObjectInterface<T>;
+  }
+  export interface RGetFieldInterface {
     /**
     * Get a single field from an object or a single element from a sequence.
     *
@@ -2313,13 +2468,18 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/bracket
     */
-    (attr:string):RValueInterface<any>;
-    <T extends RNumberInterface>(attr:string):RNumberInterface;
-    <T extends RStringInterface>(attr:string):RStringInterface;
-    <T extends RObjectInterface<any>>(attr:string):T;
-    <T extends number>(attr:string):RNumberInterface;
-    <T extends string>(attr:string):RStringInterface;
-    <T>(attr:string):RObjectInterface<T>;
+    (attr:string|RStringInterface):RValueInterface<any>;
+    <T extends RNumberInterface>(attr:string|RStringInterface):RNumberInterface;
+    <T extends RStringInterface>(attr:string|RStringInterface):RStringInterface;
+    <T extends RArrayInterface>(attr:string|RStringInterface):RArrayInterface;
+    <T extends RObjectInterface<any>>(attr:string|RStringInterface):T;
+    <T extends RTimeInterface>(attr:string|RStringInterface):RTimeInterface;
+    <T extends RGeometryInterface<any>>(attr:string|RStringInterface):RGeometryInterface<any>;
+    <T extends number>(attr:string|RStringInterface):RNumberInterface;
+    <T extends string>(attr:string|RStringInterface):RStringInterface;
+    <T extends Array<any>>(attr:string|RStringInterface):RArrayInterface;
+    <T extends Date>(attr:string|RStringInterface):RTimeInterface;
+    <T>(attr:string|RStringInterface):RObjectInterface<T>;
 
     /**
     * Get a single field from an object. If called on a sequence, gets that field from every object in the sequence, skipping objects that lack it.
@@ -2331,8 +2491,9 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/get_field
     */
-    getField(attr:string):RValueInterface<any>;
-
+    getField(attr:string|RStringInterface):RValueInterface<any>;
+  }
+  export interface RObjectInterface<RemoteT> extends RRunableInterface<RemoteT>, RGetFieldInterface, RToJSONInterface, RCoercable, RAnyInterface {
     /**
     * Test if an object has one or more fields. An object has a field if it has that key and the key has a non-null value. For instance, the object `{'a': 1,'b': 2,'c': null}` has the fields `a` and `b`.
     *
@@ -2432,8 +2593,11 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/do
     */
-    do(...args_and_then_a_function):RAnyInterface;
-    do(expr:ExpressionFunction<any>):RAnyInterface;
+    // do<R extends RAnyInterface>(...args_and_then_a_function):R;
+    do<R extends RAnyInterface>(expr:(thisObject:RAnyInterface)=>R):R;
+    do<R extends RAnyInterface, Arg1 extends RAnyInterface>(arg1:Arg1, expr:(arg1:Arg1)=>R):R;
+    do<R extends RAnyInterface, Arg1 extends RAnyInterface, Arg2 extends RAnyInterface>(arg1:Arg1, arg2:Arg2, expr:(arg1:Arg1, arg2:Arg2)=>R):R;
+    do<R extends RAnyInterface, Arg1 extends RAnyInterface, Arg2 extends RAnyInterface, Arg3 extends RAnyInterface>(arg1:Arg1, arg2:Arg2, arg3:Arg3, expr:(arg1:Arg1, arg2:Arg2, arg3:Arg3)=>R):R;
 
     /**
     * Get information about a ReQL value.
@@ -2485,7 +2649,7 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/sample
     */
     // TODO ? was: RArrayInterface;
-    sample(number:number):RSelectionInterface<RemoteT>;
+    sample(number:number|RNumberInterface):RSelectionInterface<RemoteT>;
 
     /**
     * Used to 'zip' up the result of a join by merging the 'right' fields into 'left' fields of each member of the sequence.
@@ -2500,8 +2664,7 @@ declare module rethinkdb {
     */
     zip():RStreamInterface<any>;
   }
-  export interface RGeometryInterface extends RAnyInterface {
-
+  export interface RGeometryInterface<RemoteT> extends RValueInterface<RemoteT>, RAnyInterface {
     /**
     * Compute the distance between a point and another geometry object. At least one of the geometry objects specified must be a point.
     *
@@ -2681,6 +2844,13 @@ declare module rethinkdb {
     reconnect(options:{ noreplyWait? }, callback:CallbackFunction<RConnectionInterface>):void;
     reconnect(callback:CallbackFunction<RConnectionInterface>):void;
     reconnect(options?:{ noreplyWait? }):Promise<RConnectionInterface>;
+    
+    /**
+     * noreplyWait ensures that previous queries with the noreply flag have been processed by the server. 
+     * Note that this guarantee only applies to queries run on the given connection.
+     */
+    noreplyWait(callback:CallbackFunction<void>);
+    noreplyWait():Promise<void>;
 
     /**
     * Change the default database on this connection.
@@ -2693,28 +2863,32 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/use
     */
-    use():void;
+    use(dbName:string):void;
+    
+    /**
+     * Return the server name and server UUID being used by a connection.
+     */
+    server(callback:CallbackFunction<ServerDefinition>);
+    server():Promise<ServerDefinition>
   }
-  export interface RDatabaseInterface extends RAnyInterface {
-
+  export interface RDatabaseInterface extends RConfigurableInterface {}
+  export interface RConfigurableInterface extends RAnyInterface {
     /**
     * Query (read and/or update) the configurations for individual tables or databases.
     *
-    * table.config() → selection<object>
-    database.config() → selection<object>
+    * table.config() → selection<object>database.config() → selection<object>
     * **Example:** Get the configuration for the `users` table.
     * 
     *     > r.table('users').config().run(conn, callback);
     *
     * http://rethinkdb.com/api/javascript/config
     */
-    config():RSingleSelectionInterface<any>;
+    config():RSingleSelectionInterface<TableConfig>;
 
     /**
     * Rebalances the shards of a table. When called on a database, all the tables in that database will be rebalanced.
     *
-    * table.rebalance() → object
-    database.rebalance() → object
+    * table.rebalance() → objectdatabase.rebalance() → object
     * **Example:** Rebalance a table.
     * 
     *     > r.table('superheroes').rebalance().run(conn, callback);
@@ -2726,16 +2900,14 @@ declare module rethinkdb {
     /**
     * Reconfigure a table's sharding and replication.
     *
-    * table.reconfigure({shards: <s>, replicas: <r>[, primaryReplicaTag: <t>, dryRun: false}]) → object
-    database.reconfigure({shards: <s>, replicas: <r>[, primaryReplicaTag: <t>, dryRun: false}]) → object</t></r></s></t></r></s>
+    * table.reconfigure({shards: <s>, replicas: <r>[, primaryReplicaTag: <t>, dryRun: false}]) → objectdatabase.reconfigure({shards: <s>, replicas: <r>[, primaryReplicaTag: <t>, dryRun: false}]) → object</t></r></s></t></r></s>
     * **Example:** Reconfigure a table.
     * 
     *     > r.table('superheroes').reconfigure({shards: 2, replicas: 1}).run(conn, callback);
     *
     * http://rethinkdb.com/api/javascript/reconfigure
     */
-    reconfigure({shards, replicas, primaryReplicaTag, dryRun:boolean}):RObjectInterface<any>;
-    reconfigure({shards, replicas}):RObjectInterface<any>;
+    reconfigure(options:{shards:any, replicas:any, primaryReplicaTag?:any, dryRun?:boolean|RBoolInterface}):RObjectInterface<any>;
 
     /**
     * Wait for a table or all the tables in a database to be ready. A table may be temporarily unavailable after creation, rebalancing or reconfiguring. The `wait` command blocks until the given table (or database) is fully up to date.
@@ -2747,8 +2919,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/wait
     */
-    wait(options?:{ waitFor?, timeout? }):RObjectInterface<any>;
-    wait():RObjectInterface<any>;
+    wait(options?:{ waitFor?:string|RStringInterface, timeout?:number|RNumberInterface }):RObjectInterface<any>;
   }
   export interface RDbInterface extends RAnyInterface {
 
@@ -2762,7 +2933,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/table
     */
-    table<T>(name:string, options?:{ readMode?, identifierFormat? }):RTableInterface<T>;
+    table<T>(name:string|RStringInterface, options?:{ readMode?, identifierFormat? }):RTableInterface<T>;
 
     /**
     * Create a table. A RethinkDB table is a collection of JSON documents.
@@ -2775,7 +2946,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/table_create
     */
-    tableCreate(tableName:string, options?):RObjectInterface<any>;
+    tableCreate(tableName:string|RStringInterface, options?):RObjectInterface<any>;
 
     /**
     * Drop a table. The table and all its data will be deleted.
@@ -2787,7 +2958,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/table_drop
     */
-    tableDrop(tableName:string):RObjectInterface<DropResult>;
+    tableDrop(tableName:string|RStringInterface):RObjectInterface<DropResult>;
 
     /**
     * List all table names in a database. The result is a list of strings.
@@ -2801,7 +2972,7 @@ declare module rethinkdb {
     */
     tableList():RArrayInterface;
   }
-  export interface RPolygonInterface extends RAnyInterface {
+  export interface RPolygonInterface extends RGeometryInterface<Array<Array<number>>>, RAnyInterface {
 
     /**
     * Use `polygon2` to "punch out" a hole in `polygon1`. `polygon2` must be completely contained within `polygon1` and must have no holes itself (it must not be the output of `polygonSub` itself).
@@ -2827,8 +2998,7 @@ declare module rethinkdb {
     */
     polygonSub(polygon2:RPolygonInterface):RPolygonInterface;
   }
-  export interface RLineInterface extends RValueInterface<Array<Array<number>>>, RGeometryInterface, RAnyInterface {
-
+  export interface RLineInterface extends RGeometryInterface<Array<number>>, RAnyInterface {
     /**
     * Convert a Line object into a Polygon object. If the last point does not specify the same coordinates as the first point, `polygon` will close the polygon by connecting them.
     *
@@ -2870,7 +3040,7 @@ declare module rethinkdb {
     ungroup():RArrayInterface;
   }
   
-  export interface RPointInterface extends RValueInterface<any>, RGeometryInterface, RAnyInterface {
+  export interface RPointInterface extends RGeometryInterface<Object>, RAnyInterface {
   }
   
   export interface RObservableInterface<RemoteT> {
@@ -2886,7 +3056,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/changes
     */
-    changes(options?:{squash:boolean|number, changefeedQueueSize:number, includeInitial:boolean, includeStates:boolean}):RStreamInterface<ChangesResult<RemoteT>>;
+    changes(options?:{squash:boolean|RBoolInterface|number, changefeedQueueSize:number|RNumberInterface, includeInitial:boolean|RBoolInterface, includeStates:boolean|RBoolInterface}):RStreamInterface<ChangesResult<RemoteT>>;
   }
   export interface ROperationsInterface {
     /**
@@ -2915,9 +3085,9 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/insert
     */
-    insert(...objects_and_then_options:Array<Object|{durability?:string, returnChanges?:string, conflict?:string}>):RObjectInterface<WriteResult>;
+    insert(...objects_and_then_options:Array<Object|{durability?:string|RStringInterface, returnChanges?:string|RStringInterface, conflict?:string|RStringInterface}>):RObjectInterface<WriteResult>;
     insert(...objects:Array<Object>):RObjectInterface<WriteResult>;
-    insert(object:Object, options?:{durability?:string, returnChanges?:string, conflict?:string}):RObjectInterface<WriteResult>;
+    insert(object:Object, options?:{durability?:string|RStringInterface, returnChanges?:string|RStringInterface, conflict?:string|RStringInterface}):RObjectInterface<WriteResult>;
 
     /**
     * Replace documents in a table. Accepts a JSON document or a ReQL expression, and replaces the original document with the new one. The new document must have the same primary key as the original document.
@@ -2934,7 +3104,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/replace
     */
-    replace(object_or_a_function:Object|ExpressionFunction<any>, options?:WriteOptions):RObjectInterface<WriteResult>;
+    replace(object_or_a_function:Object|ExpressionFunction<RObjectInterface<any>, any>, options?:WriteOptions):RObjectInterface<WriteResult>;
 
     /**
     * Update JSON documents in a table. Accepts a JSON document, a ReQL expression, or a combination of the two. You can pass options like `returnChanges` that will return the old and new values of the row you have modified.
@@ -2946,7 +3116,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/update
     */
-    update(object_or_a_function:Object|ExpressionFunction<any>, options?:WriteOptions):RObjectInterface<WriteResult>;
+    update(object_or_a_function:Object|ExpressionFunction<RObjectInterface<any>, any>, options?:WriteOptions):RObjectInterface<WriteResult>;
   }
   
   interface RCoercable {
@@ -2969,11 +3139,13 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/coerce_to
     */
-    coerceTo<T extends RAnyInterface>(type:string):T;
+    coerceTo<T extends RAnyInterface>(type:string|RStringInterface):T;
   }
   
-  interface ExpressionFunction<U> {
-    (doc:RObjectInterface<any>):U;
+  interface ExpressionFunction<ItemT extends RAnyInterface, U> {
+    // (doc:RValueInterface<any>):U;
+    // (doc:RObjectInterface<any>):U;
+    (doc:ItemT):U;
   }
   
   interface CallbackFunction<U> {
@@ -2981,11 +3153,11 @@ declare module rethinkdb {
   }
 
   interface JoinFunction<U> {
-    (left:RValueInterface<any>, right:RValueInterface<any>):U;
+    (left:RObjectInterface<any>, right:RObjectInterface<any>):U;
   }
-
+  
   interface ReduceFunction<U> {
-    (acc:RValueInterface<any>, val:RValueInterface<any>):U;
+    (acc:RArrayInterface, val:RArrayInterface):U;
   }
 
   interface InsertOptions {
@@ -3012,24 +3184,24 @@ declare module rethinkdb {
   }
   
   interface TableConfig {
-    id:string;
-    name:string;
-    db:string;
-    primary_key:string;
+    id:string|RStringInterface;
+    name:string|RStringInterface;
+    db:string|RStringInterface;
+    primary_key:string|RStringInterface;
     shards:Array<Shard>;
     indexes:Array<string>;
-    write_acks:string;
-    durability:string;
+    write_acks:string|RStringInterface;
+    durability:string|RStringInterface;
   }
   
   interface Shard {
-    primary_replica:string;
+    primary_replica:string|RStringInterface;
     replicas:Array<string>;
     nonvoting_replicas:Array<string>;
   }
   
   interface GroupResult {
-    group:string;
+    group:string|RStringInterface;
     reduction:Array<Object>;
   }
 
@@ -3041,7 +3213,7 @@ declare module rethinkdb {
   interface ChangesResult<RemoteT> {
     old_val?:RemoteT,
     new_val?:RemoteT,
-    state?:string,
+    state?:string|RStringInterface,
   }
 
   interface CreateResult {
@@ -3059,9 +3231,14 @@ declare module rethinkdb {
   }
   
   interface WriteOptions {
-    durability?:string;
-    returnChanges?:boolean;
-    nonAtomic?:boolean;
+    durability?:string|RStringInterface;
+    returnChanges?:boolean|RBoolInterface;
+    nonAtomic?:boolean|RBoolInterface;
+  }
+  
+  interface ServerDefinition {
+    id:string;
+    name:string;
   }
   
   export interface RConnectionOptionsInterface {readMode?, timeFormat?, profile?, durability?, groupFormat?, noreply?, db?, arrayLimit?, binaryFormat?, minBatchRows?, maxBatchRows?, maxBatchBytes?, maxBatchSeconds?, firstBatchScaledownFactor?}
