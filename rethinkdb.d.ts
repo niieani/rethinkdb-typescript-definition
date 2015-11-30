@@ -1,3 +1,11 @@
+// Type definitions for RethinkDB 2.2.0
+// Project: http://rethinkdb.com/
+// Definitions by: Bazyli Brzóska <https://invent.life/>
+// Previous definitions by: Sean Hess <https://seanhess.github.io/>
+// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// TODO: Make RArrayInterface generic
+// Reference: http://www.rethinkdb.com/api/#js
+
 declare module rethinkdb {
   export interface RNumberInterface extends RValueInterface<number>, RRunableInterface<number> {
     /**
@@ -1284,6 +1292,7 @@ declare module rethinkdb {
     */
     or(...bools:Array<boolean|RBoolInterface>):RBoolInterface;
   }
+  // TODO: make Array generic
   export interface RSequenceArrayInterface extends RSequenceInterface, RRunableInterface<Array<any>> {
     /**
     * Concatenate one or more elements into a single sequence using a mapping function.
