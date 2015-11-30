@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "listFiles": true,
+    "declaration": true,
+    "experimentalAsyncFunctions": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
