@@ -1,6 +1,10 @@
-/// <reference path="rethinkdb.d.ts" />
+/// <reference path="rethinkdbdash.d.ts" />
 
-import * as r from 'rethinkdb';
+// import rConnect = require('rethinkdbdash');
+/// <reference path="../rethinkdb/rethinkdb.d.ts" />
+
+import * as rConnect from 'rethinkdbdash';
+var r = rConnect({db: 'test'});
 
 async function test() {
   let connection = await r.connect('host');
@@ -23,6 +27,5 @@ async function test() {
   let a = 123;
   let b = await r.db('something').table<{ id:string, name:string }>('great').get('123')<{ something:boolean }>('subObject');
   let del = await r.db('something').table('a').delete({durability: 'hard'});
-  let del2 = await r.db('something').table('a').get('123').replace((current) => {  })
-  
+  let del2 = await r.db('something').table('a').get('123').replace((current) => {  });
 }

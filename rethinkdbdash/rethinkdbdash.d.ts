@@ -1,11 +1,15 @@
+// Type definitions for rethinkdbdash v2.2.5
+// Project: https://github.com/neumino/rethinkdbdash
+// Definitions by: Bazyli Brzóska <https://invent.life/>
+// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Reference: http://www.rethinkdb.com/api/#js
+
 /// <reference path="../node/node.d.ts" />
 /// <reference path="../bluebird/bluebird.d.ts" />
 /// <reference path="../rethinkdb/rethinkdb.d.ts" />
 
-declare module "rethinkdbdash" {
-  import * as events from 'events';
-  
-  class PoolMaster extends events.EventEmitter {
+declare module rethinkdbdash {
+  export interface PoolMaster extends NodeJS.EventEmitter {
       constructor(r: any, options: any);
       emitStatus(): void;
       drain(): Promise<void>;
@@ -24,7 +28,7 @@ declare module "rethinkdbdash" {
       getPools(): any[];
   }
   
-  class Pool extends events.EventEmitter {
+  export interface Pool extends NodeJS.EventEmitter {
     id: any;
     options: any;
     timeoutReconnect: any;
@@ -40,7 +44,7 @@ declare module "rethinkdbdash" {
     getConnection(): Promise<Connection>;
   }
   
-  class Connection extends events.EventEmitter {
+  export interface Connection extends NodeJS.EventEmitter {
     rejectMap: any;
     timeout: any;
     open: any;
@@ -64,32 +68,47 @@ declare module "rethinkdbdash" {
     reconnect(options: any, callback?: (err: any, value?: any) => void): any;
   }
 
-  interface rethinkdbdash extends rethinkdb.RInterface {
+  export interface RDashInterface extends rethinkdb.RInterface {
     getPoolMaster(): PoolMaster;
     getPool(i: number): Pool;
-    createPools(options?: any): rethinkdbdash;
+    createPools(options?: any): RDashInterface;
     setArrayLimit(arrayLimit: number): void;
     setNestingLevel(nestingLevel: number): void;
   }
   
-  function r(options?:{ 
-    port?:number, 
-    host?:string, 
-    db?:string, 
-    discovery?:boolean, 
-    max?:number, 
-    buffer?:number, 
-    timeout?:number, 
-    timeoutError?:number, 
-    timeoutGb?:number, 
-    maxExponent?:number, 
-    silent?:boolean, 
-    servers?:Array<{host:string, port:number}>, 
-    optionalRun?:boolean, 
-    ssl?:boolean, 
-    pool?:boolean, 
-    cursor?:boolean 
-  }):rethinkdbdash;
+  export interface RDashConnectInterface {
+    (options?:{ 
+      port?:number, 
+      host?:string, 
+      db?:string, 
+      discovery?:boolean, 
+      max?:number, 
+      buffer?:number, 
+      timeout?:number, 
+      timeoutError?:number, 
+      timeoutGb?:number, 
+      maxExponent?:number, 
+      silent?:boolean, 
+      servers?:Array<{host:string, port:number}>, 
+      optionalRun?:boolean, 
+      ssl?:boolean, 
+      pool?:boolean, 
+      cursor?:boolean 
+    }):RDashInterface;
+  }
+}
+
+declare module rethinkdb {
+  // override RRunableInterface to extend it with PromiseLike<T> 
+  export interface RRunableInterface<T> extends PromiseLike<T> {
+    run(connection:RConnectionInterface, cb:CallbackFunction<T>):void;
+    run(connection:RConnectionInterface, options:RConnectionOptionsInterface, cb:CallbackFunction<T>):void;
+    run(connection:RConnectionInterface, options?:RConnectionOptionsInterface):Promise<T>;
+  }
+}
+
+declare module "rethinkdbdash" {
+  var r:rethinkdbdash.RDashConnectInterface;
   
   export = r;
 }

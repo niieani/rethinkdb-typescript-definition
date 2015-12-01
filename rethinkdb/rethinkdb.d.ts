@@ -1,4 +1,4 @@
-// Type definitions for RethinkDB 2.2.0
+// Type definitions for RethinkDB v2.2.0
 // Project: http://rethinkdb.com/
 // Definitions by: Bazyli Brzóska <https://invent.life/>
 // Previous definitions by: Sean Hess <https://seanhess.github.io/>
@@ -3265,7 +3265,7 @@ declare module rethinkdb {
     host?:string; 
     readMode?, timeFormat?, profile?, durability?, groupFormat?, noreply?, db?, arrayLimit?, binaryFormat?, minBatchRows?, maxBatchRows?, maxBatchBytes?, maxBatchSeconds?, firstBatchScaledownFactor?
   }
-  export interface RRunableInterface<T> extends PromiseLike<T> {
+  export interface RRunableInterface<T> {
     run(connection:RConnectionInterface, cb:CallbackFunction<T>):void;
     run(connection:RConnectionInterface, options:RConnectionOptionsInterface, cb:CallbackFunction<T>):void;
     run(connection:RConnectionInterface, options?:RConnectionOptionsInterface):Promise<T>;
