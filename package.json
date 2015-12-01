@@ -1,0 +1,24 @@
+{
+  "name": "rethinkdb-typescript-definition",
+  "version": "2.2.3",
+  "description": "A Typescript definition for RethinkDB",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/niieani/rethinkdb-typescript-definition"
+  },
+  "keywords": [
+    "rethinkdb",
+    "driver",
+    "nodejs"
+  ],
+  "author": "Bazyli Brzóska <bart8472@gmail.com> (https://invent.life)",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/niieani/rethinkdb-typescript-definition/issues"
+  },
+  "devDependencies": {
+    "tsd": "^0.6.5",
+    "typescript": "^1.8.0-dev.20151201"
+  }
+}

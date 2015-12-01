@@ -1,4 +1,5 @@
 /// <reference path="../node/node.d.ts" />
+/// <reference path="../bluebird/bluebird.d.ts" />
 /// <reference path="../rethinkdb/rethinkdb.d.ts" />
 
 declare module "rethinkdbdash" {
