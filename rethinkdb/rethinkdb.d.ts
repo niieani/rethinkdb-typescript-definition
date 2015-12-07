@@ -120,7 +120,7 @@ declare module rethinkdb {
     sub(number:number|RNumberInterface, ...numbers:Array<number>):RNumberInterface;
     sub(number:number|RNumberInterface):RNumberInterface;
   }
-  export interface RStringInterface extends RCoercable, RAnyInterface, RRunableInterface<string> {
+  export interface RStringInterface extends RCoercable, RValueInterface<string> {
     /**
     * Sum two or more numbers, or concatenate two or more strings or arrays.
     *
@@ -1305,6 +1305,23 @@ declare module rethinkdb {
   // TODO: make Array generic
   export interface RSequenceArrayInterface extends RSequenceInterface, RRunableInterface<Array<any>> {
     /**
+    * Get a single field from an object or a single element from a sequence.
+    *
+    * sequence(attr) → sequence
+    singleSelection(attr) → value
+    object(attr) → value
+    array(index) → value
+    * **Example:** What was Iron Man's first appearance in a comic?
+    * 
+    *     r.table('marvel').get('IronMan')('firstAppearance').run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/bracket
+    */
+    // HACK: first one is not documented, but works on an array of objects
+    (attr:string|RStringInterface):RArrayInterface; // <{ attr:T }>
+    (index:number|RNumberInterface):RValueInterface<any>;
+    
+    /**
     * Concatenate one or more elements into a single sequence using a mapping function.
     *
     * stream.concatMap(function) → streamarray.concatMap(function) → array
@@ -1403,8 +1420,6 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/limit
     */
     limit(n:number|RNumberInterface):RArrayInterface;
-    
-    // HACK: MAP
 
     /**
     * Merge two or more objects together to construct a new object with properties from all. When there is a conflict between field names, preference is given to fields in the rightmost object in the argument list.
@@ -1925,6 +1940,9 @@ declare module rethinkdb {
     */
     count(predicate_function:ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>):RNumberInterface;
     count(value?:any):RNumberInterface;
+    
+    count<T extends RGroupedStreamInterface>(predicate_function:ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>):this;
+    count<T extends RGroupedStreamInterface>(value?:any):this;
 
     /**
     * Provide a default value in case of non-existence errors. The `default` command evaluates its first argument (the value it's chained to). If that argument returns `null` or a non-existence error is thrown in evaluation, then `default` returns its second argument. The second argument is usually a default value, but it can be a function that returns a value.
@@ -2357,7 +2375,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/default
     */
-    default(default_value):RAnyInterface;
+    default(default_value:this|RemoteT):RAnyInterface;
     default(predicate_function:ExpressionFunction<RValueInterface<RemoteT>, Object|RAnyInterface>):RAnyInterface;
 
     /**
@@ -2370,8 +2388,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/eq
     */
-    eq(value, ...values):RBoolInterface;
-    eq(value):RBoolInterface;
+    eq(value:this|RemoteT|string|number, ...values:Array<this|RemoteT|string|number>):RBoolInterface;
+    eq(value:this|RemoteT|string|number):RBoolInterface;
 
     /**
     * Compare values, testing if the left-hand value is greater than or equal to the right-hand.
@@ -2383,8 +2401,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/ge
     */
-    ge(value, ...values):RBoolInterface;
-    ge(value):RBoolInterface;
+    ge(value:this|RemoteT|string|number, ...values:Array<this|RemoteT|string|number>):RBoolInterface;
+    ge(value:this|RemoteT|string|number):RBoolInterface;
 
     /**
     * Compare values, testing if the left-hand value is greater than the right-hand.
@@ -2396,8 +2414,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/gt
     */
-    gt(value, ...values):RBoolInterface;
-    gt(value):RBoolInterface;
+    gt(value:this|RemoteT|string|number, ...values:Array<this|RemoteT|string|number>):RBoolInterface;
+    gt(value:this|RemoteT|string|number):RBoolInterface;
 
     /**
     * Compare values, testing if the left-hand value is less than or equal to the right-hand.
@@ -2409,8 +2427,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/le
     */
-    le(value, ...values):RBoolInterface;
-    le(value):RBoolInterface;
+    le(value:this|RemoteT|string|number, ...values:Array<this|RemoteT|string|number>):RBoolInterface;
+    le(value:this|RemoteT|string|number):RBoolInterface;
 
     /**
     * Compare values, testing if the left-hand value is less than the right-hand.
@@ -2422,8 +2440,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/lt
     */
-    lt(value, ...values):RBoolInterface;
-    lt(value):RBoolInterface;
+    lt(value:this|RemoteT|string|number, ...values:Array<this|RemoteT|string|number>):RBoolInterface;
+    lt(value:this|RemoteT|string|number):RBoolInterface;
 
     /**
     * Test if two or more values are not equal.
@@ -2435,8 +2453,8 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/ne
     */
-    ne(value, ...values):RBoolInterface;
-    ne(value):RBoolInterface;
+    ne(value:this|RemoteT|string|number, ...values:Array<this|RemoteT|string|number>):RBoolInterface;
+    ne(value:this|RemoteT|string|number):RBoolInterface;
   }
   export interface RSingleSelectionInterface<RemoteT> extends RObjectInterface<RemoteT>, RValueInterface<RemoteT>, ROperationsInterface, RObservableInterface<RemoteT> { //RObjectInterface<RemoteT>,  //RObservableInterface<RemoteT>, //RSelectionInterface<RemoteT>
     //// HACK: UNABLE TO EXTEND, SO DUPLICATED FROM SELECTION INTERFACE:
@@ -3065,7 +3083,7 @@ declare module rethinkdb {
     */
     fill():RPolygonInterface;
   }
-  export interface RGroupedStreamInterface extends RStreamInterface<GroupResult> { //RValueInterface<GroupResult>, RAnyInterface
+  export interface RGroupedStreamInterface extends RStreamInterface<GroupResult> { //, RValueInterface<RCursorInterface<GroupResult>>
 
     /**
     * Takes a grouped stream or grouped data and turns it into an array of objects representing the groups. Any commands chained after `ungroup` will operate on this array, rather than operating on each group individually. This is useful if you want to e.g. order the groups by the value of their reduction.
@@ -3098,9 +3116,9 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/changes
     */
-    changes(options?:{squash:boolean|RBoolInterface|number, changefeedQueueSize:number|RNumberInterface, includeInitial:boolean|RBoolInterface, includeStates:boolean|RBoolInterface}):RStreamInterface<ChangesResult<RemoteT>>;
+    changes(options?:{squash?:boolean|RBoolInterface|number, changefeedQueueSize?:number|RNumberInterface, includeInitial?:boolean|RBoolInterface, includeStates?:boolean|RBoolInterface}):RStreamInterface<ChangesResult<RemoteT>>;
   }
-  export interface ROperationsInterface {
+  export interface ROperationsInterface extends RAnyInterface {
     /**
     * Delete one or more documents from a table.
     *
@@ -3146,7 +3164,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/replace
     */
-    replace(object_or_a_function:Object|ExpressionFunction<RObjectInterface<any>, any>, options?:WriteOptions):RObjectInterface<WriteResult>;
+    replace(object_or_a_function:Object|ExpressionFunction<this, Object>, options?:WriteOptions):RObjectInterface<WriteResult>;
 
     /**
     * Update JSON documents in a table. Accepts a JSON document, a ReQL expression, or a combination of the two. You can pass options like `returnChanges` that will return the old and new values of the row you have modified.
@@ -3158,7 +3176,7 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/update
     */
-    update(object_or_a_function:Object|ExpressionFunction<RObjectInterface<any>, any>, options?:WriteOptions):RObjectInterface<WriteResult>;
+    update(object_or_a_function:Object|ExpressionFunction<this, Object>, options?:WriteOptions):RObjectInterface<WriteResult>;
   }
   
   interface ExpressionFunction<ItemT extends RAnyInterface, U> {
@@ -3198,7 +3216,7 @@ declare module rethinkdb {
     errors: number;
     deleted: number;
     skipped: number;
-    first_error?: Error;
+    first_error?: string;
     generated_keys?: string[]; // only for insert
   }
   
@@ -3262,7 +3280,7 @@ declare module rethinkdb {
   
   export interface RConnectionOptionsInterface {
     port?:number;
-    host?:string;
+    host?:string; 
     readMode?, timeFormat?, profile?, durability?, groupFormat?, noreply?, db?, arrayLimit?, binaryFormat?, minBatchRows?, maxBatchRows?, maxBatchBytes?, maxBatchSeconds?, firstBatchScaledownFactor?
   }
   export interface RRunableInterface<T> {
