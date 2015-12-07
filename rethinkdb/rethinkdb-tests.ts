@@ -750,6 +750,8 @@ r.table('marvel').map(
     )
 ).run(conn, callback);
 
+r.table('tasks').getAll(['a', 'b'], {index: "queue-status"}).update({});
+
 /// DefinitelyTyped originals (with the corrected mistake of "between" after "filter"):
 
 r.connect({host: "localhost", port: 28015}, function(err, conn) {

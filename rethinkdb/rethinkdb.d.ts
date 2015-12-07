@@ -1,13 +1,13 @@
 // Type definitions for RethinkDB v2.2.0
 // Project: http://rethinkdb.com/
 // Definitions by: Bazyli Brzóska <https://invent.life/>
-// Previous definitions by: Sean Hess <https://seanhess.github.io/>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
-// TODO: Make RArrayInterface generic
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // Reference: http://www.rethinkdb.com/api/#js
 
+// Previous definitions by: Sean Hess <https://seanhess.github.io/>
+// TODO: Make RArrayInterface generic
+
 /// <reference path="../node/node.d.ts" />
-/// <reference path="../bluebird/bluebird.d.ts" />
 
 declare module rethinkdb {
   // TODO: define union type shortcuts, like:
@@ -2116,10 +2116,11 @@ declare module rethinkdb {
     *
     * http://rethinkdb.com/api/javascript/get_all
     */
-    getAll(key:string|RStringInterface, ...keys_and_then_options:Array<string|{ index? }>):RSelectionInterface<any>;
-    getAll(key:string|RStringInterface, options?:{ index? }):RSelectionInterface<any>;
-    getAll(key:string|RStringInterface, ...keys:Array<string>):RSelectionInterface<any>;
-    getAll(args:RSpecialInterface); // TODO: add this everywhere!
+    getAll(key:string|RStringInterface, ...keys_and_then_options:Array<string|{ index? }>):RSelectionInterface<RemoteT>;
+    getAll(key:string|RStringInterface, options?:{ index }):RSelectionInterface<RemoteT>;
+    getAll(key:string|RStringInterface, ...keys:Array<string>):RSelectionInterface<RemoteT>;
+    getAll(range:Array<string|RStringInterface>, options?:{ index }):RSelectionInterface<RemoteT>;
+    getAll(args:RSpecialInterface):RSelectionInterface<RemoteT>; // TODO: add this everywhere!
 
     /**
     * Get all documents where the given geometry object intersects the geometry object of the requested geospatial index.
@@ -2511,6 +2512,28 @@ declare module rethinkdb {
     * http://rethinkdb.com/api/javascript/get_field
     */
     getField(attr:string|RStringInterface):RValueInterface<any>;
+  }
+  interface RCoercable {
+    /**
+    * Convert a value of one type into another.
+    *
+    * sequence.coerceTo('array') → array
+    sequence.coerceTo('object') → object
+    value.coerceTo('string') → string
+    array.coerceTo('object') → object
+    object.coerceTo('array') → array
+    binary.coerceTo('string') → string
+    string.coerceTo('number') → number
+    string.coerceTo('binary') → binary
+    * **Example:** Coerce a stream to an array.
+    * 
+    *     r.table('posts').map(function (post) {
+    *         post.merge({ comments: r.table('comments').getAll(post('id'), {index: 'postId'}).coerceTo('array')});
+    *     }).run(conn, callback)
+    *
+    * http://rethinkdb.com/api/javascript/coerce_to
+    */
+    coerceTo:RGetFieldInterface;
   }
   export interface RObjectInterface<RemoteT> extends RRunableInterface<RemoteT>, RGetFieldInterface, RToJSONInterface, RCoercable, RAnyInterface {
     /**
@@ -3138,29 +3161,6 @@ declare module rethinkdb {
     update(object_or_a_function:Object|ExpressionFunction<RObjectInterface<any>, any>, options?:WriteOptions):RObjectInterface<WriteResult>;
   }
   
-  interface RCoercable {
-    /**
-    * Convert a value of one type into another.
-    *
-    * sequence.coerceTo('array') → array
-    sequence.coerceTo('object') → object
-    value.coerceTo('string') → string
-    array.coerceTo('object') → object
-    object.coerceTo('array') → array
-    binary.coerceTo('string') → string
-    string.coerceTo('number') → number
-    string.coerceTo('binary') → binary
-    * **Example:** Coerce a stream to an array.
-    * 
-    *     r.table('posts').map(function (post) {
-    *         post.merge({ comments: r.table('comments').getAll(post('id'), {index: 'postId'}).coerceTo('array')});
-    *     }).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/coerce_to
-    */
-    coerceTo<T extends RAnyInterface>(type:string|RStringInterface):T;
-  }
-  
   interface ExpressionFunction<ItemT extends RAnyInterface, U> {
     // (doc:RValueInterface<any>):U;
     // (doc:RObjectInterface<any>):U;
@@ -3262,7 +3262,7 @@ declare module rethinkdb {
   
   export interface RConnectionOptionsInterface {
     port?:number;
-    host?:string; 
+    host?:string;
     readMode?, timeFormat?, profile?, durability?, groupFormat?, noreply?, db?, arrayLimit?, binaryFormat?, minBatchRows?, maxBatchRows?, maxBatchBytes?, maxBatchSeconds?, firstBatchScaledownFactor?
   }
   export interface RRunableInterface<T> {
