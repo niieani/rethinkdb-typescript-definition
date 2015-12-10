@@ -3,8 +3,7 @@
     "target": "es6",
     "module": "commonjs",
     "listFiles": true,
-    "declaration": true,
-    "experimentalAsyncFunctions": true
+    "declaration": true
   },
   "exclude": [
     "node_modules"
