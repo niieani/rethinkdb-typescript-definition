@@ -1,6 +1,6 @@
 // Type definitions for rethinkdbdash v2.2.5
 // Project: https://github.com/neumino/rethinkdbdash
-// Definitions by: Bazyli Brzóska <https://invent.life/>
+// Definitions by: Bazyli Brz?ska <https://invent.life/>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // Reference: http://www.rethinkdb.com/api/#js
 
@@ -9,24 +9,24 @@
 
 declare module rethinkdbdash {
   export interface PoolMaster extends NodeJS.EventEmitter {
-      constructor(r: any, options: any);
-      emitStatus(): void;
-      drain(): Promise<void>;
-      getAvailableLength(): any;
-      getLength(): any;
-      resetBufferParameters(): void;
-      getNumAvailableConnections(): number;
-      getNumConnections(): number;
-      initPool(pool: any): void;
-      fetchServers(useSeeds?: any): void;
-      deletePool(key: any): void;
-      createPool(server: any): void;
-      createPoolSettings(globalOptions: any, serverOptions: any, log: any): any;
-      handleAllServersResponse(servers: any): void;
-      getConnection(): any;
-      getPools(): any[];
+    constructor(r: any, options: any);
+    emitStatus(): void;
+    drain(): Promise<void>;
+    getAvailableLength(): any;
+    getLength(): any;
+    resetBufferParameters(): void;
+    getNumAvailableConnections(): number;
+    getNumConnections(): number;
+    initPool(pool: any): void;
+    fetchServers(useSeeds?: any): void;
+    deletePool(key: any): void;
+    createPool(server: any): void;
+    createPoolSettings(globalOptions: any, serverOptions: any, log: any): any;
+    handleAllServersResponse(servers: any): void;
+    getConnection(): any;
+    getPools(): any[];
   }
-  
+
   export interface Pool extends NodeJS.EventEmitter {
     id: any;
     options: any;
@@ -42,7 +42,7 @@ declare module rethinkdbdash {
     putConnection(connection: Connection): void;
     getConnection(): Promise<Connection>;
   }
-  
+
   export interface Connection extends NodeJS.EventEmitter {
     rejectMap: any;
     timeout: any;
@@ -74,40 +74,45 @@ declare module rethinkdbdash {
     setArrayLimit(arrayLimit: number): void;
     setNestingLevel(nestingLevel: number): void;
   }
-  
+
   export interface RDashConnectInterface {
-    (options?:{ 
-      port?:number, 
-      host?:string, 
-      db?:string, 
-      discovery?:boolean, 
-      max?:number, 
-      buffer?:number, 
-      timeout?:number, 
-      timeoutError?:number, 
-      timeoutGb?:number, 
-      maxExponent?:number, 
-      silent?:boolean, 
-      servers?:Array<{host:string, port:number}>, 
-      optionalRun?:boolean, 
-      ssl?:boolean, 
-      pool?:boolean, 
-      cursor?:boolean 
+    (options?:{
+      port?:number,
+      host?:string,
+      db?:string,
+      discovery?:boolean,
+      max?:number,
+      buffer?:number,
+      timeout?:number,
+      timeoutError?:number,
+      timeoutGb?:number,
+      maxExponent?:number,
+      silent?:boolean,
+      servers?:Array<{host:string, port:number}>,
+      optionalRun?:boolean,
+      ssl?:boolean,
+      pool?:boolean,
+      cursor?:boolean
     }):RDashInterface;
   }
 }
 
 declare module rethinkdb {
-  // override RRunableInterface to extend it with PromiseLike<T> 
+  // override RRunableInterface to extend it with PromiseLike<T>
   export interface RRunableInterface<T> extends PromiseLike<T> {
-    run(connection:RConnectionInterface, cb:CallbackFunction<T>):void;
-    run(connection:RConnectionInterface, options:RConnectionOptionsInterface, cb:CallbackFunction<T>):void;
-    run(connection:RConnectionInterface, options?:RConnectionOptionsInterface):Promise<T>;
+    //in rethinkdbdash you don't need to add the connection to the "run"
+    run(cb:CallbackFunction<T>):void;
+    run(options:RConnectionOptionsInterface, cb:CallbackFunction<T>):void;
+    run(options?:RConnectionOptionsInterface):Promise<T>;
+  }
+  //workaround, you could get an array directly after "run" in rethinkdbdash
+  export interface RCursorInterface<RemoteT> extends NodeJS.EventEmitter, Array<RemoteT> {
+
   }
 }
 
 declare module "rethinkdbdash" {
   var r:rethinkdbdash.RDashConnectInterface;
-  
+
   export = r;
 }

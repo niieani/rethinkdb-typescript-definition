@@ -1,6 +1,6 @@
 // Type definitions for RethinkDB v2.2.0
 // Project: http://rethinkdb.com/
-// Definitions by: Bazyli Brzóska <https://invent.life/>
+// Definitions by: Bazyli Brz?ska <https://invent.life/>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // Reference: http://www.rethinkdb.com/api/#js
 
@@ -12,6 +12,8 @@
 declare module rethinkdb {
   // TODO: define union type shortcuts, like:
   // type RNumber = number|RNumberInterface;
+
+  export type RKeyType = number|string|RValueInterface<any>|Array<number|string|RValueInterface<any>>;
   /**
    * http://rethinkdb.com/api/javascript/table_create/
    * When creating a table you can specify the following options:
@@ -36,7 +38,7 @@ declare module rethinkdb {
     /**
      * Sum two or more numbers, or concatenate two or more strings or arrays.
      *
-     * value.add(value[, value, ...]) → valuetime.add(number[, number, ...]) → time
+     * value.add(value[, value, ...]) ? valuetime.add(number[, number, ...]) ? time
      * **Example:** It's as easy as 2 + 2 = 4.
      *
      *     r.expr(2).add(2).run(conn, callback)
@@ -49,7 +51,7 @@ declare module rethinkdb {
     /**
      * Rounds the given value up, returning the smallest integer value greater than or equal to the given value (the value's ceiling).
      *
-     * r.ceil(number) → numbernumber.ceil() → number
+     * r.ceil(number) ? numbernumber.ceil() ? number
      * **Example:** Return the ceiling of 12.345.
      *
      *     > r.ceil(12.345).run(conn, callback);
@@ -63,7 +65,7 @@ declare module rethinkdb {
     /**
      * Divide two numbers.
      *
-     * number.div(number[, number ...]) → number
+     * number.div(number[, number ...]) ? number
      * **Example:** It's as easy as 2 / 2 = 1.
      *
      *     r.expr(2).div(2).run(conn, callback)
@@ -76,7 +78,7 @@ declare module rethinkdb {
     /**
      * Rounds the given value down, returning the largest integer value less than or equal to the given value (the value's floor).
      *
-     * r.floor(number) → numbernumber.floor() → number
+     * r.floor(number) ? numbernumber.floor() ? number
      * **Example:** Return the floor of 12.345.
      *
      *     > r.floor(12.345).run(conn, callback);
@@ -90,7 +92,7 @@ declare module rethinkdb {
     /**
      * Find the remainder when dividing two numbers.
      *
-     * number.mod(number) → number
+     * number.mod(number) ? number
      * **Example:** It's as easy as 2 % 2 = 0.
      *
      *     r.expr(2).mod(2).run(conn, callback)
@@ -102,7 +104,7 @@ declare module rethinkdb {
     /**
      * Multiply two numbers, or make a periodic array.
      *
-     * number.mul(number[, number, ...]) → numberarray.mul(number[, number, ...]) → array
+     * number.mul(number[, number, ...]) ? numberarray.mul(number[, number, ...]) ? array
      * **Example:** It's as easy as 2 * 2 = 4.
      *
      *     r.expr(2).mul(2).run(conn, callback)
@@ -115,7 +117,7 @@ declare module rethinkdb {
     /**
      * Rounds the given value to the nearest whole integer.
      *
-     * r.round(number) → numbernumber.round() → number
+     * r.round(number) ? numbernumber.round() ? number
      * **Example:** Round 12.345 to the nearest integer.
      *
      *     > r.round(12.345).run(conn, callback);
@@ -129,7 +131,7 @@ declare module rethinkdb {
     /**
      * Subtract two numbers.
      *
-     * number.sub(number[, number, ...]) → numbertime.sub(number[, number, ...]) → timetime.sub(time) → number
+     * number.sub(number[, number, ...]) ? numbertime.sub(number[, number, ...]) ? timetime.sub(time) ? number
      * **Example:** It's as easy as 2 - 2 = 0.
      *
      *     r.expr(2).sub(2).run(conn, callback)
@@ -143,7 +145,7 @@ declare module rethinkdb {
     /**
      * Sum two or more numbers, or concatenate two or more strings or arrays.
      *
-     * value.add(value[, value, ...]) → valuetime.add(number[, number, ...]) → time
+     * value.add(value[, value, ...]) ? valuetime.add(number[, number, ...]) ? time
      * **Example:** It's as easy as 2 + 2 = 4.
      *
      *     r.expr(2).add(2).run(conn, callback)
@@ -156,7 +158,7 @@ declare module rethinkdb {
     /**
      * Lowercases a string.
      *
-     * string.downcase() → string
+     * string.downcase() ? string
      * **Example:**
      *
      *     r.expr("Sentence about LaTeX.").downcase().run(conn, callback)
@@ -175,7 +177,7 @@ declare module rethinkdb {
      *
      * If no match is found, returns `null`.
      *
-     * string.match(regexp) → null/object
+     * string.match(regexp) ? null/object
      * **Example:** Get all users whose name starts with "A".
      *
      *     r.table('users').filter(function(doc){
@@ -191,7 +193,7 @@ declare module rethinkdb {
      *
      * Mimics the behavior of Python's `string.split` in edge cases, except for splitting on the empty string, which instead produces an array of single-character strings.
      *
-     * string.split([separator, [max_splits]]) → array
+     * string.split([separator, [max_splits]]) ? array
      * **Example:** Split on whitespace.
      *
      *     r.expr("foo  bar bax").split().run(conn, callback)
@@ -203,7 +205,7 @@ declare module rethinkdb {
     /**
      * Uppercases a string.
      *
-     * string.upcase() → string
+     * string.upcase() ? string
      * **Example:**
      *
      *     r.expr("Sentence about LaTeX.").upcase().run(conn, callback)
@@ -217,7 +219,7 @@ declare module rethinkdb {
     /**
      * Sum two or more numbers, or concatenate two or more strings or arrays.
      *
-     * value.add(value[, value, ...]) → valuetime.add(number[, number, ...]) → time
+     * value.add(value[, value, ...]) ? valuetime.add(number[, number, ...]) ? time
      * **Example:** It's as easy as 2 + 2 = 4.
      *
      *     r.expr(2).add(2).run(conn, callback)
@@ -232,7 +234,7 @@ declare module rethinkdb {
     /**
      * Append a value to an array.
      *
-     * array.append(value) → array
+     * array.append(value) ? array
      * **Example:** Retrieve Iron Man's equipment list with the addition of some new boots.
      *
      *     r.table('marvel').get('IronMan')('equipment').append('newBoots').run(conn, callback)
@@ -244,7 +246,7 @@ declare module rethinkdb {
     /**
      * Change a value in an array at a given index. Returns the modified array.
      *
-     * array.changeAt(index, value) → array
+     * array.changeAt(index, value) ? array
      * **Example:** Bruce Banner hulks out.
      *
      *     r.expr(["Iron Man", "Bruce", "Spider-Man"]).changeAt(1, "Hulk").run(conn, callback)
@@ -256,7 +258,7 @@ declare module rethinkdb {
     /**
      * Remove one or more elements from an array at a given index. Returns the modified array.
      *
-     * array.deleteAt(index [,endIndex]) → array
+     * array.deleteAt(index [,endIndex]) ? array
      * **Example:** Delete the second element of an array.
      *
      *     > r(['a','b','c','d','e','f']).deleteAt(1).run(conn, callback)
@@ -271,7 +273,7 @@ declare module rethinkdb {
     /**
      * Remove the elements of one array from another array.
      *
-     * array.difference(array) → array
+     * array.difference(array) ? array
      * **Example:** Retrieve Iron Man's equipment list without boots.
      *
      *     r.table('marvel').get('IronMan')('equipment').difference(['Boots']).run(conn, callback)
@@ -283,7 +285,7 @@ declare module rethinkdb {
     /**
      * Insert a value in to an array at a given index. Returns the modified array.
      *
-     * array.insertAt(index, value) → array
+     * array.insertAt(index, value) ? array
      * **Example:** Hulk decides to join the avengers.
      *
      *     r.expr(["Iron Man", "Spider-Man"]).insertAt(1, "Hulk").run(conn, callback)
@@ -295,10 +297,10 @@ declare module rethinkdb {
     /**
      * Transform each element of one or more sequences by applying a mapping function to them. If `map` is run with two or more sequences, it will iterate for as many items as there are in the shortest sequence.
      *
-     * sequence1.map([sequence2, ...], function) → stream
-     array1.map([array2, ...], function) → array
-     r.map(sequence1[, sequence2, ...], function) → stream
-     r.map(array1[, array2, ...], function) → array
+     * sequence1.map([sequence2, ...], function) ? stream
+     array1.map([array2, ...], function) ? array
+     r.map(sequence1[, sequence2, ...], function) ? stream
+     r.map(array1[, array2, ...], function) ? array
      * **Example:** Return the first five squares.
      *
      *     r.expr([1, 2, 3, 4, 5]).map(function (val) {
@@ -309,16 +311,16 @@ declare module rethinkdb {
      *
      * http://rethinkdb.com/api/javascript/map
      */
-    map(...arrays_and_then_a_function:Array<RArrayInterface|Array<any>|ExpressionFunction<RValueInterface<any>, RAnyInterface|Object>>):RArrayInterface;
-    map(...sequences_and_then_a_function:Array<RSequenceInterface|Array<any>|ExpressionFunction<RValueInterface<any>, RAnyInterface|Object>>):RArrayInterface;
-    map(a_function:ExpressionFunction<RValueInterface<any>, RAnyInterface|Object>):RArrayInterface;
-    map(array1:RArrayInterface|Array<any>, ...arrays_and_then_a_function:Array<RArrayInterface|Array<any>|ExpressionFunction<RValueInterface<any>, RAnyInterface|Object>>):RArrayInterface;
-    map(array1:RArrayInterface|Array<any>, a_function:ExpressionFunction<RValueInterface<any>, RAnyInterface|Object>):RArrayInterface;
+    map(...arrays_and_then_a_function:Array<RArrayInterface|Array<any>|ExpressionFunction<RAnyInterface, RAnyInterface|Object>>):RArrayInterface;
+    map(...sequences_and_then_a_function:Array<RSequenceInterface|Array<any>|ExpressionFunction<RAnyInterface, RAnyInterface|Object>>):RArrayInterface;
+    map(a_function:ExpressionFunction<RAnyInterface, RAnyInterface|Object>):RArrayInterface;
+    map(array1:RArrayInterface|Array<any>, ...arrays_and_then_a_function:Array<RArrayInterface|Array<any>|ExpressionFunction<RAnyInterface, RAnyInterface|Object>>):RArrayInterface;
+    map(array1:RArrayInterface|Array<any>, a_function:ExpressionFunction<RAnyInterface, RAnyInterface|Object>):RArrayInterface;
 
     /**
      * Multiply two numbers, or make a periodic array.
      *
-     * number.mul(number[, number, ...]) → numberarray.mul(number[, number, ...]) → array
+     * number.mul(number[, number, ...]) ? numberarray.mul(number[, number, ...]) ? array
      * **Example:** It's as easy as 2 * 2 = 4.
      *
      *     r.expr(2).mul(2).run(conn, callback)
@@ -331,7 +333,7 @@ declare module rethinkdb {
     /**
      * Prepend a value to an array.
      *
-     * array.prepend(value) → array
+     * array.prepend(value) ? array
      * **Example:** Retrieve Iron Man's equipment list with the addition of some new boots.
      *
      *     r.table('marvel').get('IronMan')('equipment').prepend('newBoots').run(conn, callback)
@@ -343,7 +345,7 @@ declare module rethinkdb {
     /**
      * Remove the elements of one array from another and return them as a set (an array with distinct values).
      *
-     * array.setDifference(array) → array
+     * array.setDifference(array) ? array
      * **Example:** Check which pieces of equipment Iron Man has, excluding a fixed list.
      *
      *     r.table('marvel').get('IronMan')('equipment').setDifference(['newBoots', 'arc_reactor']).run(conn, callback)
@@ -355,7 +357,7 @@ declare module rethinkdb {
     /**
      * Add a value to an array and return it as a set (an array with distinct values).
      *
-     * array.setInsert(value) → array
+     * array.setInsert(value) ? array
      * **Example:** Retrieve Iron Man's equipment list with the addition of some new boots.
      *
      *     r.table('marvel').get('IronMan')('equipment').setInsert('newBoots').run(conn, callback)
@@ -367,7 +369,7 @@ declare module rethinkdb {
     /**
      * Intersect two arrays returning values that occur in both of them as a set (an array with distinct values).
      *
-     * array.setIntersection(array) → array
+     * array.setIntersection(array) ? array
      * **Example:** Check which pieces of equipment Iron Man has from a fixed list.
      *
      *     r.table('marvel').get('IronMan')('equipment').setIntersection(['newBoots', 'arc_reactor']).run(conn, callback)
@@ -379,7 +381,7 @@ declare module rethinkdb {
     /**
      * Add a several values to an array and return it as a set (an array with distinct values).
      *
-     * array.setUnion(array) → array
+     * array.setUnion(array) ? array
      * **Example:** Retrieve Iron Man's equipment list with the addition of some new boots and an arc reactor.
      *
      *     r.table('marvel').get('IronMan')('equipment').setUnion(['newBoots', 'arc_reactor']).run(conn, callback)
@@ -391,7 +393,7 @@ declare module rethinkdb {
     /**
      * Insert several values in to an array at a given index. Returns the modified array.
      *
-     * array.spliceAt(index, array) → array
+     * array.spliceAt(index, array) ? array
      * **Example:** Hulk and Thor decide to join the avengers.
      *
      *     r.expr(["Iron Man", "Spider-Man"]).spliceAt(1, ["Hulk", "Thor"]).run(conn, callback)
@@ -403,7 +405,7 @@ declare module rethinkdb {
     /**
      * Used to 'zip' up the result of a join by merging the 'right' fields into 'left' fields of each member of the sequence.
      *
-     * stream.zip() → streamarray.zip() → array
+     * stream.zip() ? streamarray.zip() ? array
      * **Example:** 'zips up' the sequence by merging the left and right fields produced by a join.
      *
      *     r.table('marvel').eqJoin('main_dc_collaborator', r.table('dc'))
@@ -417,7 +419,7 @@ declare module rethinkdb {
     /**
      * Sum two or more numbers, or concatenate two or more strings or arrays.
      *
-     * value.add(value[, value, ...]) → valuetime.add(number[, number, ...]) → time
+     * value.add(value[, value, ...]) ? valuetime.add(number[, number, ...]) ? time
      * **Example:** It's as easy as 2 + 2 = 4.
      *
      *     r.expr(2).add(2).run(conn, callback)
@@ -429,7 +431,7 @@ declare module rethinkdb {
     /**
      * Return a new time object only based on the day, month and year (ie. the same day at 00:00).
      *
-     * time.date() → time
+     * time.date() ? time
      * **Example:** Retrieve all the users whose birthday is today
      *
      *     r.table("users").filter(function(user) {
@@ -443,7 +445,7 @@ declare module rethinkdb {
     /**
      * Return the day of a time object as a number between 1 and 31.
      *
-     * time.day() → number
+     * time.day() ? number
      * **Example:** Return the users born on the 24th of any month.
      *
      *     r.table("users").filter(
@@ -457,7 +459,7 @@ declare module rethinkdb {
     /**
      * Return the day of week of a time object as a number between 1 and 7 (following ISO 8601 standard). For your convenience, the terms r.monday, r.tuesday etc. are defined and map to the appropriate integer.
      *
-     * time.dayOfWeek() → number
+     * time.dayOfWeek() ? number
      * **Example:** Return today's day of week.
      *
      *     r.now().dayOfWeek().run(conn, callback)
@@ -469,7 +471,7 @@ declare module rethinkdb {
     /**
      * Return the day of the year of a time object as a number between 1 and 366 (following ISO 8601 standard).
      *
-     * time.dayOfYear() → number
+     * time.dayOfYear() ? number
      * **Example:** Retrieve all the users who were born the first day of a year.
      *
      *     r.table("users").filter(
@@ -483,7 +485,7 @@ declare module rethinkdb {
     /**
      * Return if a time is between two other times (by default, inclusive for the start, exclusive for the end).
      *
-     * time.during(startTime, endTime[, options]) → bool
+     * time.during(startTime, endTime[, options]) ? bool
      * **Example:** Retrieve all the posts that were posted between December 1st, 2013 (inclusive) and December 10th, 2013 (exclusive).
      *
      *     r.table("posts").filter(
@@ -497,7 +499,7 @@ declare module rethinkdb {
     /**
      * Return the hour in a time object as a number between 0 and 23.
      *
-     * time.hours() → number
+     * time.hours() ? number
      * **Example:** Return all the posts submitted after midnight and before 4am.
      *
      *     r.table("posts").filter(function(post) {
@@ -511,7 +513,7 @@ declare module rethinkdb {
     /**
      * Return a new time object with a different timezone. While the time stays the same, the results returned by methods such as hours() will change since they take the timezone into account. The timezone argument has to be of the ISO 8601 format.
      *
-     * time.inTimezone(timezone) → time
+     * time.inTimezone(timezone) ? time
      * **Example:** Hour of the day in San Francisco (UTC/GMT -8, without daylight saving time).
      *
      *     r.now().inTimezone('-08:00').hours().run(conn, callback)
@@ -523,7 +525,7 @@ declare module rethinkdb {
     /**
      * Return the minute in a time object as a number between 0 and 59.
      *
-     * time.minutes() → number
+     * time.minutes() ? number
      * **Example:** Return all the posts submitted during the first 10 minutes of every hour.
      *
      *     r.table("posts").filter(function(post) {
@@ -537,7 +539,7 @@ declare module rethinkdb {
     /**
      * Return the month of a time object as a number between 1 and 12\. For your convenience, the terms r.january, r.february etc. are defined and map to the appropriate integer.
      *
-     * time.month() → number
+     * time.month() ? number
      * **Example:** Retrieve all the users who were born in November.
      *
      *     r.table("users").filter(
@@ -551,7 +553,7 @@ declare module rethinkdb {
     /**
      * Return the seconds in a time object as a number between 0 and 59.999 (double precision).
      *
-     * time.seconds() → number
+     * time.seconds() ? number
      * **Example:** Return the post submitted during the first 30 seconds of every minute.
      *
      *     r.table("posts").filter(function(post) {
@@ -565,7 +567,7 @@ declare module rethinkdb {
     /**
      * Subtract two numbers.
      *
-     * number.sub(number[, number, ...]) → numbertime.sub(number[, number, ...]) → timetime.sub(time) → number
+     * number.sub(number[, number, ...]) ? numbertime.sub(number[, number, ...]) ? timetime.sub(time) ? number
      * **Example:** It's as easy as 2 - 2 = 0.
      *
      *     r.expr(2).sub(2).run(conn, callback)
@@ -577,7 +579,7 @@ declare module rethinkdb {
     /**
      * Return the number of seconds elapsed since the beginning of the day stored in the time object.
      *
-     * time.timeOfDay() → number
+     * time.timeOfDay() ? number
      * **Example:** Retrieve posts that were submitted before noon.
      *
      *     r.table("posts").filter(
@@ -591,7 +593,7 @@ declare module rethinkdb {
     /**
      * Return the timezone of the time object.
      *
-     * time.timezone() → string
+     * time.timezone() ? string
      * **Example:** Return all the users in the "-07:00" timezone.
      *
      *     r.table("users").filter( function(user) {
@@ -605,7 +607,7 @@ declare module rethinkdb {
     /**
      * Convert a time object to its epoch time.
      *
-     * time.toEpochTime() → number
+     * time.toEpochTime() ? number
      * **Example:** Return the current time in seconds since the Unix Epoch with millisecond-precision.
      *
      *     r.now().toEpochTime()
@@ -617,7 +619,7 @@ declare module rethinkdb {
     /**
      * Convert a time object to a string in ISO 8601 format.
      *
-     * time.toISO8601() → string
+     * time.toISO8601() ? string
      * **Example:** Return the current ISO 8601 time.
      *
      *     r.now().toISO8601().run(conn, callback)
@@ -631,7 +633,7 @@ declare module rethinkdb {
     /**
      * Return the year of a time object.
      *
-     * time.year() → number
+     * time.year() ? number
      * **Example:** Retrieve all the users born in 1986.
      *
      *     r.table("users").filter(function(user) {
@@ -646,7 +648,7 @@ declare module rethinkdb {
     /**
      * Compute the logical "and" of one or more values.
      *
-     * bool.and([bool, bool, ...]) → boolr.and([bool, bool, ...]) → bool
+     * bool.and([bool, bool, ...]) ? boolr.and([bool, bool, ...]) ? bool
      * **Example:** Return whether both `a` and `b` evaluate to true.
      *
      *     var a = true, b = false;
@@ -663,7 +665,7 @@ declare module rethinkdb {
      *
      * `not` can be called either via method chaining, immediately after an expression that evaluates as a boolean value, or by passing the expression as a parameter to `not`.
      *
-     * bool.not() → boolnot(bool) → bool
+     * bool.not() ? boolnot(bool) ? bool
      * **Example:** Not true is false.
      *
      *     r(true).not().run(conn, callback)
@@ -676,7 +678,7 @@ declare module rethinkdb {
     /**
      * Compute the logical "or" of one or more values.
      *
-     * bool.or([bool, bool, ...]) → boolr.or([bool, bool, ...]) → bool
+     * bool.or([bool, bool, ...]) ? boolr.or([bool, bool, ...]) ? bool
      * **Example:** Return whether either `a` or `b` evaluate to true.
      *
      *     var a = true, b = false;
@@ -690,13 +692,63 @@ declare module rethinkdb {
   }
   export interface RSpecialInterface extends RAnyInterface {
   }
-  export interface RInterface extends RDbInterface, RExpressionInterface, RAnyInterface {
+  export interface RInterface extends RExpressionInterface {
+    //if there is a default db you can access tables directly
+    /**
+     * Select all documents in a table. This command can be chained with other commands to do further processing on the data.
+     *
+     * db.table(name[, {readMode: 'single', identifierFormat: 'name'}]) ? table
+     * **Example:** Return all documents in the table 'marvel' of the default database.
+     *
+     *     r.table('marvel').run(conn, callback)
+     *
+     * http://rethinkdb.com/api/javascript/table
+     */
+    table<T>(name:string|RStringInterface, options?:{ readMode?, identifierFormat? }):RTableInterface<T>;
+
+    /**
+     * Create a table. A RethinkDB table is a collection of JSON documents.
+     *
+     * db.tableCreate(tableName[, options]) ? object
+     r.tableCreate(tableName[, options]) ? object
+     * **Example:** Create a table named 'dc_universe' with the default settings.
+     *
+     *     r.db('heroes').tableCreate('dc_universe').run(conn, callback)
+     *
+     * http://rethinkdb.com/api/javascript/table_create
+     */
+    tableCreate(tableName:string|RStringInterface, options?):RObjectInterface<any>;
+
+    /**
+     * Drop a table. The table and all its data will be deleted.
+     *
+     * db.tableDrop(tableName) ? object
+     * **Example:** Drop a table named 'dc_universe'.
+     *
+     *     r.db('test').tableDrop('dc_universe').run(conn, callback)
+     *
+     * http://rethinkdb.com/api/javascript/table_drop
+     */
+    tableDrop(tableName:string|RStringInterface):RObjectInterface<DropResult>;
+
+    /**
+     * List all table names in a database. The result is a list of strings.
+     *
+     * db.tableList() ? array
+     * **Example:** List all tables of the 'test' database.
+     *
+     *     r.db('test').tableList().run(conn, callback)
+     *
+     * http://rethinkdb.com/api/javascript/table_list
+     */
+    tableList():RArrayInterface;
+
     /**
      * `r.args` is a special term that's used to splice an array of arguments into another term. This is useful when you want to call a variadic term such as `getAll` with a set of arguments produced at runtime.
      *
      * This is analogous to using **apply** in JavaScript.
      *
-     * r.args(array) → special
+     * r.args(array) ? special
      * **Example:** Get Alice and Bob from the table `people`.
      *
      *     r.table('people').getAll('Alice', 'Bob').run(conn, callback)
@@ -710,7 +762,7 @@ declare module rethinkdb {
     /**
      * Encapsulate binary data within a query.
      *
-     * r.binary(data) → binary
+     * r.binary(data) ? binary
      * **Example:** Save an avatar image to a existing user record.
      *
      *     var fs = require('fs');
@@ -734,7 +786,7 @@ declare module rethinkdb {
      *
      * The `branch` command takes 2n+1 arguments: pairs of conditional expressions and commands to be executed if the conditionals return any value but `false` or `null` (i.e., "truthy" values), with a final "else" command to be evaluated if all of the conditionals are `false` or `null`.
      *
-     * r.branch(test, true_action[, test2, else_action, ...], false_action) → any
+     * r.branch(test, true_action[, test2, else_action, ...], false_action) ? any
      * **Example:** Test the value of x.
      *
      *     var x = 10;
@@ -775,7 +827,7 @@ declare module rethinkdb {
     /**
      * Rounds the given value up, returning the smallest integer value greater than or equal to the given value (the value's ceiling).
      *
-     * r.ceil(number) → numbernumber.ceil() → number
+     * r.ceil(number) ? numbernumber.ceil() ? number
      * **Example:** Return the ceiling of 12.345.
      *
      *     > r.ceil(12.345).run(conn, callback);
@@ -789,8 +841,8 @@ declare module rethinkdb {
     /**
      * Construct a circular line or polygon. A circle in RethinkDB is a polygon or line _approximating_ a circle of a given radius around a given center, consisting of a specified number of vertices (default 32).
      *
-     * r.circle([longitude, latitude], radius[, {numVertices: 32, geoSystem: 'WGS84', unit: 'm', fill: true}]) → geometry
-     * r.circle(point, radius[, {numVertices: 32, geoSystem: 'WGS84', unit: 'm', fill: true}]) → geometry
+     * r.circle([longitude, latitude], radius[, {numVertices: 32, geoSystem: 'WGS84', unit: 'm', fill: true}]) ? geometry
+     * r.circle(point, radius[, {numVertices: 32, geoSystem: 'WGS84', unit: 'm', fill: true}]) ? geometry
      * **Example:** Define a circle.
      *
      *     r.table('geo').insert({
@@ -810,7 +862,7 @@ declare module rethinkdb {
     /**
      * Create a new connection to the database server.
      *
-     * r.connect(options, callback)r.connect(host, callback)r.connect(options) → promiser.connect(host) → promise
+     * r.connect(options, callback)r.connect(host, callback)r.connect(options) ? promiser.connect(host) ? promise
      * **Example:** Open a connection using the default host and port, specifying the default database.
      *
      *     r.connect({
@@ -833,7 +885,7 @@ declare module rethinkdb {
     /**
      * Reference a database.
      *
-     * r.db(dbName) → db
+     * r.db(dbName) ? db
      * **Example:** Explicitly specify a database for a query.
      *
      *     r.db('heroes').table('marvel').run(conn, callback)
@@ -849,7 +901,7 @@ declare module rethinkdb {
      *
      * Note: that you can only use alphanumeric characters and underscores for the database name.
      *
-     * r.dbCreate(dbName) → object
+     * r.dbCreate(dbName) ? object
      * **Example:** Create a database named 'superheroes'.
      *
      *     r.dbCreate('superheroes').run(conn, callback)
@@ -863,7 +915,7 @@ declare module rethinkdb {
      *
      * If successful, the operation returns the object `{dropped: 1}`. If the specified database doesn't exist a `ReqlRuntimeError` is thrown.
      *
-     * r.dbDrop(dbName) → object
+     * r.dbDrop(dbName) ? object
      * **Example:** Drop a database named 'superheroes'.
      *
      *     r.dbDrop('superheroes').run(conn, callback)
@@ -875,7 +927,7 @@ declare module rethinkdb {
     /**
      * List all database names in the system. The result is a list of strings.
      *
-     * r.dbList() → array
+     * r.dbList() ? array
      * **Example:** List all databases.
      *
      *     r.dbList().run(conn, callback)
@@ -897,7 +949,7 @@ declare module rethinkdb {
     /**
      * Create a time object based on seconds since epoch. The first argument is a double and will be rounded to three decimal places (millisecond-precision).
      *
-     * r.epochTime(epochTime) → time
+     * r.epochTime(epochTime) ? time
      * **Example:** Update the birthdate of the user "John" to November 3rd, 1986.
      *
      *     r.table("user").get("John").update({birthdate: r.epochTime(531360000)})
@@ -910,7 +962,7 @@ declare module rethinkdb {
     /**
      * Throw a runtime error. If called with no arguments inside the second argument to `default`, re-throw the current error.
      *
-     * r.error(message) → error
+     * r.error(message) ? error
      * **Example:** Iron Man can't possibly have lost a battle:
      *
      *     r.table('marvel').get('IronMan').do(function(ironman) {
@@ -926,7 +978,7 @@ declare module rethinkdb {
     /**
      * Construct a ReQL JSON object from a native object.
      *
-     * r.expr(value) → value
+     * r.expr(value) ? value
      * **Example:** Objects wrapped with `expr` can then be manipulated by ReQL API functions.
      *
      *     r.expr({a:'b'}).merge({b:[1,2,3]}).run(conn, callback)
@@ -950,7 +1002,7 @@ declare module rethinkdb {
     /**
      * Rounds the given value down, returning the largest integer value less than or equal to the given value (the value's floor).
      *
-     * r.floor(number) → numbernumber.floor() → number
+     * r.floor(number) ? numbernumber.floor() ? number
      * **Example:** Return the floor of 12.345.
      *
      *     > r.floor(12.345).run(conn, callback);
@@ -964,7 +1016,7 @@ declare module rethinkdb {
     /**
      * Convert a [GeoJSON](http://geojson.org) object to a ReQL geometry object.
      *
-     * r.geojson(geojson) → geometry
+     * r.geojson(geojson) ? geometry
      * **Example:** Convert a GeoJSON object to a ReQL geometry object.
      *
      *     var geoJson = {
@@ -984,8 +1036,8 @@ declare module rethinkdb {
     /**
      * Compute the distance between a point and another geometry object. At least one of the geometry objects specified must be a point.
      *
-     * geometry.distance(geometry[, {geoSystem: 'WGS84', unit: 'm'}]) → number
-     * r.distance(geometry, geometry[, {geoSystem: 'WGS84', unit: 'm'}]) → number
+     * geometry.distance(geometry[, {geoSystem: 'WGS84', unit: 'm'}]) ? number
+     * r.distance(geometry, geometry[, {geoSystem: 'WGS84', unit: 'm'}]) ? number
      * **Example:** Compute the distance between two points on the Earth in kilometers.
      *
      *     var point1 = r.point(-122.423246,37.779388);
@@ -1001,7 +1053,7 @@ declare module rethinkdb {
     /**
      * Retrieve data from the specified URL over HTTP. The return type depends on the `resultFormat` option, which checks the `Content-Type` of the response by default.
      *
-     * r.http(url [, options]) → value
+     * r.http(url [, options]) ? value
      * **Example:** Perform a simple HTTP `GET` request, and store the result in a table.
      *
      *     r.table('posts').insert(r.http('http://httpbin.org/get')).run(conn, callback)
@@ -1018,7 +1070,7 @@ declare module rethinkdb {
     /**
      * Create a time object based on an ISO 8601 date-time string (e.g. '2013-01-01T01:01:01+00:00'). We support all valid ISO 8601 formats except for week dates. If you pass an ISO 8601 date-time without a time zone, you must specify the time zone with the `defaultTimezone` argument. Read more about the ISO 8601 format at [Wikipedia](http://en.wikipedia.org/wiki/ISO_8601).
      *
-     * r.ISO8601(iso8601Date[, {defaultTimezone:''}]) → time
+     * r.ISO8601(iso8601Date[, {defaultTimezone:''}]) ? time
      * **Example:** Update the time of John's birth.
      *
      *     r.table("user").get("John").update({birth: r.ISO8601('1986-11-03T08:30:00-07:00')}).run(conn, callback)
@@ -1030,7 +1082,7 @@ declare module rethinkdb {
     /**
      * Create a javascript expression.
      *
-     * r.js(jsString[, {timeout: <number>}]) → value</number>
+     * r.js(jsString[, {timeout: <number>}]) ? value</number>
      * **Example:** Concatenate two strings using JavaScript.
      *
      *     r.js("'str1' + 'str2'").run(conn, callback)
@@ -1043,7 +1095,7 @@ declare module rethinkdb {
     /**
      * Parse a JSON string on the server.
      *
-     * r.json(json_string) → value
+     * r.json(json_string) ? value
      * **Example:** Send an array to the server.
      *
      *     r.json("[1,2,3]").run(conn, callback)
@@ -1060,7 +1112,7 @@ declare module rethinkdb {
      * *   Two or more two-item arrays, specifying longitude and latitude numbers of the line's vertices;
      * *   Two or more [Point](/api/javascript/point) objects specifying the line's vertices.
      *
-     * r.line([lon1, lat1], [lon2, lat1], ...) → liner.line(point1, point2, ...) → line
+     * r.line([lon1, lat1], [lon2, lat1], ...) ? liner.line(point1, point2, ...) ? line
      * **Example:** Define a line.
      *
      *     r.table('geo').insert({
@@ -1078,7 +1130,7 @@ declare module rethinkdb {
      *
      * `js r.table('users').get(1).update({ data: r.literal({ age: 19, job: 'Engineer' }) }).run(conn, callback)`
      *
-     * r.literal(object) → special
+     * r.literal(object) ? special
      *
      *
      * http://rethinkdb.com/api/javascript/literal
@@ -1088,7 +1140,7 @@ declare module rethinkdb {
     /**
      * Return a time object representing the current time in UTC. The command now() is computed once when the server receives the query, so multiple instances of r.now() will always return the same time inside a query.
      *
-     * r.now() → time
+     * r.now() ? time
      * **Example:** Add a new user with the time at which he subscribed.
      *
      *     r.table("users").insert({
@@ -1103,7 +1155,7 @@ declare module rethinkdb {
     /**
      * Creates an object from a list of key-value pairs, where the keys must be strings. `r.object(A, B, C, D)` is equivalent to `r.expr([[A, B], [C, D]]).coerce_to('OBJECT')`.
      *
-     * r.object([key, value,]...) → object
+     * r.object([key, value,]...) ? object
      * **Example:** Create a simple object.
      *
      *     r.object('id', 5, 'data', ['foo', 'bar']).run(conn, callback)
@@ -1114,9 +1166,9 @@ declare module rethinkdb {
     object(...keyAndValues:Array<any>):RObjectInterface<any>;
 
     /**
-     * Construct a geometry object of type Point. The point is specified by two floating point numbers, the longitude (−180 to 180) and the latitude (−90 to 90) of the point on a perfect sphere.
+     * Construct a geometry object of type Point. The point is specified by two floating point numbers, the longitude (?180 to 180) and the latitude (?90 to 90) of the point on a perfect sphere.
      *
-     * r.point(longitude, latitude) → point
+     * r.point(longitude, latitude) ? point
      * **Example:** Define a point.
      *
      *     r.table('geo').insert({
@@ -1135,7 +1187,7 @@ declare module rethinkdb {
      * *   Three or more two-item arrays, specifying longitude and latitude numbers of the polygon's vertices;
      * *   Three or more [Point](/api/javascript/point) objects specifying the polygon's vertices.
      *
-     * r.polygon([lon1, lat1], [lon2, lat2], [lon3, lat3], ...) → polygonr.polygon(point1, point2, point3, ...) → polygon
+     * r.polygon([lon1, lat1], [lon2, lat2], [lon3, lat3], ...) ? polygonr.polygon(point1, point2, point3, ...) ? polygon
      * **Example:** Define a polygon.
      *
      *     r.table('geo').insert({
@@ -1156,7 +1208,7 @@ declare module rethinkdb {
     /**
      * Generate a random number between given (or implied) bounds. `random` takes zero, one or two arguments.
      *
-     * r.random() → numberr.random(number[, number], {float: true}) → numberr.random(integer[, integer]) → integer
+     * r.random() ? numberr.random(number[, number], {float: true}) ? numberr.random(integer[, integer]) ? integer
      * **Example:** Generate a random number in the range `[0,1)`
      *
      *     r.random().run(conn, callback)
@@ -1170,7 +1222,7 @@ declare module rethinkdb {
     /**
      * Generate a stream of sequential integers in a specified range.
      *
-     * r.range() → streamr.range([startValue, ]endValue) → stream
+     * r.range() ? streamr.range([startValue, ]endValue) ? stream
      * **Example:** Return a four-element range of `[0, 1, 2, 3]`.
      *
      *     > r.range(4).run(conn, callback)
@@ -1186,7 +1238,7 @@ declare module rethinkdb {
     /**
      * Rounds the given value to the nearest whole integer.
      *
-     * r.round(number) → numbernumber.round() → number
+     * r.round(number) ? numbernumber.round() ? number
      * **Example:** Round 12.345 to the nearest integer.
      *
      *     > r.round(12.345).run(conn, callback);
@@ -1200,7 +1252,7 @@ declare module rethinkdb {
     /**
      * Returns the currently visited document.
      *
-     * r.row → value // TODO: BUG in the docs?
+     * r.row ? value // TODO: BUG in the docs?
      * **Example:** Get all users whose age is greater than 5.
      *
      *     r.table('users').filter(r.row('age').gt(5)).run(conn, callback)
@@ -1237,7 +1289,7 @@ declare module rethinkdb {
      * *   `seconds` is a double. Its value will be rounded to three decimal places (millisecond-precision).
      * *   `timezone` can be `'Z'` (for UTC) or a string with the format `±[hh]:[mm]`.
      *
-     * r.time(year, month, day[, hour, minute, second], timezone)→ time
+     * r.time(year, month, day[, hour, minute, second], timezone)? time
      * **Example:** Update the birthdate of the user "John" to November 3rd, 1986 UTC.
      *
      *     r.table("user").get("John").update({birthdate: r.time(1986, 11, 3, 'Z')})
@@ -1251,7 +1303,7 @@ declare module rethinkdb {
     /**
      * Return a UUID (universally unique identifier), a string that can be used as a unique ID.
      *
-     * r.uuid() → string
+     * r.uuid() ? string
      * **Example:** Generate a UUID.
      *
      *     > r.uuid().run(conn, callback)
@@ -1265,9 +1317,9 @@ declare module rethinkdb {
     /**
      * Wait for a table or all the tables in a database to be ready. A table may be temporarily unavailable after creation, rebalancing or reconfiguring. The `wait` command blocks until the given table (or database) is fully up to date.
      *
-     * table.wait([{waitFor: 'ready_for_writes', timeout: <sec>}]) → object
-     * database.wait([{waitFor: 'ready_for_writes', timeout: <sec>}]) → object
-     * r.wait([{waitFor: 'ready_for_writes', timeout: <sec>}]) → object</sec></sec></sec>
+     * table.wait([{waitFor: 'ready_for_writes', timeout: <sec>}]) ? object
+     * database.wait([{waitFor: 'ready_for_writes', timeout: <sec>}]) ? object
+     * r.wait([{waitFor: 'ready_for_writes', timeout: <sec>}]) ? object</sec></sec></sec>
      * **Example:** Wait for a table to be ready.
      *
      *     > r.table('superheroes').wait().run(conn, callback);
@@ -1279,7 +1331,7 @@ declare module rethinkdb {
     /**
      * Compute the logical "and" of one or more values.
      *
-     * bool.and([bool, bool, ...]) → boolr.and([bool, bool, ...]) → bool
+     * bool.and([bool, bool, ...]) ? boolr.and([bool, bool, ...]) ? bool
      * **Example:** Return whether both `a` and `b` evaluate to true.
      *
      *     var a = true, b = false;
@@ -1296,7 +1348,7 @@ declare module rethinkdb {
      *
      * `not` can be called either via method chaining, immediately after an expression that evaluates as a boolean value, or by passing the expression as a parameter to `not`.
      *
-     * bool.not() → boolnot(bool) → bool
+     * bool.not() ? boolnot(bool) ? bool
      * **Example:** Not true is false.
      *
      *     r(true).not().run(conn, callback)
@@ -1309,7 +1361,7 @@ declare module rethinkdb {
     /**
      * Compute the logical "or" of one or more values.
      *
-     * bool.or([bool, bool, ...]) → boolr.or([bool, bool, ...]) → bool
+     * bool.or([bool, bool, ...]) ? boolr.or([bool, bool, ...]) ? bool
      * **Example:** Return whether either `a` or `b` evaluate to true.
      *
      *     var a = true, b = false;
@@ -1329,7 +1381,7 @@ declare module rethinkdb {
     /**
      * Get information about a ReQL value.
      *
-     * any.info() → objectr.info(any) → object
+     * any.info() ? objectr.info(any) ? object
      * **Example:** Get information about a table such as primary key, or cache size.
      *
      *     r.table('marvel').info().run(conn, callback)
@@ -1341,7 +1393,7 @@ declare module rethinkdb {
     /**
      * Gets the type of a value.
      *
-     * any.typeOf() → string
+     * any.typeOf() ? string
      * **Example:** Get the type of a string.
      *
      *     r.expr("foo").typeOf().run(conn, callback)
@@ -1358,10 +1410,10 @@ declare module rethinkdb {
     /**
      * Get a single field from an object or a single element from a sequence.
      *
-     * sequence(attr) → sequence
-     singleSelection(attr) → value
-     object(attr) → value
-     array(index) → value
+     * sequence(attr) ? sequence
+     singleSelection(attr) ? value
+     object(attr) ? value
+     array(index) ? value
      * **Example:** What was Iron Man's first appearance in a comic?
      *
      *     r.table('marvel').get('IronMan')('firstAppearance').run(conn, callback)
@@ -1375,7 +1427,7 @@ declare module rethinkdb {
     /**
      * Concatenate one or more elements into a single sequence using a mapping function.
      *
-     * stream.concatMap(function) → streamarray.concatMap(function) → array
+     * stream.concatMap(function) ? streamarray.concatMap(function) ? array
      * **Example:** Construct a sequence of all monsters defeated by Marvel heroes. The field "defeatedMonsters" is an array of one or more monster names.
      *
      *     r.table('marvel').concatMap(function(hero) {
@@ -1393,7 +1445,7 @@ declare module rethinkdb {
      *
      * `js r.table('players').eqJoin('gameId', r.table('games')).run(conn, callback)`
      *
-     * sequence.eqJoin(leftField, rightTable[, {index:'id'}]) → sequencesequence.eqJoin(predicate_function, rightTable[, {index:'id'}]) → sequence
+     * sequence.eqJoin(leftField, rightTable[, {index:'id'}]) ? sequencesequence.eqJoin(predicate_function, rightTable[, {index:'id'}]) ? sequence
      *
      *
      * http://rethinkdb.com/api/javascript/eq_join
@@ -1408,8 +1460,8 @@ declare module rethinkdb {
      *
      * The body of every filter is wrapped in an implicit `.default(false)`, which means that if a non-existence errors is thrown (when you try to access a field that does not exist in a document), RethinkDB will just ignore the document. The `default` value can be changed by passing an object with a `default` field. Setting this optional argument to `r.error()` will cause any non-existence errors to return a `ReqlRuntimeError`.
      *
-     * selection.filter(predicate_function[, {default: false}]) → selection
-     * stream.filter(predicate_function[, {default: false}]) → streamarray.filter(predicate_function[, {default: false}]) → array
+     * selection.filter(predicate_function[, {default: false}]) ? selection
+     * stream.filter(predicate_function[, {default: false}]) ? streamarray.filter(predicate_function[, {default: false}]) ? array
      * **Example:** Get all the users that are 30 years old.
      *
      *     r.table('users').filter({age: 30}).run(conn, callback)
@@ -1423,7 +1475,7 @@ declare module rethinkdb {
     /**
      * Remove duplicate elements from the sequence.
      *
-     * sequence.distinct() → arraytable.distinct([{index: <indexname>}]) → stream</indexname>
+     * sequence.distinct() ? arraytable.distinct([{index: <indexname>}]) ? stream</indexname>
      * **Example:** Which unique villains have been vanquished by marvel heroes?
      *
      *     r.table('marvel').concatMap(function(hero) {
@@ -1437,7 +1489,7 @@ declare module rethinkdb {
     /**
      * Test if an object has one or more fields. An object has a field if it has that key and the key has a non-null value. For instance, the object `{'a': 1,'b': 2,'c': null}` has the fields `a` and `b`.
      *
-     * sequence.hasFields([selector1, selector2...]) → streamarray.hasFields([selector1, selector2...]) → arrayobject.hasFields([selector1, selector2...]) → boolean
+     * sequence.hasFields([selector1, selector2...]) ? streamarray.hasFields([selector1, selector2...]) ? arrayobject.hasFields([selector1, selector2...]) ? boolean
      * **Example:** Return the players who have won games.
      *
      *     r.table('players').hasFields('games_won').run(conn, callback)
@@ -1449,7 +1501,7 @@ declare module rethinkdb {
     /**
      * Returns an inner join of two sequences.
      *
-     * sequence.innerJoin(otherSequence, predicate_function) → streamarray.innerJoin(otherSequence, predicate_function) → array
+     * sequence.innerJoin(otherSequence, predicate_function) ? streamarray.innerJoin(otherSequence, predicate_function) ? array
      * **Example:** Return a list of all matchups between Marvel and DC heroes in which the DC hero could beat the Marvel hero in a fight.
      *
      *     r.table('marvel').innerJoin(r.table('dc'), function(marvelRow, dcRow) {
@@ -1461,21 +1513,9 @@ declare module rethinkdb {
     innerJoin(otherSequence:RSequenceInterface, predicate_function:JoinFunction<RBoolInterface>):RArrayInterface;
 
     /**
-    * End the sequence after the given number of elements.
-    *
-    * sequence.limit(n) → streamarray.limit(n) → array
-    * **Example:** Only so many can fit in our Pantheon of heroes.
-    * 
-    *     r.table('marvel').orderBy('belovedness').limit(10).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/limit
-    */
-    limit(n:number|RNumberInterface):RArrayInterface;
-
-    /**
      * Merge two or more objects together to construct a new object with properties from all. When there is a conflict between field names, preference is given to fields in the rightmost object in the argument list.
      *
-     * singleSelection.merge([object | function, object | function, ...]) → objectobject.merge([object | function, object | function, ...]) → objectsequence.merge([object | function, object | function, ...]) → streamarray.merge([object | function, object | function, ...]) → array
+     * singleSelection.merge([object | function, object | function, ...]) ? objectobject.merge([object | function, object | function, ...]) ? objectsequence.merge([object | function, object | function, ...]) ? streamarray.merge([object | function, object | function, ...]) ? array
      * **Example:** Equip Thor for battle.
      *
      *     r.table('marvel').get('thor').merge(
@@ -1492,7 +1532,7 @@ declare module rethinkdb {
      *
      * Sorting without an index requires the server to hold the sequence in memory, and is limited to 100,000 documents (or the setting of the `arrayLimit` option for [run](/api/javascript/run)). Sorting with an index can be done on arbitrarily large tables, or after a `between` command using the same index.
      *
-     * table.orderBy([key | function...], {index: index_name}) → table_sliceselection.orderBy(key | function[, ...]) → selection<array>sequence.orderBy(key | function[, ...]) → array</array>
+     * table.orderBy([key | function...], {index: index_name}) ? table_sliceselection.orderBy(key | function[, ...]) ? selection<array>sequence.orderBy(key | function[, ...]) ? array</array>
      * **Example:** Order all the posts using the index `date`.
      *
      *     r.table('posts').orderBy({index: 'date'}).run(conn, callback)
@@ -1514,7 +1554,7 @@ declare module rethinkdb {
     /**
      * Returns a left outer join of two sequences.
      *
-     * sequence.outerJoin(otherSequence, predicate_function) → streamarray.outerJoin(otherSequence, predicate_function) → array
+     * sequence.outerJoin(otherSequence, predicate_function) ? streamarray.outerJoin(otherSequence, predicate_function) ? array
      * **Example:** Return a list of all Marvel heroes, paired with any DC heroes who could beat them in a fight.
      *
      *     r.table('marvel').outerJoin(r.table('dc'), function(marvelRow, dcRow) {
@@ -1528,7 +1568,7 @@ declare module rethinkdb {
     /**
      * Plucks out one or more attributes from either an object or a sequence of objects (projection).
      *
-     * sequence.pluck([selector1, selector2...]) → streamarray.pluck([selector1, selector2...]) → arrayobject.pluck([selector1, selector2...]) → objectsingleSelection.pluck([selector1, selector2...]) → object
+     * sequence.pluck([selector1, selector2...]) ? streamarray.pluck([selector1, selector2...]) ? arrayobject.pluck([selector1, selector2...]) ? objectsingleSelection.pluck([selector1, selector2...]) ? object
      * **Example:** We just need information about IronMan's reactor and not the rest of the document.
      *
      *     r.table('marvel').get('IronMan').pluck('reactorState', 'reactorPower').run(conn, callback)
@@ -1540,7 +1580,7 @@ declare module rethinkdb {
     /**
      * Select a given number of elements from a sequence with uniform random distribution. Selection is done without replacement.
      *
-     * sequence.sample(number) → selectionstream.sample(number) → arrayarray.sample(number) → array
+     * sequence.sample(number) ? selectionstream.sample(number) ? arrayarray.sample(number) ? array
      * **Example:** Select 3 random heroes.
      *
      *     r.table('marvel').sample(3).run(conn, callback)
@@ -1550,36 +1590,9 @@ declare module rethinkdb {
     sample(number:number|RNumberInterface):RArrayInterface;
 
     /**
-    * Skip a number of elements from the head of the sequence.
-    *
-    * sequence.skip(n) → streamarray.skip(n) → array
-    * **Example:** Here in conjunction with `orderBy` we choose to ignore the most successful heroes.
-    * 
-    *     r.table('marvel').orderBy('successMetric').skip(10).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/skip
-    */
-    skip(n:number|RNumberInterface):RArrayInterface;
-
-    /**
-    * Return the elements of a sequence within the specified range.
-    * 
-    * **Example:** Return the fourth, fifth and sixth youngest players. (The youngest player is at index 0, so those are elements 3–5.)
-    * 
-    * `js r.table('players').orderBy({index: 'age'}).slice(3,6).run(conn, callback)`
-    *
-    * selection.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → selectionstream.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → streamarray.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → arraybinary.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → binary
-    * 
-    *
-    * http://rethinkdb.com/api/javascript/slice
-    */
-    slice(startIndex:number|RNumberInterface, endIndex:number|RNumberInterface, options?:{ leftBound?, rightBound? }):RArrayInterface;
-    slice(startIndex:number|RNumberInterface):RArrayInterface;
-
-    /**
      * Merge two or more sequences. (Note that ordering is not guaranteed by `union`.)
      *
-     * stream.union(sequence[, sequence, ...]) → streamarray.union(sequence[, sequence, ...]) → array
+     * stream.union(sequence[, sequence, ...]) ? streamarray.union(sequence[, sequence, ...]) ? array
      * **Example:** Construct a stream of all heroes.
      *
      *     r.table('marvel').union(r.table('dc')).run(conn, callback);
@@ -1592,7 +1605,7 @@ declare module rethinkdb {
     /**
      * Plucks one or more attributes from a sequence of objects, filtering out any objects in the sequence that do not have the specified fields. Functionally, this is identical to `hasFields` followed by `pluck` on a sequence.
      *
-     * sequence.withFields([selector1, selector2...]) → streamarray.withFields([selector1, selector2...]) → array
+     * sequence.withFields([selector1, selector2...]) ? streamarray.withFields([selector1, selector2...]) ? array
      * **Example:** Get a list of users and their posts, excluding any users who have not made any posts.
      *
      *     r.table('users').withFields('id', 'username', 'posts').run(conn, callback)
@@ -1600,27 +1613,15 @@ declare module rethinkdb {
      * http://rethinkdb.com/api/javascript/with_fields
      */
     withFields(...selectors:Array<string>):RArrayInterface;
-
-    /**
-    * The opposite of pluck; takes an object or a sequence of objects, and returns them with the specified paths removed.
-    *
-    * sequence.without([selector1, selector2...]) → streamarray.without([selector1, selector2...]) → arraysingleSelection.without([selector1, selector2...]) → objectobject.without([selector1, selector2...]) → object
-    * **Example:** Since we don't need it for this computation we'll save bandwidth and leave out the list of IronMan's romantic conquests.
-    * 
-    *     r.table('marvel').get('IronMan').without('personalVictoriesList').run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/without
-    */
-    without(...selectors:Array<string>):RArrayInterface;
   }
-  export interface RSequenceStream<RemoteT> extends RSequenceInterface, RRunableInterface<RCursorInterface<RemoteT> & Array<RemoteT>> { // '&' is a workaround so I can use both cursor or array interfaces after run (in rethinkdbdash it returns arrays by default)
+  export interface RSequenceStream<RemoteT> extends RSequenceInterface, RRunableInterface<RCursorInterface<RemoteT>> { // '&' is a workaround so I can use both cursor or array interfaces after run (in rethinkdbdash it returns arrays by default)
     /**
      * Get a single field from an object or a single element from a sequence.
      *
-     * sequence(attr) → sequence
-     singleSelection(attr) → value
-     object(attr) → value
-     array(index) → value
+     * sequence(attr) ? sequence
+     singleSelection(attr) ? value
+     object(attr) ? value
+     array(index) ? value
      * **Example:** What was Iron Man's first appearance in a comic?
      *
      *     r.table('marvel').get('IronMan')('firstAppearance').run(conn, callback)
@@ -1633,7 +1634,7 @@ declare module rethinkdb {
     /**
      * Concatenate one or more elements into a single sequence using a mapping function.
      *
-     * stream.concatMap(function) → streamarray.concatMap(function) → array
+     * stream.concatMap(function) ? streamarray.concatMap(function) ? array
      * **Example:** Construct a sequence of all monsters defeated by Marvel heroes. The field "defeatedMonsters" is an array of one or more monster names.
      *
      *     r.table('marvel').concatMap(function(hero) {
@@ -1647,7 +1648,7 @@ declare module rethinkdb {
     /**
      * Remove duplicate elements from the sequence.
      *
-     * sequence.distinct() → arraytable.distinct([{index: <indexname>}]) → stream</indexname>
+     * sequence.distinct() ? arraytable.distinct([{index: <indexname>}]) ? stream</indexname>
      * **Example:** Which unique villains have been vanquished by marvel heroes?
      *
      *     r.table('marvel').concatMap(function(hero) {
@@ -1665,8 +1666,8 @@ declare module rethinkdb {
      *
      * `js r.table('players').eqJoin('gameId', r.table('games')).run(conn, callback)`
      *
-     * sequence.eqJoin(leftField, rightTable[, {index:'id'}]) → sequence
-     * sequence.eqJoin(predicate_function, rightTable[, {index:'id'}]) → sequence
+     * sequence.eqJoin(leftField, rightTable[, {index:'id'}]) ? sequence
+     * sequence.eqJoin(predicate_function, rightTable[, {index:'id'}]) ? sequence
      *
      *
      * http://rethinkdb.com/api/javascript/eq_join
@@ -1681,9 +1682,9 @@ declare module rethinkdb {
      *
      * The body of every filter is wrapped in an implicit `.default(false)`, which means that if a non-existence errors is thrown (when you try to access a field that does not exist in a document), RethinkDB will just ignore the document. The `default` value can be changed by passing an object with a `default` field. Setting this optional argument to `r.error()` will cause any non-existence errors to return a `ReqlRuntimeError`.
      *
-     * selection.filter(predicate_function[, {default: false}]) → selection
-     * stream.filter(predicate_function[, {default: false}]) → stream
-     * array.filter(predicate_function[, {default: false}]) → array
+     * selection.filter(predicate_function[, {default: false}]) ? selection
+     * stream.filter(predicate_function[, {default: false}]) ? stream
+     * array.filter(predicate_function[, {default: false}]) ? array
      * **Example:** Get all the users that are 30 years old.
      *
      *     r.table('users').filter({age: 30}).run(conn, callback)
@@ -1696,9 +1697,9 @@ declare module rethinkdb {
     /**
      * Get a single field from an object. If called on a sequence, gets that field from every object in the sequence, skipping objects that lack it.
      *
-     * sequence.getField(attr) → sequence
-     * singleSelection.getField(attr) → value
-     * object.getField(attr) → value
+     * sequence.getField(attr) ? sequence
+     * singleSelection.getField(attr) ? value
+     * object.getField(attr) ? value
      * **Example:** What was Iron Man's first appearance in a comic?
      *
      *     r.table('marvel').get('IronMan').getField('firstAppearance').run(conn, callback)
@@ -1710,9 +1711,9 @@ declare module rethinkdb {
     /**
      * Test if an object has one or more fields. An object has a field if it has that key and the key has a non-null value. For instance, the object `{'a': 1,'b': 2,'c': null}` has the fields `a` and `b`.
      *
-     * sequence.hasFields([selector1, selector2...]) → stream
-     array.hasFields([selector1, selector2...]) → array
-     object.hasFields([selector1, selector2...]) → boolean
+     * sequence.hasFields([selector1, selector2...]) ? stream
+     array.hasFields([selector1, selector2...]) ? array
+     object.hasFields([selector1, selector2...]) ? boolean
      * **Example:** Return the players who have won games.
      *
      *     r.table('players').hasFields('games_won').run(conn, callback)
@@ -1724,8 +1725,8 @@ declare module rethinkdb {
     /**
      * Tests whether a geometry object is completely contained within another. When applied to a sequence of geometry objects, `includes` acts as a [filter](/api/javascript/filter), returning a sequence of objects from the sequence that include the argument.
      *
-     * sequence.includes(geometry) → sequence
-     * geometry.includes(geometry) → bool
+     * sequence.includes(geometry) ? sequence
+     * geometry.includes(geometry) ? bool
      * **Example:** Is `point2` included within a 2000-meter circle around `point1`?
      *
      *     var point1 = r.point(-117.220406,32.719464);
@@ -1741,8 +1742,8 @@ declare module rethinkdb {
     /**
      * Returns an inner join of two sequences.
      *
-     * sequence.innerJoin(otherSequence, predicate_function) → stream
-     * array.innerJoin(otherSequence, predicate_function) → array
+     * sequence.innerJoin(otherSequence, predicate_function) ? stream
+     * array.innerJoin(otherSequence, predicate_function) ? array
      * **Example:** Return a list of all matchups between Marvel and DC heroes in which the DC hero could beat the Marvel hero in a fight.
      *
      *     r.table('marvel').innerJoin(r.table('dc'), function(marvelRow, dcRow) {
@@ -1756,10 +1757,10 @@ declare module rethinkdb {
     /**
      * Tests whether two geometry objects intersect with one another. When applied to a sequence of geometry objects, `intersects` acts as a [filter](/api/javascript/filter), returning a sequence of objects from the sequence that intersect with the argument.
      *
-     * sequence.intersects(geometry) → sequence
-     * geometry.intersects(geometry) → bool
-     r.intersects(sequence, geometry) → sequence
-     r.intersects(geometry, geometry) → bool
+     * sequence.intersects(geometry) ? sequence
+     * geometry.intersects(geometry) ? bool
+     r.intersects(sequence, geometry) ? sequence
+     r.intersects(geometry, geometry) ? bool
      * **Example:** Is `point2` within a 2000-meter circle around `point1`?
      *
      *     var point1 = r.point(-117.220406,32.719464);
@@ -1773,25 +1774,12 @@ declare module rethinkdb {
     intersects(geometry):RStreamInterface<RemoteT>;
 
     /**
-    * End the sequence after the given number of elements.
-    *
-    * sequence.limit(n) → stream
-    array.limit(n) → array
-    * **Example:** Only so many can fit in our Pantheon of heroes.
-    * 
-    *     r.table('marvel').orderBy('belovedness').limit(10).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/limit
-    */
-    limit(n:number|RNumberInterface):RStreamInterface<RemoteT>;
-
-    /**
      * Transform each element of one or more sequences by applying a mapping function to them. If `map` is run with two or more sequences, it will iterate for as many items as there are in the shortest sequence.
      *
-     * sequence1.map([sequence2, ...], function) → stream
-     array1.map([array2, ...], function) → array
-     r.map(sequence1[, sequence2, ...], function) → stream
-     r.map(array1[, array2, ...], function) → array
+     * sequence1.map([sequence2, ...], function) ? stream
+     array1.map([array2, ...], function) ? array
+     r.map(sequence1[, sequence2, ...], function) ? stream
+     r.map(array1[, array2, ...], function) ? array
      * **Example:** Return the first five squares.
      *
      *     r.expr([1, 2, 3, 4, 5]).map(function (val) {
@@ -1811,10 +1799,10 @@ declare module rethinkdb {
     /**
      * Merge two or more objects together to construct a new object with properties from all. When there is a conflict between field names, preference is given to fields in the rightmost object in the argument list.
      *
-     * singleSelection.merge([object | function, object | function, ...]) → object
-     object.merge([object | function, object | function, ...]) → object
-     sequence.merge([object | function, object | function, ...]) → stream
-     array.merge([object | function, object | function, ...]) → array
+     * singleSelection.merge([object | function, object | function, ...]) ? object
+     object.merge([object | function, object | function, ...]) ? object
+     sequence.merge([object | function, object | function, ...]) ? stream
+     array.merge([object | function, object | function, ...]) ? array
      * **Example:** Equip Thor for battle.
      *
      *     r.table('marvel').get('thor').merge(
@@ -1831,9 +1819,9 @@ declare module rethinkdb {
      *
      * Sorting without an index requires the server to hold the sequence in memory, and is limited to 100,000 documents (or the setting of the `arrayLimit` option for [run](/api/javascript/run)). Sorting with an index can be done on arbitrarily large tables, or after a `between` command using the same index.
      *
-     * table.orderBy([key | function...], {index: index_name}) → table_slice
-     selection.orderBy(key | function[, ...]) → selection<array>
-     sequence.orderBy(key | function[, ...]) → array</array>
+     * table.orderBy([key | function...], {index: index_name}) ? table_slice
+     selection.orderBy(key | function[, ...]) ? selection<array>
+     sequence.orderBy(key | function[, ...]) ? array</array>
      * **Example:** Order all the posts using the index `date`.
      *
      *     r.table('posts').orderBy({index: 'date'}).run(conn, callback)
@@ -1856,7 +1844,7 @@ declare module rethinkdb {
     /**
      * Returns a left outer join of two sequences.
      *
-     * sequence.outerJoin(otherSequence, predicate_function) → streamarray.outerJoin(otherSequence, predicate_function) → array
+     * sequence.outerJoin(otherSequence, predicate_function) ? streamarray.outerJoin(otherSequence, predicate_function) ? array
      * **Example:** Return a list of all Marvel heroes, paired with any DC heroes who could beat them in a fight.
      *
      *     r.table('marvel').outerJoin(r.table('dc'), function(marvelRow, dcRow) {
@@ -1870,9 +1858,9 @@ declare module rethinkdb {
     /**
      * Select a given number of elements from a sequence with uniform random distribution. Selection is done without replacement.
      *
-     * sequence.sample(number) → selection
-     stream.sample(number) → array
-     array.sample(number) → array
+     * sequence.sample(number) ? selection
+     stream.sample(number) ? array
+     array.sample(number) ? array
      * **Example:** Select 3 random heroes.
      *
      *     r.table('marvel').sample(3).run(conn, callback)
@@ -1883,41 +1871,10 @@ declare module rethinkdb {
     sample(number:number|RNumberInterface):RSelectionInterface<any>;
 
     /**
-    * Skip a number of elements from the head of the sequence.
-    *
-    * sequence.skip(n) → stream
-    array.skip(n) → array
-    * **Example:** Here in conjunction with `orderBy` we choose to ignore the most successful heroes.
-    * 
-    *     r.table('marvel').orderBy('successMetric').skip(10).run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/skip
-    */
-    skip(n:number|RNumberInterface):RStreamInterface<RemoteT>;
-
-    /**
-    * Return the elements of a sequence within the specified range.
-    * 
-    * **Example:** Return the fourth, fifth and sixth youngest players. (The youngest player is at index 0, so those are elements 3–5.)
-    * 
-    * `js r.table('players').orderBy({index: 'age'}).slice(3,6).run(conn, callback)`
-    *
-    * selection.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → selection
-    stream.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → stream
-    array.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → array
-    binary.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → binary
-    * 
-    *
-    * http://rethinkdb.com/api/javascript/slice
-    */
-    slice(startIndex:number|RNumberInterface, endIndex:number|RNumberInterface, options?:{ leftBound?, rightBound? }):RStreamInterface<RemoteT>;
-    slice(startIndex:number|RNumberInterface):RStreamInterface<RemoteT>;
-
-    /**
      * Merge two or more sequences. (Note that ordering is not guaranteed by `union`.)
      *
-     * stream.union(sequence[, sequence, ...]) → stream
-     array.union(sequence[, sequence, ...]) → array
+     * stream.union(sequence[, sequence, ...]) ? stream
+     array.union(sequence[, sequence, ...]) ? array
      * **Example:** Construct a stream of all heroes.
      *
      *     r.table('marvel').union(r.table('dc')).run(conn, callback);
@@ -1930,8 +1887,8 @@ declare module rethinkdb {
     /**
      * Plucks one or more attributes from a sequence of objects, filtering out any objects in the sequence that do not have the specified fields. Functionally, this is identical to `hasFields` followed by `pluck` on a sequence.
      *
-     * sequence.withFields([selector1, selector2...]) → stream
-     array.withFields([selector1, selector2...]) → array
+     * sequence.withFields([selector1, selector2...]) ? stream
+     array.withFields([selector1, selector2...]) ? array
      * **Example:** Get a list of users and their posts, excluding any users who have not made any posts.
      *
      *     r.table('users').withFields('id', 'username', 'posts').run(conn, callback)
@@ -1939,24 +1896,12 @@ declare module rethinkdb {
      * http://rethinkdb.com/api/javascript/with_fields
      */
     withFields(...selectors:Array<string>):RStreamInterface<RemoteT>;
-
-    /**
-    * The opposite of pluck; takes an object or a sequence of objects, and returns them with the specified paths removed.
-    *
-    * sequence.without([selector1, selector2...]) → streamarray.without([selector1, selector2...]) → arraysingleSelection.without([selector1, selector2...]) → objectobject.without([selector1, selector2...]) → object
-    * **Example:** Since we don't need it for this computation we'll save bandwidth and leave out the list of IronMan's romantic conquests.
-    * 
-    *     r.table('marvel').get('IronMan').without('personalVictoriesList').run(conn, callback)
-    *
-    * http://rethinkdb.com/api/javascript/without
-    */
-    without(...selectors:Array<string>):RStreamInterface<RemoteT>;
   }
   export interface RSequenceInterface extends RCoercable, RToJSONInterface, RAnyInterface {
     /**
      * Averages all the elements of a sequence. If called with a field name, averages all the values of that field in the sequence, skipping elements of the sequence that lack that field. If called with a function, calls that function on every element of the sequence and averages the results, skipping elements of the sequence where that function returns `null` or a non-existence error.
      *
-     * sequence.avg([field | function]) → number
+     * sequence.avg([field | function]) ? number
      * **Example:** What's the average of 3, 5, and 7?
      *
      *     r.expr([3, 5, 7]).avg().run(conn, callback)
@@ -1970,7 +1915,7 @@ declare module rethinkdb {
     /**
      * Returns whether or not a sequence contains all the specified values, or if functions are provided instead, returns whether or not a sequence contains values matching all the specified functions.
      *
-     * sequence.contains([value | predicate_function, ...]) → bool
+     * sequence.contains([value | predicate_function, ...]) ? bool
      * **Example:** Has Iron Man ever fought Superman?
      *
      *     r.table('marvel').get('ironman')('opponents').contains('superman').run(conn, callback)
@@ -1983,7 +1928,7 @@ declare module rethinkdb {
     /**
      * Count the number of elements in the sequence. With a single argument, count the number of elements equal to it. If the argument is a function, it is equivalent to calling filter before count.
      *
-     * sequence.count([value | predicate_function]) → numberbinary.count() → number
+     * sequence.count([value | predicate_function]) ? numberbinary.count() ? number
      * **Example:** Just how many super heroes are there?
      *
      *     r.table('marvel').count().add(r.table('dc').count()).run(conn, callback)
@@ -1992,14 +1937,11 @@ declare module rethinkdb {
      */
     count(predicate_function:ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>):RNumberInterface;
     count(value?:any):RNumberInterface;
-    
-    count<T extends RGroupedStreamInterface>(predicate_function:ExpressionFunction<RObjectInterface<any>, RAnyInterface|Object>):this;
-    count<T extends RGroupedStreamInterface>(value?:any):this;
 
     /**
      * Provide a default value in case of non-existence errors. The `default` command evaluates its first argument (the value it's chained to). If that argument returns `null` or a non-existence error is thrown in evaluation, then `default` returns its second argument. The second argument is usually a default value, but it can be a function that returns a value.
      *
-     * value.default(default_value | function) → anysequence.default(default_value | function) → any
+     * value.default(default_value | function) ? anysequence.default(default_value | function) ? any
      * **Example:** Retrieve the titles and authors of the table `posts`. In the case where the author field is missing or `null`, we want to retrieve the string `Anonymous`.
      *
      *     r.table("posts").map(function (post) {
@@ -2017,7 +1959,7 @@ declare module rethinkdb {
     /**
      * Loop over a sequence, evaluating the given write query for each element.
      *
-     * sequence.forEach(write_function) → object
+     * sequence.forEach(write_function) ? object
      * **Example:** Now that our heroes have defeated their villains, we can safely remove them from the villain table.
      *
      *     r.table('marvel').forEach(function(hero) {
@@ -2031,7 +1973,7 @@ declare module rethinkdb {
     /**
      * Takes a stream and partitions it into multiple groups based on the fields or functions provided. Commands chained after `group` will be called on each of these grouped sub-streams, producing grouped data.
      *
-     * sequence.group(field | function..., [{index: <indexname>, multi: false}]) → grouped_stream</indexname>
+     * sequence.group(field | function..., [{index: <indexname>, multi: false}]) ? grouped_stream</indexname>
      * **Example:** What is each player's best game?
      *
      *     r.table('games').group('player').max('points').run(conn, callback)
@@ -2044,7 +1986,7 @@ declare module rethinkdb {
     /**
      * Test if a sequence is empty.
      *
-     * sequence.isEmpty() → bool
+     * sequence.isEmpty() ? bool
      * **Example:** Are there any documents in the marvel table?
      *
      *     r.table('marvel').isEmpty().run(conn, callback)
@@ -2056,7 +1998,7 @@ declare module rethinkdb {
     /**
      * Finds the maximum element of a sequence.
      *
-     * sequence.max(field | function) → elementsequence.max({index: <indexname>}) → element</indexname>
+     * sequence.max(field | function) ? elementsequence.max({index: <indexname>}) ? element</indexname>
      * **Example:** Return the maximum value in the list `[3, 5, 7]`.
      *
      *     r.expr([3, 5, 7]).max().run(conn, callback);
@@ -2069,7 +2011,7 @@ declare module rethinkdb {
     /**
      * Finds the minimum element of a sequence.
      *
-     * sequence.min(field | function) → elementsequence.min({index: <indexname>}) → element</indexname>
+     * sequence.min(field | function) ? elementsequence.min({index: <indexname>}) ? element</indexname>
      * **Example:** Return the minimum value in the list `[3, 5, 7]`.
      *
      *     r.expr([3, 5, 7]).min().run(conn, callback);
@@ -2082,7 +2024,7 @@ declare module rethinkdb {
     /**
      * Get the _nth_ element of a sequence, counting from zero. If the argument is negative, count from the last element.
      *
-     * sequence.nth(index) → objectselection.nth(index) → selection<object>
+     * sequence.nth(index) ? objectselection.nth(index) ? selection<object>
      * **Example:** Select the second element in the array.
      *
      *     r.expr([1,2,3]).nth(1).run(conn, callback)
@@ -2094,7 +2036,7 @@ declare module rethinkdb {
     /**
      * Get the indexes of an element in a sequence. If the argument is a predicate, get the indexes of all elements matching it.
      *
-     * sequence.offsetsOf(datum | predicate_function) → array
+     * sequence.offsetsOf(datum | predicate_function) ? array
      * **Example:** Find the position of the letter 'c'.
      *
      *     r.expr(['a','b','c']).offsetsOf('c').run(conn, callback)
@@ -2107,7 +2049,7 @@ declare module rethinkdb {
     /**
      * Produce a single value from a sequence through repeated application of a reduction function.
      *
-     * sequence.reduce(function) → value
+     * sequence.reduce(function) ? value
      * **Example:** Return the number of documents in the table `posts.
      *
      *     r.table("posts").map(function(doc) {
@@ -2123,7 +2065,7 @@ declare module rethinkdb {
     /**
      * Sums all the elements of a sequence. If called with a field name, sums all the values of that field in the sequence, skipping elements of the sequence that lack that field. If called with a function, calls that function on every element of the sequence and sums the results, skipping elements of the sequence where that function returns `null` or a non-existence error.
      *
-     * sequence.sum([field | function]) → number
+     * sequence.sum([field | function]) ? number
      * **Example:** What's 3 + 5 + 7?
      *
      *     r.expr([3, 5, 7]).sum().run(conn, callback)
@@ -2139,7 +2081,7 @@ declare module rethinkdb {
      *
      * `js r.table('players').orderBy({index: 'age'}).slice(3,6).run(conn, callback)`
      *
-     * selection.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → selectionstream.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → streamarray.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → arraybinary.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → binary
+     * selection.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) ? selectionstream.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) ? streamarray.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) ? arraybinary.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) ? binary
      *
      *
      * http://rethinkdb.com/api/javascript/slice
@@ -2151,8 +2093,8 @@ declare module rethinkdb {
     /**
      * End the sequence after the given number of elements.
      *
-     * sequence.limit(n) → stream
-     array.limit(n) → array
+     * sequence.limit(n) ? stream
+     array.limit(n) ? array
      * **Example:** Only so many can fit in our Pantheon of heroes.
      *
      *     r.table('marvel').orderBy('belovedness').limit(10).run(conn, callback)
@@ -2164,7 +2106,7 @@ declare module rethinkdb {
     /**
      * Skip a number of elements from the head of the sequence.
      *
-     * sequence.skip(n) → streamarray.skip(n) → array
+     * sequence.skip(n) ? streamarray.skip(n) ? array
      * **Example:** Here in conjunction with `orderBy` we choose to ignore the most successful heroes.
      *
      *     r.table('marvel').orderBy('successMetric').skip(10).run(conn, callback)
@@ -2177,7 +2119,7 @@ declare module rethinkdb {
     /**
      * The opposite of pluck; takes an object or a sequence of objects, and returns them with the specified paths removed.
      *
-     * sequence.without([selector1, selector2...]) → streamarray.without([selector1, selector2...]) → arraysingleSelection.without([selector1, selector2...]) → objectobject.without([selector1, selector2...]) → object
+     * sequence.without([selector1, selector2...]) ? streamarray.without([selector1, selector2...]) ? arraysingleSelection.without([selector1, selector2...]) ? objectobject.without([selector1, selector2...]) ? object
      * **Example:** Since we don't need it for this computation we'll save bandwidth and leave out the list of IronMan's romantic conquests.
      *
      *     r.table('marvel').get('IronMan').without('personalVictoriesList').run(conn, callback)
@@ -2198,7 +2140,7 @@ declare module rethinkdb {
     /**
      * Get all documents between two keys. Accepts three optional arguments: `index`, `left_bound`, and `right_bound`. If `index` is set to the name of a secondary index, `between` will return all documents where that index's value is in the specified range (it uses the primary key by default). `left_bound` or `right_bound` may be set to `open` or `closed` to indicate whether or not to include that endpoint of the range (by default, `left_bound` is closed and `right_bound` is open).
      *
-     * table.between(lowerKey, upperKey[, options]) → table_slicetable_slice.between(lowerKey, upperKey[, options]) → table_slice
+     * table.between(lowerKey, upperKey[, options]) ? table_slicetable_slice.between(lowerKey, upperKey[, options]) ? table_slice
      * **Example:** Find all users with primary key >= 10 and < 20 (a normal half-open interval).
      *
      *     r.table('marvel').between(10, 20).run(conn, callback)
@@ -2211,7 +2153,7 @@ declare module rethinkdb {
     /**
      * Remove duplicate elements from the sequence.
      *
-     * sequence.distinct() → arraytable.distinct([{index: <indexname>}]) → stream</indexname>
+     * sequence.distinct() ? arraytable.distinct([{index: <indexname>}]) ? stream</indexname>
      * **Example:** Which unique villains have been vanquished by marvel heroes?
      *
      *     r.table('marvel').concatMap(function(hero) {
@@ -2227,35 +2169,34 @@ declare module rethinkdb {
      *
      * If no document exists with that primary key, `get` will return `null`.
      *
-     * table.get(key) → singleRowSelection
+     * table.get(key) ? singleRowSelection
      * **Example:** Find a document by UUID.
      *
      *     r.table('posts').get('a9849eef-7176-4411-935b-79a6e3c56a74').run(conn, callback)
      *
      * http://rethinkdb.com/api/javascript/get
      */
-    get(key:string|RStringInterface):RSingleSelectionInterface<RemoteT>;
+    get(key:RKeyType):RSingleSelectionInterface<RemoteT>;
 
     /**
      * Get all documents where the given value matches the value of the requested index.
      *
-     * table.getAll(key[, key2...], [, {index:'id'}]) → selection
+     * table.getAll(key[, key2...], [, {index:'id'}]) ? selection
      * **Example:** Secondary index keys are not guaranteed to be unique so we cannot query via [get](/api/javascript/get/) when using a secondary index.
      *
      *     r.table('marvel').getAll('man_of_steel', {index:'code_name'}).run(conn, callback)
      *
      * http://rethinkdb.com/api/javascript/get_all
      */
-    getAll(key:string|RStringInterface, ...keys_and_then_options:Array<string|{ index? }>):RSelectionInterface<RemoteT>;
-    getAll(key:string|RStringInterface, options?:{ index }):RSelectionInterface<RemoteT>;
-    getAll(key:string|RStringInterface, ...keys:Array<string>):RSelectionInterface<RemoteT>;
-    getAll(range:Array<string|RStringInterface>, options?:{ index }):RSelectionInterface<RemoteT>;
-    getAll(args:RSpecialInterface):RSelectionInterface<RemoteT>; // TODO: add this everywhere!
+    getAll(key:RKeyType, ...keys_and_then_options:Array<RKeyType|{ index? }>):RSelectionInterface<RemoteT>;
+    getAll(key:RKeyType, options?:{ index }):RSelectionInterface<RemoteT>;
+    getAll(key:RKeyType, ...keys:Array<RKeyType>):RSelectionInterface<RemoteT>;
+    getAll(args:RSpecialInterface, options?:{ index }):RSelectionInterface<RemoteT>; // TODO: add this everywhere!
 
     /**
      * Get all documents where the given geometry object intersects the geometry object of the requested geospatial index.
      *
-     * table.getIntersecting(geometry, {index: 'indexname'}) → selection<stream></stream>
+     * table.getIntersecting(geometry, {index: 'indexname'}) ? selection<stream></stream>
      * **Example:** Which of the locations in a list of parks intersect `circle1`?
      *
      *     var circle1 = r.circle([-117.220406,32.719464], 10, {unit: 'mi'});
@@ -2268,7 +2209,7 @@ declare module rethinkdb {
     /**
      * Get all documents where the specified geospatial index is within a certain distance of the specified point (default 100 kilometers).
      *
-     * table.getNearest(point, {index: 'indexname'[, maxResults: 100, maxDist: 100000, unit: 'm', geoSystem: 'WGS84']}) → selection<array></array>
+     * table.getNearest(point, {index: 'indexname'[, maxResults: 100, maxDist: 100000, unit: 'm', geoSystem: 'WGS84']}) ? selection<array></array>
      * **Example:** Return a list of enemy hideouts within 5000 meters of the secret base.
      *
      *     var secretBase = r.point(-122.422876,37.777128);
@@ -2283,7 +2224,7 @@ declare module rethinkdb {
     /**
      * Create a new secondary index on a table.
      *
-     * table.indexCreate(indexName[, indexFunction][, {multi: false, geo: false}]) → object
+     * table.indexCreate(indexName[, indexFunction][, {multi: false, geo: false}]) ? object
      * **Example:** Create a simple index based on the field `postId`.
      *
      *     r.table('comments').indexCreate('postId').run(conn, callback)
@@ -2298,7 +2239,7 @@ declare module rethinkdb {
     /**
      * Delete a previously created secondary index of this table.
      *
-     * table.indexDrop(indexName) → object
+     * table.indexDrop(indexName) ? object
      * **Example:** Drop a secondary index named 'code_name'.
      *
      *     r.table('dc').indexDrop('code_name').run(conn, callback)
@@ -2310,7 +2251,7 @@ declare module rethinkdb {
     /**
      * List all the secondary indexes of this table.
      *
-     * table.indexList() → array
+     * table.indexList() ? array
      * **Example:** List the available secondary indexes for this table.
      *
      *     r.table('marvel').indexList().run(conn, callback)
@@ -2322,7 +2263,7 @@ declare module rethinkdb {
     /**
      * Rename an existing secondary index on a table. If the optional argument `overwrite` is specified as `true`, a previously existing index with the new name will be deleted and the index will be renamed. If `overwrite` is `false` (the default) an error will be raised if the new index name already exists.
      *
-     * table.indexRename(oldIndexName, newIndexName[, {overwrite: false}]) → object
+     * table.indexRename(oldIndexName, newIndexName[, {overwrite: false}]) ? object
      * **Example:** Rename an index on the comments table.
      *
      *     r.table('comments').indexRename('postId', 'messageId').run(conn, callback)
@@ -2335,7 +2276,7 @@ declare module rethinkdb {
     /**
      * Get the status of the specified indexes on this table, or the status of all indexes on this table if no indexes are specified.
      *
-     * table.indexStatus([, index...]) → array
+     * table.indexStatus([, index...]) ? array
      * **Example:** Get the status of all the indexes on `test`:
      *
      *     r.table('test').indexStatus().run(conn, callback)
@@ -2352,7 +2293,7 @@ declare module rethinkdb {
     /**
      * Wait for the specified indexes on this table to be ready, or for all indexes on this table to be ready if no indexes are specified.
      *
-     * table.indexWait([, index...]) → array
+     * table.indexWait([, index...]) ? array
      * **Example:** Wait for all indexes on the table `test` to be ready:
      *
      *     r.table('test').indexWait().run(conn, callback)
@@ -2371,7 +2312,7 @@ declare module rethinkdb {
      *
      * Sorting without an index requires the server to hold the sequence in memory, and is limited to 100,000 documents (or the setting of the `arrayLimit` option for [run](/api/javascript/run)). Sorting with an index can be done on arbitrarily large tables, or after a `between` command using the same index.
      *
-     * table.orderBy([key | function...], {index: index_name}) → table_sliceselection.orderBy(key | function[, ...]) → selection<array>sequence.orderBy(key | function[, ...]) → array</array>
+     * table.orderBy([key | function...], {index: index_name}) ? table_sliceselection.orderBy(key | function[, ...]) ? selection<array>sequence.orderBy(key | function[, ...]) ? array</array>
      * **Example:** Order all the posts using the index `date`.
      *
      *     r.table('posts').orderBy({index: 'date'}).run(conn, callback)
@@ -2393,7 +2334,7 @@ declare module rethinkdb {
     /**
      * Return the status of a table.
      *
-     * table.status() → selection<object>
+     * table.status() ? selection<object>
      * **Example:** Get a table's status.
      *
      *     > r.table('superheroes').status().run(conn, callback);
@@ -2405,7 +2346,7 @@ declare module rethinkdb {
     /**
      * `sync` ensures that writes on a given table are written to permanent storage. Queries that specify soft durability (`{durability: 'soft'}`) do not give such guarantees, so `sync` can be used to ensure the state of these queries. A call to `sync` does not return until all previous writes to the table are persisted.
      *
-     * table.sync()→ object
+     * table.sync()? object
      * **Example:** After having updated multiple heroes with soft durability, we now want to wait until these changes are persisted.
      *
      *     r.table('marvel').sync().run(conn, callback)
@@ -2418,7 +2359,7 @@ declare module rethinkdb {
     /**
      * Count the number of elements in the sequence. With a single argument, count the number of elements equal to it. If the argument is a function, it is equivalent to calling filter before count.
      *
-     * sequence.count([value | predicate_function]) → numberbinary.count() → number
+     * sequence.count([value | predicate_function]) ? numberbinary.count() ? number
      * **Example:** Just how many super heroes are there?
      *
      *     r.table('marvel').count().add(r.table('dc').count()).run(conn, callback)
@@ -2428,17 +2369,17 @@ declare module rethinkdb {
     count():RNumberInterface;
 
     /**
-    * Return the elements of a sequence within the specified range.
-    * 
-    * **Example:** Return the fourth, fifth and sixth youngest players. (The youngest player is at index 0, so those are elements 3–5.)
-    * 
-    * `js r.table('players').orderBy({index: 'age'}).slice(3,6).run(conn, callback)`
-    *
-    * selection.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → selectionstream.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → streamarray.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → arraybinary.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → binary
-    * 
-    *
-    * http://rethinkdb.com/api/javascript/slice
-    */
+     * Return the elements of a sequence within the specified range.
+     *
+     * **Example:** Return the fourth, fifth and sixth youngest players. (The youngest player is at index 0, so those are elements 3–5.)
+     *
+     * `js r.table('players').orderBy({index: 'age'}).slice(3,6).run(conn, callback)`
+     *
+     * selection.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) ? selectionstream.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) ? streamarray.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) ? arraybinary.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) ? binary
+     *
+     *
+     * http://rethinkdb.com/api/javascript/slice
+     */
     slice(startIndex:number|RNumberInterface, endIndex:number|RNumberInterface, options?:{ leftBound?, rightBound? }):RBinaryInterface;
     slice(startIndex:number|RNumberInterface):RBinaryInterface;
   }
@@ -2446,7 +2387,7 @@ declare module rethinkdb {
     /**
      * Convert a ReQL value or object to a JSON string. You may use either `toJsonString` or `toJSON`.
      *
-     * value.toJsonString() → stringvalue.toJSON() → string
+     * value.toJsonString() ? stringvalue.toJSON() ? string
      * **Example:** Get a ReQL document as a JSON string.
      *
      *     > r.table('hero').get(1).toJSON()
@@ -2460,7 +2401,7 @@ declare module rethinkdb {
     /**
      * Convert a ReQL value or object to a JSON string. You may use either `toJsonString` or `toJSON`.
      *
-     * value.toJsonString() → stringvalue.toJSON() → string
+     * value.toJsonString() ? stringvalue.toJSON() ? string
      * **Example:** Get a ReQL document as a JSON string.
      *
      *     > r.table('hero').get(1).toJSON()
@@ -2475,7 +2416,7 @@ declare module rethinkdb {
     /**
      * Provide a default value in case of non-existence errors. The `default` command evaluates its first argument (the value it's chained to). If that argument returns `null` or a non-existence error is thrown in evaluation, then `default` returns its second argument. The second argument is usually a default value, but it can be a function that returns a value.
      *
-     * value.default(default_value | function) → anysequence.default(default_value | function) → any
+     * value.default(default_value | function) ? anysequence.default(default_value | function) ? any
      * **Example:** Retrieve the titles and authors of the table `posts`. In the case where the author field is missing or `null`, we want to retrieve the string `Anonymous`.
      *
      *     r.table("posts").map(function (post) {
@@ -2493,7 +2434,7 @@ declare module rethinkdb {
     /**
      * Test if two or more values are equal.
      *
-     * value.eq(value[, value, ...]) → bool
+     * value.eq(value[, value, ...]) ? bool
      * **Example:** See if a user's `role` field is set to `administrator`.
      *
      *     r.table('users').get(1)('role').eq('administrator').run(conn, callback);
@@ -2506,7 +2447,7 @@ declare module rethinkdb {
     /**
      * Compare values, testing if the left-hand value is greater than or equal to the right-hand.
      *
-     * value.ge(value[, value, ...]) → bool
+     * value.ge(value[, value, ...]) ? bool
      * **Example:** Test if a player has scored 10 points or more.
      *
      *     r.table('players').get(1)('score').ge(10).run(conn, callback);
@@ -2519,7 +2460,7 @@ declare module rethinkdb {
     /**
      * Compare values, testing if the left-hand value is greater than the right-hand.
      *
-     * value.gt(value[, value, ...]) → bool
+     * value.gt(value[, value, ...]) ? bool
      * **Example:** Test if a player has scored more than 10 points.
      *
      *     r.table('players').get(1)('score').gt(10).run(conn, callback);
@@ -2532,7 +2473,7 @@ declare module rethinkdb {
     /**
      * Compare values, testing if the left-hand value is less than or equal to the right-hand.
      *
-     * value.le(value[, value, ...]) → bool
+     * value.le(value[, value, ...]) ? bool
      * **Example:** Test if a player has scored 10 points or less.
      *
      *     r.table('players').get(1)('score').le(10).run(conn, callback);
@@ -2545,7 +2486,7 @@ declare module rethinkdb {
     /**
      * Compare values, testing if the left-hand value is less than the right-hand.
      *
-     * value.lt(value[, value, ...]) → bool
+     * value.lt(value[, value, ...]) ? bool
      * **Example:** Test if a player has scored less than 10 points.
      *
      *     r.table('players').get(1)['score'].lt(10).run(conn, callback);
@@ -2558,7 +2499,7 @@ declare module rethinkdb {
     /**
      * Test if two or more values are not equal.
      *
-     * value.ne(value[, value, ...]) → bool
+     * value.ne(value[, value, ...]) ? bool
      * **Example:** See if a user's `role` field is not set to `administrator`.
      *
      *     r.table('users').get(1)('role').ne('administrator').run(conn, callback);
@@ -2580,9 +2521,9 @@ declare module rethinkdb {
      *
      * The body of every filter is wrapped in an implicit `.default(false)`, which means that if a non-existence errors is thrown (when you try to access a field that does not exist in a document), RethinkDB will just ignore the document. The `default` value can be changed by passing an object with a `default` field. Setting this optional argument to `r.error()` will cause any non-existence errors to return a `ReqlRuntimeError`.
      *
-     * selection.filter(predicate_function[, {default: false}]) → selection
-     * stream.filter(predicate_function[, {default: false}]) → stream
-     * array.filter(predicate_function[, {default: false}]) → array
+     * selection.filter(predicate_function[, {default: false}]) ? selection
+     * stream.filter(predicate_function[, {default: false}]) ? stream
+     * array.filter(predicate_function[, {default: false}]) ? array
      * **Example:** Get all the users that are 30 years old.
      *
      *     r.table('users').filter({age: 30}).run(conn, callback)
@@ -2611,7 +2552,7 @@ declare module rethinkdb {
     /**
      * Get a single field from an object or a single element from a sequence.
      *
-     * sequence(attr) → sequencesingleSelection(attr) → valueobject(attr) → valuearray(index) → value
+     * sequence(attr) ? sequencesingleSelection(attr) ? valueobject(attr) ? valuearray(index) ? value
      * **Example:** What was Iron Man's first appearance in a comic?
      *
      *     r.table('marvel').get('IronMan')('firstAppearance').run(conn, callback)
@@ -2634,7 +2575,7 @@ declare module rethinkdb {
     /**
      * Get a single field from an object. If called on a sequence, gets that field from every object in the sequence, skipping objects that lack it.
      *
-     * sequence.getField(attr) → sequencesingleSelection.getField(attr) → valueobject.getField(attr) → value
+     * sequence.getField(attr) ? sequencesingleSelection.getField(attr) ? valueobject.getField(attr) ? value
      * **Example:** What was Iron Man's first appearance in a comic?
      *
      *     r.table('marvel').get('IronMan').getField('firstAppearance').run(conn, callback)
@@ -2647,14 +2588,14 @@ declare module rethinkdb {
     /**
      * Convert a value of one type into another.
      *
-     * sequence.coerceTo('array') → array
-     sequence.coerceTo('object') → object
-     value.coerceTo('string') → string
-     array.coerceTo('object') → object
-     object.coerceTo('array') → array
-     binary.coerceTo('string') → string
-     string.coerceTo('number') → number
-     string.coerceTo('binary') → binary
+     * sequence.coerceTo('array') ? array
+     sequence.coerceTo('object') ? object
+     value.coerceTo('string') ? string
+     array.coerceTo('object') ? object
+     object.coerceTo('array') ? array
+     binary.coerceTo('string') ? string
+     string.coerceTo('number') ? number
+     string.coerceTo('binary') ? binary
      * **Example:** Coerce a stream to an array.
      *
      *     r.table('posts').map(function (post) {
@@ -2674,7 +2615,7 @@ declare module rethinkdb {
     /**
      * Test if an object has one or more fields. An object has a field if it has that key and the key has a non-null value. For instance, the object `{'a': 1,'b': 2,'c': null}` has the fields `a` and `b`.
      *
-     * sequence.hasFields([selector1, selector2...]) → streamarray.hasFields([selector1, selector2...]) → arrayobject.hasFields([selector1, selector2...]) → boolean
+     * sequence.hasFields([selector1, selector2...]) ? streamarray.hasFields([selector1, selector2...]) ? arrayobject.hasFields([selector1, selector2...]) ? boolean
      * **Example:** Return the players who have won games.
      *
      *     r.table('players').hasFields('games_won').run(conn, callback)
@@ -2686,7 +2627,7 @@ declare module rethinkdb {
     /**
      * Return an array containing all of an object's keys. Note that the keys will be sorted as described in [ReQL data types](/docs/data-types/#sorting-order) (for strings, lexicographically).
      *
-     * singleSelection.keys() → arrayobject.keys() → array
+     * singleSelection.keys() ? arrayobject.keys() ? array
      * **Example:** Get all the keys from a table row.
      *
      *     // row: { id: 1, mail: "fred@example.com", name: "fred" }
@@ -2702,7 +2643,7 @@ declare module rethinkdb {
     /**
      * Merge two or more objects together to construct a new object with properties from all. When there is a conflict between field names, preference is given to fields in the rightmost object in the argument list.
      *
-     * singleSelection.merge([object | function, object | function, ...]) → objectobject.merge([object | function, object | function, ...]) → objectsequence.merge([object | function, object | function, ...]) → streamarray.merge([object | function, object | function, ...]) → array
+     * singleSelection.merge([object | function, object | function, ...]) ? objectobject.merge([object | function, object | function, ...]) ? objectsequence.merge([object | function, object | function, ...]) ? streamarray.merge([object | function, object | function, ...]) ? array
      * **Example:** Equip Thor for battle.
      *
      *     r.table('marvel').get('thor').merge(
@@ -2717,7 +2658,7 @@ declare module rethinkdb {
     /**
      * Plucks out one or more attributes from either an object or a sequence of objects (projection).
      *
-     * sequence.pluck([selector1, selector2...]) → streamarray.pluck([selector1, selector2...]) → arrayobject.pluck([selector1, selector2...]) → objectsingleSelection.pluck([selector1, selector2...]) → object
+     * sequence.pluck([selector1, selector2...]) ? streamarray.pluck([selector1, selector2...]) ? arrayobject.pluck([selector1, selector2...]) ? objectsingleSelection.pluck([selector1, selector2...]) ? object
      * **Example:** We just need information about IronMan's reactor and not the rest of the document.
      *
      *     r.table('marvel').get('IronMan').pluck('reactorState', 'reactorPower').run(conn, callback)
@@ -2731,7 +2672,7 @@ declare module rethinkdb {
      *
      * Return an array containing all of an object's values. `values()` guarantees the values will come out in the same order as [keys](/api/javascript/keys).
      *
-     * singleSelection.values() → arrayobject.values() → array
+     * singleSelection.values() ? arrayobject.values() ? array
      * **Example:** Get all of the values from a table row.
      *
      *     // row: { id: 1, mail: "fred@example.com", name: "fred" }
@@ -2747,7 +2688,7 @@ declare module rethinkdb {
     /**
      * The opposite of pluck; takes an object or a sequence of objects, and returns them with the specified paths removed.
      *
-     * sequence.without([selector1, selector2...]) → streamarray.without([selector1, selector2...]) → arraysingleSelection.without([selector1, selector2...]) → objectobject.without([selector1, selector2...]) → object
+     * sequence.without([selector1, selector2...]) ? streamarray.without([selector1, selector2...]) ? arraysingleSelection.without([selector1, selector2...]) ? objectobject.without([selector1, selector2...]) ? object
      * **Example:** Since we don't need it for this computation we'll save bandwidth and leave out the list of IronMan's romantic conquests.
      *
      *     r.table('marvel').get('IronMan').without('personalVictoriesList').run(conn, callback)
@@ -2765,21 +2706,20 @@ declare module rethinkdb {
      *
      * `js r.table('players').get('f19b5f16-ef14-468f-bd48-e194761df255').do( function (player) { return player('gross_score').sub(player('course_handicap')); } ).run(conn, callback);`
      *
-     * any.do(function) → anyr.do([args]*, function) → anyany.do(expr) → anyr.do([args]*, expr) → any
+     * any.do(function) ? anyr.do([args]*, function) ? anyany.do(expr) ? anyr.do([args]*, expr) ? any
      *
      *
      * http://rethinkdb.com/api/javascript/do
      */
     // do<R extends RAnyInterface>(...args_and_then_a_function):R;
-    do<R extends RAnyInterface>(expr:(thisObject:RAnyInterface)=>R):R;
-    do<R extends RAnyInterface, Arg1 extends RAnyInterface>(arg1:Arg1, expr:(arg1:Arg1)=>R):R;
-    do<R extends RAnyInterface, Arg1 extends RAnyInterface, Arg2 extends RAnyInterface>(arg1:Arg1, arg2:Arg2, expr:(arg1:Arg1, arg2:Arg2)=>R):R;
-    do<R extends RAnyInterface, Arg1 extends RAnyInterface, Arg2 extends RAnyInterface, Arg3 extends RAnyInterface>(arg1:Arg1, arg2:Arg2, arg3:Arg3, expr:(arg1:Arg1, arg2:Arg2, arg3:Arg3)=>R):R;
+    do<T extends RAnyInterface, R extends RAnyInterface>(expr:(thisObject:T)=>R):R;
+    do<T extends RAnyInterface, R extends {}>(expr:(thisObject:T)=>R):RObjectInterface<any>;
+    do<T extends RAnyInterface, R>(expr:(thisObject:T)=>R):RValueInterface<any>;
 
     /**
      * Get information about a ReQL value.
      *
-     * any.info() → objectr.info(any) → object
+     * any.info() ? objectr.info(any) ? object
      * **Example:** Get information about a table such as primary key, or cache size.
      *
      *     r.table('marvel').info().run(conn, callback)
@@ -2791,7 +2731,7 @@ declare module rethinkdb {
     /**
      * Gets the type of a value.
      *
-     * any.typeOf() → string
+     * any.typeOf() ? string
      * **Example:** Get the type of a string.
      *
      *     r.expr("foo").typeOf().run(conn, callback)
@@ -2800,11 +2740,11 @@ declare module rethinkdb {
      */
     typeOf():RStringInterface;
   }
-  export interface RStreamInterface<RemoteT> extends RObservableInterface<RemoteT>, RSequenceStream<RemoteT>, RRunableInterface<RCursorInterface<RemoteT>> {
+  export interface RStreamInterface<RemoteT> extends RObservableInterface<RemoteT>, RSequenceStream<RemoteT> {
     /**
      * Plucks out one or more attributes from either an object or a sequence of objects (projection).
      *
-     * sequence.pluck([selector1, selector2...]) → streamarray.pluck([selector1, selector2...]) → arrayobject.pluck([selector1, selector2...]) → objectsingleSelection.pluck([selector1, selector2...]) → object
+     * sequence.pluck([selector1, selector2...]) ? streamarray.pluck([selector1, selector2...]) ? arrayobject.pluck([selector1, selector2...]) ? objectsingleSelection.pluck([selector1, selector2...]) ? object
      * **Example:** We just need information about IronMan's reactor and not the rest of the document.
      *
      *     r.table('marvel').get('IronMan').pluck('reactorState', 'reactorPower').run(conn, callback)
@@ -2816,9 +2756,9 @@ declare module rethinkdb {
     /**
      * Select a given number of elements from a sequence with uniform random distribution. Selection is done without replacement.
      *
-     * sequence.sample(number) → selection // TODO: this is a mistake, isn't it?
-     stream.sample(number) → array
-     array.sample(number) → array
+     * sequence.sample(number) ? selection // TODO: this is a mistake, isn't it?
+     stream.sample(number) ? array
+     array.sample(number) ? array
      * **Example:** Select 3 random heroes.
      *
      *     r.table('marvel').sample(3).run(conn, callback)
@@ -2831,7 +2771,7 @@ declare module rethinkdb {
     /**
      * Used to 'zip' up the result of a join by merging the 'right' fields into 'left' fields of each member of the sequence.
      *
-     * stream.zip() → streamarray.zip() → array
+     * stream.zip() ? streamarray.zip() ? array
      * **Example:** 'zips up' the sequence by merging the left and right fields produced by a join.
      *
      *     r.table('marvel').eqJoin('main_dc_collaborator', r.table('dc'))
@@ -2845,7 +2785,7 @@ declare module rethinkdb {
     /**
      * Compute the distance between a point and another geometry object. At least one of the geometry objects specified must be a point.
      *
-     * geometry.distance(geometry[, {geoSystem: 'WGS84', unit: 'm'}]) → numberr.distance(geometry, geometry[, {geoSystem: 'WGS84', unit: 'm'}]) → number
+     * geometry.distance(geometry[, {geoSystem: 'WGS84', unit: 'm'}]) ? numberr.distance(geometry, geometry[, {geoSystem: 'WGS84', unit: 'm'}]) ? number
      * **Example:** Compute the distance between two points on the Earth in kilometers.
      *
      *     var point1 = r.point(-122.423246,37.779388);
@@ -2861,7 +2801,7 @@ declare module rethinkdb {
     /**
      * Tests whether a geometry object is completely contained within another. When applied to a sequence of geometry objects, `includes` acts as a [filter](/api/javascript/filter), returning a sequence of objects from the sequence that include the argument.
      *
-     * sequence.includes(geometry) → sequencegeometry.includes(geometry) → bool
+     * sequence.includes(geometry) ? sequencegeometry.includes(geometry) ? bool
      * **Example:** Is `point2` included within a 2000-meter circle around `point1`?
      *
      *     var point1 = r.point(-117.220406,32.719464);
@@ -2877,7 +2817,7 @@ declare module rethinkdb {
     /**
      * Tests whether two geometry objects intersect with one another. When applied to a sequence of geometry objects, `intersects` acts as a [filter](/api/javascript/filter), returning a sequence of objects from the sequence that intersect with the argument.
      *
-     * sequence.intersects(geometry) → sequencegeometry.intersects(geometry) → boolr.intersects(sequence, geometry) → sequencer.intersects(geometry, geometry) → bool
+     * sequence.intersects(geometry) ? sequencegeometry.intersects(geometry) ? boolr.intersects(sequence, geometry) ? sequencer.intersects(geometry, geometry) ? bool
      * **Example:** Is `point2` within a 2000-meter circle around `point1`?
      *
      *     var point1 = r.point(-117.220406,32.719464);
@@ -2893,7 +2833,7 @@ declare module rethinkdb {
     /**
      * Convert a ReQL geometry object to a [GeoJSON][] object.
      *
-     * geometry.toGeojson() → object
+     * geometry.toGeojson() ? object
      * **Example:** Convert a ReQL geometry object to a GeoJSON object.
      *
      *     r.table('geo').get('sfo')('location').toGeojson.run(conn, callback);
@@ -2938,7 +2878,7 @@ declare module rethinkdb {
     /**
      * Lazily iterate over a result set one element at a time in an identical fashion to [each](/api/javascript/each/), returning a Promise that will be resolved once all rows are returned.
      *
-     * cursor.eachAsync(function) → promisearray.eachAsync(function) → promisefeed.eachAsync(function) → promise
+     * cursor.eachAsync(function) ? promisearray.eachAsync(function) ? promisefeed.eachAsync(function) ? promise
      * **Example:** Process all the elements in a stream.
      *
      *     cursor.eachAsync(function(row) {
@@ -2956,7 +2896,7 @@ declare module rethinkdb {
     /**
      * Get the next element in the cursor.
      *
-     * cursor.next(callback)array.next(callback)cursor.next() → promisearray.next() → promise
+     * cursor.next(callback)array.next(callback)cursor.next() ? promisearray.next() ? promise
      * **Example:** Retrieve the next element.
      *
      *     cursor.next(function(err, row) {
@@ -2972,7 +2912,7 @@ declare module rethinkdb {
     /**
      * Retrieve all results and pass them as an array to the given callback.
      *
-     * cursor.toArray(callback)array.toArray(callback)cursor.toArray() → promisearray.toArray() → promise
+     * cursor.toArray(callback)array.toArray(callback)cursor.toArray() ? promisearray.toArray() ? promise
      * **Example:** For small result sets it may be more convenient to process them at once as an array.
      *
      *     cursor.toArray(function(err, results) {
@@ -2993,7 +2933,7 @@ declare module rethinkdb {
      * If no callback is provided, a promise will be returned.
      *
      * conn.close([{noreplyWait: true}, ]callback)
-     conn.close([{noreplyWait: true}]) → promise
+     conn.close([{noreplyWait: true}]) ? promise
      * **Example:** Close an open connection, waiting for noreply writes to finish.
      *
      *     conn.close(function(err) { if (err) throw err; })
@@ -3011,7 +2951,7 @@ declare module rethinkdb {
      * If no callback is provided, a promise will be returned.
      *
      * conn.reconnect([{noreplyWait: true}, ]callback)
-     conn.reconnect([{noreplyWait: true}]) → promise
+     conn.reconnect([{noreplyWait: true}]) ? promise
      * **Example:** Cancel outstanding requests/queries that are no longer needed.
      *
      *     conn.reconnect({noreplyWait: false}, function(error, connection) { ... })
@@ -3053,7 +2993,7 @@ declare module rethinkdb {
     /**
      * Query (read and/or update) the configurations for individual tables or databases.
      *
-     * table.config() → selection<object>database.config() → selection<object>
+     * table.config() ? selection<object>database.config() ? selection<object>
      * **Example:** Get the configuration for the `users` table.
      *
      *     > r.table('users').config().run(conn, callback);
@@ -3065,7 +3005,7 @@ declare module rethinkdb {
     /**
      * Rebalances the shards of a table. When called on a database, all the tables in that database will be rebalanced.
      *
-     * table.rebalance() → objectdatabase.rebalance() → object
+     * table.rebalance() ? objectdatabase.rebalance() ? object
      * **Example:** Rebalance a table.
      *
      *     > r.table('superheroes').rebalance().run(conn, callback);
@@ -3077,7 +3017,7 @@ declare module rethinkdb {
     /**
      * Reconfigure a table's sharding and replication.
      *
-     * table.reconfigure({shards: <s>, replicas: <r>[, primaryReplicaTag: <t>, dryRun: false}]) → objectdatabase.reconfigure({shards: <s>, replicas: <r>[, primaryReplicaTag: <t>, dryRun: false}]) → object</t></r></s></t></r></s>
+     * table.reconfigure({shards: <s>, replicas: <r>[, primaryReplicaTag: <t>, dryRun: false}]) ? objectdatabase.reconfigure({shards: <s>, replicas: <r>[, primaryReplicaTag: <t>, dryRun: false}]) ? object</t></r></s></t></r></s>
      * **Example:** Reconfigure a table.
      *
      *     > r.table('superheroes').reconfigure({shards: 2, replicas: 1}).run(conn, callback);
@@ -3089,7 +3029,7 @@ declare module rethinkdb {
     /**
      * Wait for a table or all the tables in a database to be ready. A table may be temporarily unavailable after creation, rebalancing or reconfiguring. The `wait` command blocks until the given table (or database) is fully up to date.
      *
-     * table.wait([{waitFor: 'ready_for_writes', timeout: <sec>}]) → objectdatabase.wait([{waitFor: 'ready_for_writes', timeout: <sec>}]) → objectr.wait([{waitFor: 'ready_for_writes', timeout: <sec>}]) → object</sec></sec></sec>
+     * table.wait([{waitFor: 'ready_for_writes', timeout: <sec>}]) ? objectdatabase.wait([{waitFor: 'ready_for_writes', timeout: <sec>}]) ? objectr.wait([{waitFor: 'ready_for_writes', timeout: <sec>}]) ? object</sec></sec></sec>
      * **Example:** Wait for a table to be ready.
      *
      *     > r.table('superheroes').wait().run(conn, callback);
@@ -3103,7 +3043,7 @@ declare module rethinkdb {
     /**
      * Select all documents in a table. This command can be chained with other commands to do further processing on the data.
      *
-     * db.table(name[, {readMode: 'single', identifierFormat: 'name'}]) → table
+     * db.table(name[, {readMode: 'single', identifierFormat: 'name'}]) ? table
      * **Example:** Return all documents in the table 'marvel' of the default database.
      *
      *     r.table('marvel').run(conn, callback)
@@ -3115,8 +3055,8 @@ declare module rethinkdb {
     /**
      * Create a table. A RethinkDB table is a collection of JSON documents.
      *
-     * db.tableCreate(tableName[, options]) → object
-     r.tableCreate(tableName[, options]) → object
+     * db.tableCreate(tableName[, options]) ? object
+     r.tableCreate(tableName[, options]) ? object
      * **Example:** Create a table named 'dc_universe' with the default settings.
      *
      *     r.db('heroes').tableCreate('dc_universe').run(conn, callback)
@@ -3128,7 +3068,7 @@ declare module rethinkdb {
     /**
      * Drop a table. The table and all its data will be deleted.
      *
-     * db.tableDrop(tableName) → object
+     * db.tableDrop(tableName) ? object
      * **Example:** Drop a table named 'dc_universe'.
      *
      *     r.db('test').tableDrop('dc_universe').run(conn, callback)
@@ -3140,7 +3080,7 @@ declare module rethinkdb {
     /**
      * List all table names in a database. The result is a list of strings.
      *
-     * db.tableList() → array
+     * db.tableList() ? array
      * **Example:** List all tables of the 'test' database.
      *
      *     r.db('test').tableList().run(conn, callback)
@@ -3154,7 +3094,7 @@ declare module rethinkdb {
     /**
      * Use `polygon2` to "punch out" a hole in `polygon1`. `polygon2` must be completely contained within `polygon1` and must have no holes itself (it must not be the output of `polygonSub` itself).
      *
-     * polygon1.polygonSub(polygon2) → polygon
+     * polygon1.polygonSub(polygon2) ? polygon
      * **Example:** Define a polygon with a hole punched in it.
      *
      *     var outerPolygon = r.polygon(
@@ -3179,7 +3119,7 @@ declare module rethinkdb {
     /**
      * Convert a Line object into a Polygon object. If the last point does not specify the same coordinates as the first point, `polygon` will close the polygon by connecting them.
      *
-     * line.fill() → polygon
+     * line.fill() ? polygon
      * **Example:** Create a line object and then convert it to a polygon.
      *
      *     r.table('geo').insert({
@@ -3200,12 +3140,12 @@ declare module rethinkdb {
      */
     fill():RPolygonInterface;
   }
-  export interface RGroupedValueInterface<RemoteT> extends RRunableInterface<RCursorInterface<GroupResult<RemoteT>> & Array<GroupResult<RemoteT>>>, RCoercable, RToJSONInterface, RAnyInterface {
+  export interface RGroupedValueInterface<RemoteT> extends RRunableInterface<RCursorInterface<GroupResult<RemoteT>>>, RCoercable, RToJSONInterface, RAnyInterface {
     //RGroupedStreamInterface
     /**
      * Takes a grouped stream or grouped data and turns it into an array of objects representing the groups. Any commands chained after `ungroup` will operate on this array, rather than operating on each group individually. This is useful if you want to e.g. order the groups by the value of their reduction.
      *
-     * grouped_stream.ungroup() → arraygrouped_data.ungroup() → array
+     * grouped_stream.ungroup() ? arraygrouped_data.ungroup() ? array
      * **Example:** What is the maximum number of points scored by each player, with the highest scorers first?
      *
      *     r.table('games')
@@ -3221,7 +3161,7 @@ declare module rethinkdb {
     /**
      * Averages all the elements of a sequence. If called with a field name, averages all the values of that field in the sequence, skipping elements of the sequence that lack that field. If called with a function, calls that function on every element of the sequence and averages the results, skipping elements of the sequence where that function returns `null` or a non-existence error.
      *
-     * sequence.avg([field | function]) → number
+     * sequence.avg([field | function]) ? number
      * **Example:** What's the average of 3, 5, and 7?
      *
      *     r.expr([3, 5, 7]).avg().run(conn, callback)
@@ -3235,7 +3175,7 @@ declare module rethinkdb {
     /**
      * Returns whether or not a sequence contains all the specified values, or if functions are provided instead, returns whether or not a sequence contains values matching all the specified functions.
      *
-     * sequence.contains([value | predicate_function, ...]) → bool
+     * sequence.contains([value | predicate_function, ...]) ? bool
      * **Example:** Has Iron Man ever fought Superman?
      *
      *     r.table('marvel').get('ironman')('opponents').contains('superman').run(conn, callback)
@@ -3248,7 +3188,7 @@ declare module rethinkdb {
     /**
      * Count the number of elements in the sequence. With a single argument, count the number of elements equal to it. If the argument is a function, it is equivalent to calling filter before count.
      *
-     * sequence.count([value | predicate_function]) → numberbinary.count() → number
+     * sequence.count([value | predicate_function]) ? numberbinary.count() ? number
      * **Example:** Just how many super heroes are there?
      *
      *     r.table('marvel').count().add(r.table('dc').count()).run(conn, callback)
@@ -3261,7 +3201,7 @@ declare module rethinkdb {
     /**
      * Provide a default value in case of non-existence errors. The `default` command evaluates its first argument (the value it's chained to). If that argument returns `null` or a non-existence error is thrown in evaluation, then `default` returns its second argument. The second argument is usually a default value, but it can be a function that returns a value.
      *
-     * value.default(default_value | function) → anysequence.default(default_value | function) → any
+     * value.default(default_value | function) ? anysequence.default(default_value | function) ? any
      * **Example:** Retrieve the titles and authors of the table `posts`. In the case where the author field is missing or `null`, we want to retrieve the string `Anonymous`.
      *
      *     r.table("posts").map(function (post) {
@@ -3279,7 +3219,7 @@ declare module rethinkdb {
     /**
      * Loop over a sequence, evaluating the given write query for each element.
      *
-     * sequence.forEach(write_function) → object
+     * sequence.forEach(write_function) ? object
      * **Example:** Now that our heroes have defeated their villains, we can safely remove them from the villain table.
      *
      *     r.table('marvel').forEach(function(hero) {
@@ -3293,7 +3233,7 @@ declare module rethinkdb {
     /**
      * Takes a stream and partitions it into multiple groups based on the fields or functions provided. Commands chained after `group` will be called on each of these grouped sub-streams, producing grouped data.
      *
-     * sequence.group(field | function..., [{index: <indexname>, multi: false}]) → grouped_stream</indexname>
+     * sequence.group(field | function..., [{index: <indexname>, multi: false}]) ? grouped_stream</indexname>
      * **Example:** What is each player's best game?
      *
      *     r.table('games').group('player').max('points').run(conn, callback)
@@ -3307,7 +3247,7 @@ declare module rethinkdb {
     /**
      * Test if a sequence is empty.
      *
-     * sequence.isEmpty() → bool
+     * sequence.isEmpty() ? bool
      * **Example:** Are there any documents in the marvel table?
      *
      *     r.table('marvel').isEmpty().run(conn, callback)
@@ -3319,7 +3259,7 @@ declare module rethinkdb {
     /**
      * Finds the maximum element of a sequence.
      *
-     * sequence.max(field | function) → elementsequence.max({index: <indexname>}) → element</indexname>
+     * sequence.max(field | function) ? elementsequence.max({index: <indexname>}) ? element</indexname>
      * **Example:** Return the maximum value in the list `[3, 5, 7]`.
      *
      *     r.expr([3, 5, 7]).max().run(conn, callback);
@@ -3332,7 +3272,7 @@ declare module rethinkdb {
     /**
      * Finds the minimum element of a sequence.
      *
-     * sequence.min(field | function) → elementsequence.min({index: <indexname>}) → element</indexname>
+     * sequence.min(field | function) ? elementsequence.min({index: <indexname>}) ? element</indexname>
      * **Example:** Return the minimum value in the list `[3, 5, 7]`.
      *
      *     r.expr([3, 5, 7]).min().run(conn, callback);
@@ -3345,7 +3285,7 @@ declare module rethinkdb {
     /**
      * Get the _nth_ element of a sequence, counting from zero. If the argument is negative, count from the last element.
      *
-     * sequence.nth(index) → objectselection.nth(index) → selection<object>
+     * sequence.nth(index) ? objectselection.nth(index) ? selection<object>
      * **Example:** Select the second element in the array.
      *
      *     r.expr([1,2,3]).nth(1).run(conn, callback)
@@ -3357,7 +3297,7 @@ declare module rethinkdb {
     /**
      * Get the indexes of an element in a sequence. If the argument is a predicate, get the indexes of all elements matching it.
      *
-     * sequence.offsetsOf(datum | predicate_function) → array
+     * sequence.offsetsOf(datum | predicate_function) ? array
      * **Example:** Find the position of the letter 'c'.
      *
      *     r.expr(['a','b','c']).offsetsOf('c').run(conn, callback)
@@ -3370,7 +3310,7 @@ declare module rethinkdb {
     /**
      * Produce a single value from a sequence through repeated application of a reduction function.
      *
-     * sequence.reduce(function) → value
+     * sequence.reduce(function) ? value
      * **Example:** Return the number of documents in the table `posts.
      *
      *     r.table("posts").map(function(doc) {
@@ -3386,7 +3326,7 @@ declare module rethinkdb {
     /**
      * Sums all the elements of a sequence. If called with a field name, sums all the values of that field in the sequence, skipping elements of the sequence that lack that field. If called with a function, calls that function on every element of the sequence and sums the results, skipping elements of the sequence where that function returns `null` or a non-existence error.
      *
-     * sequence.sum([field | function]) → number
+     * sequence.sum([field | function]) ? number
      * **Example:** What's 3 + 5 + 7?
      *
      *     r.expr([3, 5, 7]).sum().run(conn, callback)
@@ -3402,7 +3342,7 @@ declare module rethinkdb {
      *
      * `js r.table('players').orderBy({index: 'age'}).slice(3,6).run(conn, callback)`
      *
-     * selection.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → selectionstream.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → streamarray.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → arraybinary.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) → binary
+     * selection.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) ? selectionstream.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) ? streamarray.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) ? arraybinary.slice(startIndex[, endIndex, {leftBound:'closed', rightBound:'open'}]) ? binary
      *
      *
      * http://rethinkdb.com/api/javascript/slice
@@ -3414,8 +3354,8 @@ declare module rethinkdb {
     /**
      * End the sequence after the given number of elements.
      *
-     * sequence.limit(n) → stream
-     array.limit(n) → array
+     * sequence.limit(n) ? stream
+     array.limit(n) ? array
      * **Example:** Only so many can fit in our Pantheon of heroes.
      *
      *     r.table('marvel').orderBy('belovedness').limit(10).run(conn, callback)
@@ -3427,7 +3367,7 @@ declare module rethinkdb {
     /**
      * Skip a number of elements from the head of the sequence.
      *
-     * sequence.skip(n) → streamarray.skip(n) → array
+     * sequence.skip(n) ? streamarray.skip(n) ? array
      * **Example:** Here in conjunction with `orderBy` we choose to ignore the most successful heroes.
      *
      *     r.table('marvel').orderBy('successMetric').skip(10).run(conn, callback)
@@ -3440,7 +3380,7 @@ declare module rethinkdb {
     /**
      * The opposite of pluck; takes an object or a sequence of objects, and returns them with the specified paths removed.
      *
-     * sequence.without([selector1, selector2...]) → streamarray.without([selector1, selector2...]) → arraysingleSelection.without([selector1, selector2...]) → objectobject.without([selector1, selector2...]) → object
+     * sequence.without([selector1, selector2...]) ? streamarray.without([selector1, selector2...]) ? arraysingleSelection.without([selector1, selector2...]) ? objectobject.without([selector1, selector2...]) ? object
      * **Example:** Since we don't need it for this computation we'll save bandwidth and leave out the list of IronMan's romantic conquests.
      *
      *     r.table('marvel').get('IronMan').without('personalVictoriesList').run(conn, callback)
@@ -3458,10 +3398,10 @@ declare module rethinkdb {
     /**
      * Get a single field from an object or a single element from a sequence.
      *
-     * sequence(attr) → sequence
-     singleSelection(attr) → value
-     object(attr) → value
-     array(index) → value
+     * sequence(attr) ? sequence
+     singleSelection(attr) ? value
+     object(attr) ? value
+     array(index) ? value
      * **Example:** What was Iron Man's first appearance in a comic?
      *
      *     r.table('marvel').get('IronMan')('firstAppearance').run(conn, callback)
@@ -3474,7 +3414,7 @@ declare module rethinkdb {
     /**
      * Concatenate one or more elements into a single sequence using a mapping function.
      *
-     * stream.concatMap(function) → streamarray.concatMap(function) → array
+     * stream.concatMap(function) ? streamarray.concatMap(function) ? array
      * **Example:** Construct a sequence of all monsters defeated by Marvel heroes. The field "defeatedMonsters" is an array of one or more monster names.
      *
      *     r.table('marvel').concatMap(function(hero) {
@@ -3488,7 +3428,7 @@ declare module rethinkdb {
     /**
      * Remove duplicate elements from the sequence.
      *
-     * sequence.distinct() → arraytable.distinct([{index: <indexname>}]) → stream</indexname>
+     * sequence.distinct() ? arraytable.distinct([{index: <indexname>}]) ? stream</indexname>
      * **Example:** Which unique villains have been vanquished by marvel heroes?
      *
      *     r.table('marvel').concatMap(function(hero) {
@@ -3506,8 +3446,8 @@ declare module rethinkdb {
      *
      * `js r.table('players').eqJoin('gameId', r.table('games')).run(conn, callback)`
      *
-     * sequence.eqJoin(leftField, rightTable[, {index:'id'}]) → sequence
-     * sequence.eqJoin(predicate_function, rightTable[, {index:'id'}]) → sequence
+     * sequence.eqJoin(leftField, rightTable[, {index:'id'}]) ? sequence
+     * sequence.eqJoin(predicate_function, rightTable[, {index:'id'}]) ? sequence
      *
      *
      * http://rethinkdb.com/api/javascript/eq_join
@@ -3522,9 +3462,9 @@ declare module rethinkdb {
      *
      * The body of every filter is wrapped in an implicit `.default(false)`, which means that if a non-existence errors is thrown (when you try to access a field that does not exist in a document), RethinkDB will just ignore the document. The `default` value can be changed by passing an object with a `default` field. Setting this optional argument to `r.error()` will cause any non-existence errors to return a `ReqlRuntimeError`.
      *
-     * selection.filter(predicate_function[, {default: false}]) → selection
-     * stream.filter(predicate_function[, {default: false}]) → stream
-     * array.filter(predicate_function[, {default: false}]) → array
+     * selection.filter(predicate_function[, {default: false}]) ? selection
+     * stream.filter(predicate_function[, {default: false}]) ? stream
+     * array.filter(predicate_function[, {default: false}]) ? array
      * **Example:** Get all the users that are 30 years old.
      *
      *     r.table('users').filter({age: 30}).run(conn, callback)
@@ -3537,9 +3477,9 @@ declare module rethinkdb {
     /**
      * Get a single field from an object. If called on a sequence, gets that field from every object in the sequence, skipping objects that lack it.
      *
-     * sequence.getField(attr) → sequence
-     * singleSelection.getField(attr) → value
-     * object.getField(attr) → value
+     * sequence.getField(attr) ? sequence
+     * singleSelection.getField(attr) ? value
+     * object.getField(attr) ? value
      * **Example:** What was Iron Man's first appearance in a comic?
      *
      *     r.table('marvel').get('IronMan').getField('firstAppearance').run(conn, callback)
@@ -3551,9 +3491,9 @@ declare module rethinkdb {
     /**
      * Test if an object has one or more fields. An object has a field if it has that key and the key has a non-null value. For instance, the object `{'a': 1,'b': 2,'c': null}` has the fields `a` and `b`.
      *
-     * sequence.hasFields([selector1, selector2...]) → stream
-     array.hasFields([selector1, selector2...]) → array
-     object.hasFields([selector1, selector2...]) → boolean
+     * sequence.hasFields([selector1, selector2...]) ? stream
+     array.hasFields([selector1, selector2...]) ? array
+     object.hasFields([selector1, selector2...]) ? boolean
      * **Example:** Return the players who have won games.
      *
      *     r.table('players').hasFields('games_won').run(conn, callback)
@@ -3565,8 +3505,8 @@ declare module rethinkdb {
     /**
      * Tests whether a geometry object is completely contained within another. When applied to a sequence of geometry objects, `includes` acts as a [filter](/api/javascript/filter), returning a sequence of objects from the sequence that include the argument.
      *
-     * sequence.includes(geometry) → sequence
-     * geometry.includes(geometry) → bool
+     * sequence.includes(geometry) ? sequence
+     * geometry.includes(geometry) ? bool
      * **Example:** Is `point2` included within a 2000-meter circle around `point1`?
      *
      *     var point1 = r.point(-117.220406,32.719464);
@@ -3582,8 +3522,8 @@ declare module rethinkdb {
     /**
      * Returns an inner join of two sequences.
      *
-     * sequence.innerJoin(otherSequence, predicate_function) → stream
-     * array.innerJoin(otherSequence, predicate_function) → array
+     * sequence.innerJoin(otherSequence, predicate_function) ? stream
+     * array.innerJoin(otherSequence, predicate_function) ? array
      * **Example:** Return a list of all matchups between Marvel and DC heroes in which the DC hero could beat the Marvel hero in a fight.
      *
      *     r.table('marvel').innerJoin(r.table('dc'), function(marvelRow, dcRow) {
@@ -3597,10 +3537,10 @@ declare module rethinkdb {
     /**
      * Tests whether two geometry objects intersect with one another. When applied to a sequence of geometry objects, `intersects` acts as a [filter](/api/javascript/filter), returning a sequence of objects from the sequence that intersect with the argument.
      *
-     * sequence.intersects(geometry) → sequence
-     * geometry.intersects(geometry) → bool
-     r.intersects(sequence, geometry) → sequence
-     r.intersects(geometry, geometry) → bool
+     * sequence.intersects(geometry) ? sequence
+     * geometry.intersects(geometry) ? bool
+     r.intersects(sequence, geometry) ? sequence
+     r.intersects(geometry, geometry) ? bool
      * **Example:** Is `point2` within a 2000-meter circle around `point1`?
      *
      *     var point1 = r.point(-117.220406,32.719464);
@@ -3616,10 +3556,10 @@ declare module rethinkdb {
     /**
      * Transform each element of one or more sequences by applying a mapping function to them. If `map` is run with two or more sequences, it will iterate for as many items as there are in the shortest sequence.
      *
-     * sequence1.map([sequence2, ...], function) → stream
-     array1.map([array2, ...], function) → array
-     r.map(sequence1[, sequence2, ...], function) → stream
-     r.map(array1[, array2, ...], function) → array
+     * sequence1.map([sequence2, ...], function) ? stream
+     array1.map([array2, ...], function) ? array
+     r.map(sequence1[, sequence2, ...], function) ? stream
+     r.map(array1[, array2, ...], function) ? array
      * **Example:** Return the first five squares.
      *
      *     r.expr([1, 2, 3, 4, 5]).map(function (val) {
@@ -3639,10 +3579,10 @@ declare module rethinkdb {
     /**
      * Merge two or more objects together to construct a new object with properties from all. When there is a conflict between field names, preference is given to fields in the rightmost object in the argument list.
      *
-     * singleSelection.merge([object | function, object | function, ...]) → object
-     object.merge([object | function, object | function, ...]) → object
-     sequence.merge([object | function, object | function, ...]) → stream
-     array.merge([object | function, object | function, ...]) → array
+     * singleSelection.merge([object | function, object | function, ...]) ? object
+     object.merge([object | function, object | function, ...]) ? object
+     sequence.merge([object | function, object | function, ...]) ? stream
+     array.merge([object | function, object | function, ...]) ? array
      * **Example:** Equip Thor for battle.
      *
      *     r.table('marvel').get('thor').merge(
@@ -3659,9 +3599,9 @@ declare module rethinkdb {
      *
      * Sorting without an index requires the server to hold the sequence in memory, and is limited to 100,000 documents (or the setting of the `arrayLimit` option for [run](/api/javascript/run)). Sorting with an index can be done on arbitrarily large tables, or after a `between` command using the same index.
      *
-     * table.orderBy([key | function...], {index: index_name}) → table_slice
-     selection.orderBy(key | function[, ...]) → selection<array>
-     sequence.orderBy(key | function[, ...]) → array</array>
+     * table.orderBy([key | function...], {index: index_name}) ? table_slice
+     selection.orderBy(key | function[, ...]) ? selection<array>
+     sequence.orderBy(key | function[, ...]) ? array</array>
      * **Example:** Order all the posts using the index `date`.
      *
      *     r.table('posts').orderBy({index: 'date'}).run(conn, callback)
@@ -3684,7 +3624,7 @@ declare module rethinkdb {
     /**
      * Returns a left outer join of two sequences.
      *
-     * sequence.outerJoin(otherSequence, predicate_function) → streamarray.outerJoin(otherSequence, predicate_function) → array
+     * sequence.outerJoin(otherSequence, predicate_function) ? streamarray.outerJoin(otherSequence, predicate_function) ? array
      * **Example:** Return a list of all Marvel heroes, paired with any DC heroes who could beat them in a fight.
      *
      *     r.table('marvel').outerJoin(r.table('dc'), function(marvelRow, dcRow) {
@@ -3698,9 +3638,9 @@ declare module rethinkdb {
     /**
      * Select a given number of elements from a sequence with uniform random distribution. Selection is done without replacement.
      *
-     * sequence.sample(number) → selection
-     stream.sample(number) → array
-     array.sample(number) → array
+     * sequence.sample(number) ? selection
+     stream.sample(number) ? array
+     array.sample(number) ? array
      * **Example:** Select 3 random heroes.
      *
      *     r.table('marvel').sample(3).run(conn, callback)
@@ -3713,8 +3653,8 @@ declare module rethinkdb {
     /**
      * Merge two or more sequences. (Note that ordering is not guaranteed by `union`.)
      *
-     * stream.union(sequence[, sequence, ...]) → stream
-     array.union(sequence[, sequence, ...]) → array
+     * stream.union(sequence[, sequence, ...]) ? stream
+     array.union(sequence[, sequence, ...]) ? array
      * **Example:** Construct a stream of all heroes.
      *
      *     r.table('marvel').union(r.table('dc')).run(conn, callback);
@@ -3727,8 +3667,8 @@ declare module rethinkdb {
     /**
      * Plucks one or more attributes from a sequence of objects, filtering out any objects in the sequence that do not have the specified fields. Functionally, this is identical to `hasFields` followed by `pluck` on a sequence.
      *
-     * sequence.withFields([selector1, selector2...]) → stream
-     array.withFields([selector1, selector2...]) → array
+     * sequence.withFields([selector1, selector2...]) ? stream
+     array.withFields([selector1, selector2...]) ? array
      * **Example:** Get a list of users and their posts, excluding any users who have not made any posts.
      *
      *     r.table('users').withFields('id', 'username', 'posts').run(conn, callback)
@@ -3741,7 +3681,7 @@ declare module rethinkdb {
     /**
      * Plucks out one or more attributes from either an object or a sequence of objects (projection).
      *
-     * sequence.pluck([selector1, selector2...]) → streamarray.pluck([selector1, selector2...]) → arrayobject.pluck([selector1, selector2...]) → objectsingleSelection.pluck([selector1, selector2...]) → object
+     * sequence.pluck([selector1, selector2...]) ? streamarray.pluck([selector1, selector2...]) ? arrayobject.pluck([selector1, selector2...]) ? objectsingleSelection.pluck([selector1, selector2...]) ? object
      * **Example:** We just need information about IronMan's reactor and not the rest of the document.
      *
      *     r.table('marvel').get('IronMan').pluck('reactorState', 'reactorPower').run(conn, callback)
@@ -3753,9 +3693,9 @@ declare module rethinkdb {
     /**
      * Select a given number of elements from a sequence with uniform random distribution. Selection is done without replacement.
      *
-     * sequence.sample(number) → selection // TODO: this is a mistake, isn't it?
-     stream.sample(number) → array
-     array.sample(number) → array
+     * sequence.sample(number) ? selection // TODO: this is a mistake, isn't it?
+     stream.sample(number) ? array
+     array.sample(number) ? array
      * **Example:** Select 3 random heroes.
      *
      *     r.table('marvel').sample(3).run(conn, callback)
@@ -3768,7 +3708,7 @@ declare module rethinkdb {
     /**
      * Used to 'zip' up the result of a join by merging the 'right' fields into 'left' fields of each member of the sequence.
      *
-     * stream.zip() → streamarray.zip() → array
+     * stream.zip() ? streamarray.zip() ? array
      * **Example:** 'zips up' the sequence by merging the left and right fields produced by a join.
      *
      *     r.table('marvel').eqJoin('main_dc_collaborator', r.table('dc'))
@@ -3786,7 +3726,7 @@ declare module rethinkdb {
     /**
      * Return a changefeed, an infinite stream of objects representing changes to a query. A changefeed may return changes to a table or an individual document (a "point" changefeed), and document transformation commands such as `filter` or `map` may be used before the `changes` command to affect the output.
      *
-     * stream.changes([options]) → streamsingleSelection.changes([options]) → stream
+     * stream.changes([options]) ? streamsingleSelection.changes([options]) ? stream
      * **Example:** Subscribe to the changes on a table.
      *
      *     r.table('games').changes().run(conn, function(err, cursor) {
@@ -3801,7 +3741,7 @@ declare module rethinkdb {
     /**
      * Delete one or more documents from a table.
      *
-     * table.delete([{durability: "hard", returnChanges: false}])→ objectselection.delete([{durability: "hard", returnChanges: false}])→ objectsingleSelection.delete([{durability: "hard", returnChanges: false}])→ object
+     * table.delete([{durability: "hard", returnChanges: false}])? objectselection.delete([{durability: "hard", returnChanges: false}])? objectsingleSelection.delete([{durability: "hard", returnChanges: false}])? object
      * **Example:** Delete a single document from the table `comments`.
      *
      *     r.table("comments").get("7eab9e63-73f1-4f33-8ce4-95cbea626f59").delete().run(conn, callback)
@@ -3813,7 +3753,7 @@ declare module rethinkdb {
     /**
      * Insert JSON documents into a table. Accepts a single JSON document or an array of documents.
      *
-     * table.insert(object | [object1, object2, ...][, {durability: "hard", returnChanges: false, conflict: "error"}]) → object
+     * table.insert(object | [object1, object2, ...][, {durability: "hard", returnChanges: false, conflict: "error"}]) ? object
      * **Example:** Insert a document into the table `posts`.
      *
      *     r.table("posts").insert({
@@ -3831,7 +3771,7 @@ declare module rethinkdb {
     /**
      * Replace documents in a table. Accepts a JSON document or a ReQL expression, and replaces the original document with the new one. The new document must have the same primary key as the original document.
      *
-     * table.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectselection.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectsingleSelection.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ object
+     * table.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])? objectselection.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])? objectsingleSelection.replace(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])? object
      * **Example:** Replace the document with the primary key `1`.
      *
      *     r.table("posts").get(1).replace({
@@ -3848,7 +3788,7 @@ declare module rethinkdb {
     /**
      * Update JSON documents in a table. Accepts a JSON document, a ReQL expression, or a combination of the two. You can pass options like `returnChanges` that will return the old and new values of the row you have modified.
      *
-     * table.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectselection.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ objectsingleSelection.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])→ object
+     * table.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])? objectselection.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])? objectsingleSelection.update(object | function[, {durability: "hard", returnChanges: false, nonAtomic: false}])? object
      * **Example:** Update the status of the post with `id` of `1` to `published`.
      *
      *     r.table("posts").get(1).update({status: "published"}).run(conn, callback)
