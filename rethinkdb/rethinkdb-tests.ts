@@ -3,7 +3,7 @@
 import * as r from 'rethinkdb';
 
 let callback = (err, result) => { };
-let conn = <rethinkdb.RConnectionInterface>{};
+let conn = <rethinkdb.RConnection>{};
 
 // TESTS FOR: add //
 r.expr<number>(2).add(2).run(conn, callback)
@@ -12,7 +12,7 @@ r.expr<number>(2).add(2).run(conn, callback)
 var a = true, b = false;
 r.expr<boolean>(a).and(b).run(conn, callback);
 // result passed to callback
-false
+// false
 
 // TESTS FOR: append //
 r.table('marvel').get('IronMan')<Array<any>>('equipment').append('newBoots').run(conn, callback)
@@ -111,7 +111,7 @@ r.table('geo').insert({
 conn.close(function(err) { if (err) throw err; })
 
 // TESTS FOR: coerceTo //
-r.table('posts').map(function (post) {
+r.table('posts').map(function (post:rethinkdb.RObject<any>) {
     return post.merge({ comments: r.table('comments').getAll(post<string>('id'), {index: 'postId'}).coerceTo('array')});
 }).run(conn, callback)
 
@@ -138,7 +138,7 @@ r.table('marvel').get('ironman')<Array<any>>('opponents').contains('superman').r
 r.table('marvel').count().add(r.table('dc').count()).run(conn, callback)
 
 // TESTS FOR: date //
-r.table("users").filter(function(user:rethinkdb.RObjectInterface<Object>) {
+r.table("users").filter(function(user:rethinkdb.RObject<Object>) {
     return user<Date>("birthdate").date().eq(r.now().date())
 }).run(conn, callback)
 
@@ -168,7 +168,7 @@ r.dbDrop('superheroes').run(conn, callback)
 r.dbList().run(conn, callback)
 
 // TESTS FOR: default //
-r.table("posts").map(function (post) {
+r.table("posts").map(function (post:rethinkdb.RObject<any>) {
     return {
         title: post("title"),
         author: post("author").default("Anonymous")
@@ -219,8 +219,8 @@ r.table('users').get("1")('role').eq('administrator').run(conn, callback);
 // TESTS FOR: eqJoin //
 
 
-// TESTS FOR: error //<rethinkdb.RObjectInterface<any>>
-r.table('marvel').get('IronMan').do((ironman:rethinkdb.RObjectInterface<any>) => {
+// TESTS FOR: error //<rethinkdb.RObject<any>>
+r.table('marvel').get('IronMan').do((ironman:rethinkdb.RObject<any>) => {
     return r.branch(ironman('victories').lt(ironman('battles')),
         r.error('impossible code path'),
         ironman)
@@ -243,7 +243,7 @@ r.table('geo').insert({
     )
 }).run(conn, callback);
 r.table('geo').get('201').update({
-    rectangle: r.row<rethinkdb.RLineInterface>('rectangle').fill()
+    rectangle: r.row<rethinkdb.RLine>('rectangle').fill()
 }, {nonAtomic: true}).run(conn, callback);
 
 // TESTS FOR: filter //
@@ -254,7 +254,7 @@ r.floor(12.345).run(conn, callback);
 12.0
 
 // TESTS FOR: forEach //
-r.table('marvel').forEach(function(hero) {
+r.table('marvel').forEach(function(hero:rethinkdb.RObject<any>) {
     return r.table('villains').get(hero<string>('villainDefeated')).delete()
 }).run(conn, callback)
 
@@ -400,7 +400,7 @@ r.table('geo').insert({
 r.table('players').get('1')['score'].lt(10).run(conn, callback);
 
 // TESTS FOR: map //
-r.expr<Array<number>>([1, 2, 3, 4, 5]).map(function (val:rethinkdb.RNumberInterface) {
+r.expr<Array<number>>([1, 2, 3, 4, 5]).map(function (val:rethinkdb.RNumber) {
     return val.mul(val);
 }).run(conn, callback);
 // Result passed to callback
@@ -539,7 +539,7 @@ conn.reconnect({noreplyWait: false}, function(error, connection) { })
 // TESTS FOR: reduce //
 r.table("posts").map(function(doc) {
     return 1
-}).reduce(function(left, right) {
+}).reduce(function(left: rethinkdb.RNumber, right) {
     return left.add(right)
 }).run(conn, callback);
 
@@ -640,7 +640,7 @@ r.table("users").filter(function(user) {
 r.now().toEpochTime()
 
 // TESTS FOR: toGeojson //
-r.table('geo').get('sfo')<rethinkdb.RPointInterface>('location').toGeojson().run(conn, callback);
+r.table('geo').get('sfo')<rethinkdb.RPoint>('location').toGeojson().run(conn, callback);
 // result passed to callback
 // {
 //     'type': 'Point',
@@ -712,14 +712,14 @@ r.table('marvel').eqJoin('main_dc_collaborator', r.table('dc'))
 
 r.db('this').table('something').insert({ something: true, other: r.now().year() });
 
-r.db('that').table("posts").map((post) => {
+r.db('that').table("posts").map((post: rethinkdb.RObject<any>) => {
         return {
             title: post("title"),
             author: post("author").default("Anonymous")
         }
     });
     
-r.db('that').table("posts").map((post) => {
+r.db('that').table("posts").map((post: rethinkdb.RObject<any>) => {
         return {
             title: post("title"),
             author: post("author").default("Anonymous")
@@ -738,7 +738,7 @@ r.db('test').table('name').group('');
 
 r.connect({});
 
-r.now().coerceTo<rethinkdb.RStringInterface>('string');
+r.now().coerceTo('string');
 
 r.table('marvel').map(
     r.branch(
@@ -768,9 +768,7 @@ r.connect({host: "localhost", port: 28015}, function(err, conn) {
               return doc("henry").eq("bob")
           })
           .limit(4)
-          .run(conn, function() {
-
-        });
+          .run(conn, function() {});
     });
 });
 

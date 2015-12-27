@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
+    "target": "es2015",
     "listFiles": true,
     "declaration": true
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "bluebird",
+    "parser-documentation-to-ts-d"
   ]
 }
