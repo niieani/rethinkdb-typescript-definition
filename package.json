@@ -19,6 +19,6 @@
   },
   "devDependencies": {
     "tsd": "^0.6.5",
-    "typescript": "^1.8.0-dev.20151226"
+    "typescript": "^1.8.0-dev.20160114"
   }
 }
