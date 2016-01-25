@@ -98,7 +98,7 @@ declare module rethinkdb {
     r.distinct.sequence<RemoteT>,
     r.orderBy<RemoteT, RSequence<RemoteT>>
     // note: distinct and orderBy is defined in RStream,
-    // because table is a type of a stream that has a different signature for those two  
+    // because table is a type of a stream that has a different signature for those two
     // TODO: check if `sample` return type is correct
   {}
   export interface RStreamJoin<TLeft, TRight> extends
@@ -144,7 +144,7 @@ declare module rethinkdb {
     RValue<Date>,
     r.add<r.dateLike, RTime>,
     r.sub<r.dateLike, RTime>,
-    r.date, r.dayOfWeek, r.dayOfYear, 
+    r.date, r.dayOfWeek, r.dayOfYear,
     r.during, r.inTimezone,
     r.seconds, r.minutes, r.hours, r.month, r.year, r.day,
     r.timeOfDay, r.timezone, r.toEpochTime, r.toISO8601
@@ -703,8 +703,8 @@ declare module rethinkdb {
        * **Example:** Get all users whose name starts with "A".
        *
        *     r.table('users').filter(function(doc){
-    *         return doc('name').match("^A")
-    *     }).run(conn, callback)
+       *         return doc('name').match("^A")
+       *     }).run(conn, callback)
        *
        * http://rethinkdb.com/api/javascript/match
        */
@@ -807,7 +807,7 @@ declare module rethinkdb {
        */
       insertAt(index:r.numberLike, value:T): RArray<T>;
     }
-    
+
     module map {
       interface array<T> {
         /**
@@ -1039,8 +1039,8 @@ declare module rethinkdb {
        * **Example:** Return all the posts submitted after midnight and before 4am.
        *
        *     r.table("posts").filter(function(post) {
-    *         return post("date").hours().lt(4)
-    *     })
+       *         return post("date").hours().lt(4)
+       *     })
        *
        * http://rethinkdb.com/api/javascript/hours
        */
@@ -1067,8 +1067,8 @@ declare module rethinkdb {
        * **Example:** Return the post submitted during the first 30 seconds of every minute.
        *
        *     r.table("posts").filter(function(post) {
-    *         return post("date").seconds().lt(30)
-    *     })
+       *         return post("date").seconds().lt(30)
+       *     })
        *
        * http://rethinkdb.com/api/javascript/seconds
        */
@@ -1082,8 +1082,8 @@ declare module rethinkdb {
        * **Example:** Return all the posts submitted during the first 10 minutes of every hour.
        *
        *     r.table("posts").filter(function(post) {
-    *         return post("date").minutes().lt(10)
-    *     })
+       *         return post("date").minutes().lt(10)
+       *     })
        *
        * http://rethinkdb.com/api/javascript/minutes
        */
@@ -1112,8 +1112,8 @@ declare module rethinkdb {
        * **Example:** Retrieve all the users born in 1986.
        *
        *     r.table("users").filter(function(user) {
-    *         return user("birthdate").year().eq(1986)
-    *     }).run(conn, callback)
+       *         return user("birthdate").year().eq(1986)
+       *     }).run(conn, callback)
        *
        * http://rethinkdb.com/api/javascript/year
        */
@@ -1142,8 +1142,8 @@ declare module rethinkdb {
        * **Example:** Return all the users in the "-07:00" timezone.
        *
        *     r.table("users").filter( function(user) {
-    *         return user("subscriptionDate").timezone().eq("-07:00")
-    *     })
+       *         return user("subscriptionDate").timezone().eq("-07:00")
+       *     })
        *
        * http://rethinkdb.com/api/javascript/timezone
        */
@@ -1381,7 +1381,7 @@ declare module rethinkdb {
         //concatMap<U extends RNumber>(concatFunction:(item:RObject<T>)=>U): RArray<number>;
 
         // concatenating has to be done on arrays, so the output array will be of the same type
-        concatMap<ArrOfT, U extends RValue<ArrOfT>>(concatFunction:ConcatFunction<T, U>): RArray<ArrOfT>;
+        concatMap<ArrOfT>(concatFunction:ConcatFunction<T, RValue<ArrOfT>>): RArray<ArrOfT>;
       }
       interface stream<T> {
         /**
@@ -1401,7 +1401,7 @@ declare module rethinkdb {
         //concatMap<U extends RNumber>(concatFunction:(item:RObject<T>)=>U): RArray<number>;
 
         // concatenating has to be done on arrays, so the output array will be of the same type
-        concatMap<ArrOfT, U extends RValue<ArrOfT>>(concatFunction:ConcatFunction<T, U>): RStream<ArrOfT>;
+        concatMap<ArrOfT>(concatFunction:ConcatFunction<T, RValue<ArrOfT>>): RStream<ArrOfT>;
       }
     }
     module eqJoin {
@@ -1453,21 +1453,22 @@ declare module rethinkdb {
        * The body of every filter is wrapped in an implicit `.default(false)`, which means that if a non-existence errors is thrown (when you try to access a field that does not exist in a document), RethinkDB will just ignore the document. The `default` value can be changed by passing an object with a `default` field. Setting this optional argument to `r.error()` will cause any non-existence errors to return a `ReqlRuntimeError`.
        *
        * selection.filter(predicate_function[, {default: false}]) → selection
-       * stream.filter(predicate_function[, {default: false}]) → streamarray.filter(predicate_function[, {default: false}]) → array
+       * stream.filter(predicate_function[, {default: false}]) → stream
+       * array.filter(predicate_function[, {default: false}]) → array
        * **Example:** Get all the users that are 30 years old.
        *
        *     r.table('users').filter({age: 30}).run(conn, callback)
        *
        * http://rethinkdb.com/api/javascript/filter
        */
-      filter(predicate_function:FilterPredicate<T>, options?:{ default?: boolean }): this;
-      filter(filterByObject:r.objectLike<T>): this;
+      filter(predicate_function_or_object:FilterPredicate<T>|T|RObject<T>, options?:{ default: boolean }): this;
     }
     interface distinct<TOut> {
       /**
        * Remove duplicate elements from the sequence.
        *
-       * sequence.distinct() → arraytable.distinct([{index: <indexname>}]) → stream</indexname>
+       * sequence.distinct() → array
+       * table.distinct([{index: <indexname>}]) → stream
        * **Example:** Which unique villains have been vanquished by marvel heroes?
        *
        *     r.table('marvel').concatMap(function(hero) {
@@ -1910,11 +1911,11 @@ declare module rethinkdb {
        * **Example:** Retrieve the titles and authors of the table `posts`. In the case where the author field is missing or `null`, we want to retrieve the string `Anonymous`.
        *
        *     r.table("posts").map(function (post) {
-    *         return {
-    *             title: post("title"),
-    *             author: post("author").default("Anonymous")
-    *         }
-    *     }).run(conn, callback);
+       *         return {
+       *             title: post("title"),
+       *             author: post("author").default("Anonymous")
+       *         }
+       *     }).run(conn, callback);
        *
        * http://rethinkdb.com/api/javascript/default
        */
@@ -2067,9 +2068,9 @@ declare module rethinkdb {
       offsetsOf(predicate_function:(item:RValue<T> | RObject<T>)=>RBool): RArray<number>;
       offsetsOf(datum:r.stringLike): RArray<number>;
     }
-    
+
     type ReductionFunction<T, TOut> = (left: RValue<T> | RObject<T>, right: RValue<T> | RObject<T>)=>TOut;
-    
+
     interface reduce<T> {
       /**
        * Produce a single value from a sequence through repeated application of a reduction function.
@@ -2258,7 +2259,7 @@ declare module rethinkdb {
      */
     toGeojson(): RObject<any>;
   }
-  
+
   export interface RPolygon extends RGeometry<Array<Array<r.numberLike>>> {
     /**
      * Use `polygon2` to "punch out" a hole in `polygon1`. `polygon2` must be completely contained within `polygon1` and must have no holes itself (it must not be the output of `polygonSub` itself).
@@ -2284,7 +2285,7 @@ declare module rethinkdb {
      */
     polygonSub(polygon2:RPolygon): RPolygon;
   }
-  
+
   export interface RLine extends RGeometry<Array<r.numberLike>> {
     /**
      * Convert a Line object into a Polygon object. If the last point does not specify the same coordinates as the first point, `polygon` will close the polygon by connecting them.
@@ -2311,10 +2312,10 @@ declare module rethinkdb {
     fill(): RPolygon;
   }
 
-  export interface RPoint extends 
-    RGeometry<Object> 
+  export interface RPoint extends
+    RGeometry<Object>
   {}
-  
+
   export interface RGroupedStream<RemoteT> extends RStream<GroupResult<RemoteT>> { //, RValue<RCursor<GroupResult>>
 
     /**
@@ -2411,7 +2412,7 @@ declare module rethinkdb {
      */
     update(object_or_a_function:((item:RValue<T> | RObject<T>)=>T)|T, options?:WriteOptions): RObject<WriteResult>;
   }
-  
+
   export interface R extends
     RDb,
     RExpression,
@@ -3137,7 +3138,7 @@ declare module rethinkdb {
     toArray(callback:CallbackFunction<Array<RemoteT>>): void;
     toArray(): Promise<Array<RemoteT>>;
   }
-  
+
   export interface RConnection {
 
     /**
@@ -3201,7 +3202,7 @@ declare module rethinkdb {
     server(callback:CallbackFunction<ServerDefinition>);
     server(): Promise<ServerDefinition>
   }
-  
+
   export interface RConfigurable extends RAny {
     /**
      * Query (read and/or update) the configurations for individual tables or databases.
@@ -3305,7 +3306,7 @@ declare module rethinkdb {
      */
     tableList(): RArray<string>;
   }
-  
+
   interface RCoercable {
     /**
      * Convert a value of one type into another.
