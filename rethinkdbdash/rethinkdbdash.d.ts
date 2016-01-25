@@ -67,7 +67,7 @@ declare module rethinkdbdash {
     reconnect(options: any, callback?: (err: any, value?: any) => void): any;
   }
 
-  export interface RDashInterface extends rethinkdb.RInterface {
+  export interface RDashInterface extends rethinkdb.R {
     getPoolMaster(): PoolMaster;
     getPool(i: number): Pool;
     createPools(options?: any): RDashInterface;
@@ -99,10 +99,13 @@ declare module rethinkdbdash {
 
 declare module rethinkdb {
   // override RRunableInterface to extend it with PromiseLike<T> 
-  export interface RRunableInterface<T> extends PromiseLike<T> {
-    run(connection:RConnectionInterface, cb:CallbackFunction<T>):void;
-    run(connection:RConnectionInterface, options:RConnectionOptionsInterface, cb:CallbackFunction<T>):void;
-    run(connection:RConnectionInterface, options?:RConnectionOptionsInterface):Promise<T>;
+  export interface RRunable<T> extends PromiseLike<T> {
+    run(connection:rethinkdbdash.Connection, cb:CallbackFunction<T>):void;
+    run(connection:rethinkdbdash.Connection, options:RConnectionOptions, cb:CallbackFunction<T>):void;
+    run(connection:rethinkdbdash.Connection, options?:RConnectionOptions):Promise<T>;
+    run(cb:CallbackFunction<T>):void;
+    run(options:RConnectionOptions, cb:CallbackFunction<T>):void;
+    run(options?:RConnectionOptions):Promise<T>;
   }
 }
 
