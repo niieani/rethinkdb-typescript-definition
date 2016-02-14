@@ -161,7 +161,8 @@ declare module rethinkdb {
     r.hasFields<RBool>,
     r.merge.object<RemoteT>,
     r.pluck.object,
-    r.without.object
+    r.without.object,
+    r.default_<RemoteT>
   {
     /**
      * Return an array containing all of an object's keys. Note that the keys will be sorted as described in [ReQL data types](/docs/data-types/#sorting-order) (for strings, lexicographically).
@@ -309,7 +310,7 @@ declare module rethinkdb {
     getAll(key:KeyType, options?:{ index:string }): RSelection<RemoteT>;
     getAll(key:KeyType, ...keys:Array<KeyType>): RSelection<RemoteT>;
     getAll(range:Array<KeyType>, options?:{ index:string  }): RSelection<RemoteT>;
-    getAll(args:RSpecial): RSelection<RemoteT>; // TODO: add this everywhere! || 1 month LATER: add what?
+    getAll(args:RSpecial, options?:{ index:string }): RSelection<RemoteT>; // TODO: add this everywhere! || 1 month LATER: add what?
 
     /**
      * Get all documents where the given geometry object intersects the geometry object of the requested geospatial index.
@@ -506,7 +507,7 @@ declare module rethinkdb {
     <T extends Date>(expression:r.dateLike): RTime;
     <T extends {}>(expression:r.objectLike<any>): RObject<T>;
   }
-  export interface RGetField {
+  export interface RGetFieldBase {
     /**
      * Get a single field from an object or a single element from a sequence.
      *
@@ -532,7 +533,9 @@ declare module rethinkdb {
     <T extends Array<any>>(attr:r.stringLike): RArray<any>;
     <T extends Date>(attr:r.stringLike): RTime;
     <T extends {}>(attr:r.stringLike): RObject<T>;
-
+  }
+  
+  export interface RGetField extends RGetFieldBase {
     /**
      * Get a single field from an object. If called on a sequence, gets that field from every object in the sequence, skipping objects that lack it.
      *
@@ -545,7 +548,7 @@ declare module rethinkdb {
      *
      * http://rethinkdb.com/api/javascript/get_field
      */
-    getField<T>(attr:r.stringLike): RValue<T> | RObject<T>;
+    getField:RGetFieldBase;
     // TODO: implement getFields the same as bracket
   }
 
@@ -558,6 +561,7 @@ declare module rethinkdb {
     type dateLike = (()=>Date | RTime) | Date | RTime;
     type boolLike = boolean | RBool;
     type rLike<T> = T|r.objectLike<T>|r.numberLike|r.stringLike|r.arrayLike<T>|r.dateLike|r.boolLike;
+    type rQuery<T> = RSelection<T>|RTable<T>|RTableSlice<T>|RSingleSelection<T>;
 
     interface add<TIn, TOut> {
       /**
@@ -708,7 +712,7 @@ declare module rethinkdb {
        *
        * http://rethinkdb.com/api/javascript/match
        */
-      match(regexp): RObject<{str:string, start:number, end:number, groups:Array<string>}>;
+      match(regexp): RObject<{str:string, start:number, end:number, groups:Array<string>}> & RBool;
     }
     interface split {
       /**
@@ -848,8 +852,10 @@ declare module rethinkdb {
          *
          * http://rethinkdb.com/api/javascript/map
          */
-        // note: RValue<TOut> is needed when doing r.branch
-        map<TOut>(mappingExpression:RValue<TOut>|((item:RValue<T> | RObject<T>)=>TOut)):RStream<TOut>
+        // NOTE: RValue<TOut> is needed when doing r.branch
+        // NOTE: RValue<T> & RObject makes it more permissive (not exact type check here)
+        map<TOut>(mappingExpression:RValue<TOut>|((item:RValue<T> & RObject<T>)=>TOut)):RStream<TOut>
+        
       }
       interface r {
         // there are only for r.map:
@@ -1919,7 +1925,7 @@ declare module rethinkdb {
        *
        * http://rethinkdb.com/api/javascript/default
        */
-      default(default_value:T): this;
+      default(default_value:T|RValue<T>|RObject<T>): this;
       default(onError:(error:Error)=>void): this;
     }
     interface forEach<T> {
@@ -2370,16 +2376,16 @@ declare module rethinkdb {
      * **Example:** Insert a document into the table `posts`.
      *
      *     r.table("posts").insert({
-    *         id: 1,
-    *         title: "Lorem ipsum",
-    *         content: "Dolor sit amet"
-    *     }).run(conn, callback)
+     *         id: 1,
+     *         title: "Lorem ipsum",
+     *         content: "Dolor sit amet"
+     *     }).run(conn, callback)
      *
      * http://rethinkdb.com/api/javascript/insert
      */
-    insert(...objects_and_then_options:Array<T | { durability?: string, returnChanges?: string, conflict?: string }>): RObject<WriteResult>;
+    insert(...objects_and_then_options:Array<T | InsertOptions>): RObject<WriteResult>;
     insert(...objects:Array<T>): RObject<WriteResult>;
-    insert(object:T, options?:{ durability?: string, returnChanges?: string, conflict?: string }): RObject<WriteResult>;
+    insert(object:T, options?:InsertOptions): RObject<WriteResult>;
 
     /**
      * Replace documents in a table. Accepts a JSON document or a ReQL expression, and replaces the original document with the new one. The new document must have the same primary key as the original document.
@@ -3307,7 +3313,7 @@ declare module rethinkdb {
     tableList(): RArray<string>;
   }
 
-  interface RCoercable {
+  interface RCoercable { // TODO: Make generic (so there's no need for casting arrays and objects)
     /**
      * Convert a value of one type into another.
      *
@@ -3328,8 +3334,8 @@ declare module rethinkdb {
      * http://rethinkdb.com/api/javascript/coerce_to
      */
     //coerceTo: RGetField;
-    coerceTo<ArrayOfT>(type: 'array'): RArray<ArrayOfT>;
-    coerceTo(type: 'array'): RArray<any>;
+    coerceTo<T>(type: 'array'): RArray<T>;
+    // coerceTo(type: 'array'): RArray<this>;
     coerceTo<T>(type: 'object'): RObject<T>;
     coerceTo(type: 'string'): RString;
     coerceTo(type: 'number'): RNumber;
@@ -3344,11 +3350,13 @@ declare module rethinkdb {
   interface JoinFunction<U> {
     (left:RObject<any>, right:RObject<any>): U;
   }
-
   interface InsertOptions {
-    upsert: boolean; // true
-    durability: string; // 'soft'
-    return_vals: boolean; // false
+    returnChanges: boolean | 'always';
+    conflict: "error" | "replace" | "update";
+    // { durability?: string, returnChanges?: string, conflict?: string }
+    // upsert: boolean; // true
+    durability: 'hard' | 'soft'; // 'soft'
+    // return_vals: boolean; // false
   }
 
   interface UpdateOptions {
@@ -3358,14 +3366,44 @@ declare module rethinkdb {
   }
 
   interface WriteResult {
+    /**
+     * the number of documents successfully inserted
+     */
     inserted: number;
-    replaced: number;
-    unchanged: number;
+    /**
+     * the number of documents updated when conflict is set to "replace" or "update"
+     */
+    replaced?: number;
+    /**
+     * the number of documents whose fields are identical to existing documents with the same primary key when conflict is set to "replace" or "update"
+     */
+    unchanged?: number;
+    /**
+     * the number of errors encountered while performing the insert
+     */
     errors: number;
+    /**
+     * 0 for an insert operation
+     */
     deleted: number;
+    /**
+     * 0 for an insert operation
+     */
     skipped: number;
+    /**
+     *  a list of generated primary keys for inserted documents whose primary keys were not specified (capped to 100,000).
+     */
     first_error?: string;
+    warnings?: string[];
+    /**
+     * a list of generated primary keys for inserted documents whose primary keys were not specified (capped to 100,000).
+     */
     generated_keys?: string[]; // only for insert
+    /**
+     * if returnChanges is set to true, this will be an array of objects, one for each objected affected by the insert operation. Each object will have two keys: {new_val: <new value>, old_val: null}.
+     */
+    changes?: Array<{new_val:Object, old_val:Object}>;
+    // TODO: make generic
   }
 
   interface TableConfig {

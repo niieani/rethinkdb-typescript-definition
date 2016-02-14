@@ -67,15 +67,15 @@ declare module rethinkdbdash {
     reconnect(options: any, callback?: (err: any, value?: any) => void): any;
   }
 
-  export interface RDashInterface extends rethinkdb.R {
+  export interface RDash extends rethinkdb.R {
     getPoolMaster(): PoolMaster;
     getPool(i: number): Pool;
-    createPools(options?: any): RDashInterface;
+    createPools(options?: any): RDash;
     setArrayLimit(arrayLimit: number): void;
     setNestingLevel(nestingLevel: number): void;
   }
   
-  export interface RDashConnectInterface {
+  export interface RDashConnect {
     (options?:{ 
       port?:number, 
       host?:string, 
@@ -93,12 +93,12 @@ declare module rethinkdbdash {
       ssl?:boolean, 
       pool?:boolean, 
       cursor?:boolean 
-    }):RDashInterface;
+    }):RDash;
   }
 }
 
 declare module rethinkdb {
-  // override RRunableInterface to extend it with PromiseLike<T> 
+  // override RRunable to extend it with PromiseLike<T> 
   export interface RRunable<T> extends PromiseLike<T> {
     run(connection:rethinkdbdash.Connection, cb:CallbackFunction<T>):void;
     run(connection:rethinkdbdash.Connection, options:RConnectionOptions, cb:CallbackFunction<T>):void;
@@ -107,10 +107,14 @@ declare module rethinkdb {
     run(options:RConnectionOptions, cb:CallbackFunction<T>):void;
     run(options?:RConnectionOptions):Promise<T>;
   }
+  
+  export interface RCursor<RemoteT> extends NodeJS.EventEmitter {
+    eachAsync(process_function:(element:RemoteT) => any): Promise<void> & { error:(errorHandler:(error:Error)=>void)=>Promise<void> };
+  }
 }
 
 declare module "rethinkdbdash" {
-  var r:rethinkdbdash.RDashConnectInterface;
+  var r:rethinkdbdash.RDashConnect;
   
   export = r;
 }
