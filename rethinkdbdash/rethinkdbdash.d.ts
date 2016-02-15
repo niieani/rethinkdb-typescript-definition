@@ -73,6 +73,45 @@ declare module rethinkdbdash {
     createPools(options?: any): RDash;
     setArrayLimit(arrayLimit: number): void;
     setNestingLevel(nestingLevel: number): void;
+    Error: RError;
+  }
+
+  export interface RError {
+    ReqlDriverError: typeof ReqlDriverError;
+    ReqlServerError: typeof ReqlServerError;
+    ReqlRuntimeError: typeof ReqlRuntimeError;
+    ReqlCompileError: typeof ReqlCompileError;
+    ReqlClientError: typeof ReqlClientError
+  }
+
+  var ReqlDriverError: ReqlDriverError;
+  interface ReqlDriverError extends Error {
+    prototype: Error;
+    new (message?: string, query?: string, secondMessage?: string): ReqlDriverError;
+  }
+
+  var ReqlServerError: ReqlServerError;
+  interface ReqlServerError extends Error {
+    prototype: Error;
+    new (message?: string, query?: string): ReqlServerError;
+  }
+
+  var ReqlRuntimeError: ReqlRuntimeError;
+  interface ReqlRuntimeError extends Error {
+    prototype: Error;
+    new (message?: string, query?: string, frames?: string): ReqlRuntimeError;
+  }
+
+  var ReqlCompileError: ReqlCompileError;
+  interface ReqlCompileError extends Error {
+    prototype: Error;
+    new (message?: string, query?: string, frames?: string): ReqlCompileError;
+  }
+
+  var ReqlClientError: ReqlClientError;
+  interface ReqlClientError extends Error {
+    prototype: Error;
+    new (message?: string): ReqlClientError;
   }
   
   export interface RDashConnect {
