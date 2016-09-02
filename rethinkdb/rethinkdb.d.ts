@@ -6,9 +6,7 @@
 
 // Previous definitions by: Sean Hess <https://seanhess.github.io/>
 
-/// <reference path="../node/node.d.ts" />
-
-declare module rethinkdb {
+declare namespace rethinkdb {
   export interface RSequence<RemoteT> extends
     RAny,
     RCoercable,
@@ -254,12 +252,12 @@ declare module rethinkdb {
   }
 
   type IndexFunction<T> = RValue<any>|Array<RValue<any>>|((item:RValue<T> | RObject<T>)=>RValue<any>);
-  type KeyType = r.stringLike|r.numberLike|r.arrayLike<string|number>;
+  type KeyType = r.stringLike|r.numberLike|r.arrayLike<string|number>|r.dateLike;
 
   interface IndexOptions {
     index?: string;
-    left_bound?: string; // 'closed'
-    right_bound?: string; // 'open'
+    leftBound?: 'closed' | 'open';
+    rightBound?: 'closed' | 'open';
   }
 
   export interface RTable<RemoteT> extends
@@ -521,20 +519,20 @@ declare module rethinkdb {
      *
      * http://rethinkdb.com/api/javascript/bracket
      */
-    (attr:r.stringLike): RValue<any>;
-    <T extends RNumber>(attr:r.stringLike): RNumber;
-    <T extends RString>(attr:r.stringLike): RString;
-    <T extends RArray<any>>(attr:r.stringLike): T;
-    <T extends RObject<any>>(attr:r.stringLike): T;
-    <T extends RTime>(attr:r.stringLike): RTime;
-    <T extends RGeometry<any>>(attr:r.stringLike): T;
-    <T extends number>(attr:r.stringLike): RNumber;
-    <T extends string>(attr:r.stringLike): RString;
-    <T extends Array<any>>(attr:r.stringLike): RArray<any>;
-    <T extends Date>(attr:r.stringLike): RTime;
-    <T extends {}>(attr:r.stringLike): RObject<T>;
+    (attr:r.stringLike|r.numberLike): RValue<any>;
+    <T extends RNumber>(attr:r.stringLike|r.numberLike): RNumber;
+    <T extends RString>(attr:r.stringLike|r.numberLike): RString;
+    <T extends RArray<any>>(attr:r.stringLike|r.numberLike): T;
+    <T extends RObject<any>>(attr:r.stringLike|r.numberLike): T;
+    <T extends RTime>(attr:r.stringLike|r.numberLike): RTime;
+    <T extends RGeometry<any>>(attr:r.stringLike|r.numberLike): T;
+    <T extends number>(attr:r.stringLike|r.numberLike): RNumber;
+    <T extends string>(attr:r.stringLike|r.numberLike): RString;
+    <T extends Array<any>>(attr:r.stringLike|r.numberLike): RArray<any>;
+    <T extends Date>(attr:r.stringLike|r.numberLike): RTime;
+    <T extends {}>(attr:r.stringLike|r.numberLike): RObject<T>;
   }
-  
+
   export interface RGetField extends RGetFieldBase {
     /**
      * Get a single field from an object. If called on a sequence, gets that field from every object in the sequence, skipping objects that lack it.
@@ -552,16 +550,16 @@ declare module rethinkdb {
     // TODO: implement getFields the same as bracket
   }
 
-  module r {
+  namespace r {
     // TODO: functions should be RFunctions
     type numberLike = (()=>number | RNumber) | number | RNumber;
     type stringLike = (()=>string | RString) | string | RString;
     type objectLike<T extends Object> = (()=>T | RValue<T>) | T | RValue<T>;
     type arrayLike<T> = (()=>Array<T> | RArray<T>) | Array<T> | RArray<T>;
-    type dateLike = (()=>Date | RTime) | Date | RTime;
+    type dateLike = (()=>Date | RTime) | Date | RTime | numberLike;  // TODO: verify date can take a number
     type boolLike = boolean | RBool;
     type rLike<T> = T|r.objectLike<T>|r.numberLike|r.stringLike|r.arrayLike<T>|r.dateLike|r.boolLike;
-    type rQuery<T> = RSelection<T>|RTable<T>|RTableSlice<T>|RSingleSelection<T>;
+    type rQuery<T> = RSelection<T>|RTable<T>|RTableSlice<T>|RSingleSelection<T>; //|RSequence<T>;
 
     interface add<TIn, TOut> {
       /**
@@ -812,7 +810,7 @@ declare module rethinkdb {
       insertAt(index:r.numberLike, value:T): RArray<T>;
     }
 
-    module map {
+    namespace map {
       interface array<T> {
         /**
          * Transform each element of one or more sequences by applying a mapping function to them. If `map` is run with two or more sequences, it will iterate for as many items as there are in the shortest sequence.
@@ -855,7 +853,7 @@ declare module rethinkdb {
         // NOTE: RValue<TOut> is needed when doing r.branch
         // NOTE: RValue<T> & RObject makes it more permissive (not exact type check here)
         map<TOut>(mappingExpression:RValue<TOut>|((item:RValue<T> & RObject<T>)=>TOut)):RStream<TOut>
-        
+
       }
       interface r {
         // there are only for r.map:
@@ -1251,7 +1249,7 @@ declare module rethinkdb {
        */
       (index:r.numberLike): TOut;
     }
-    module pluck {
+    namespace pluck {
       interface array {
         /**
          * Plucks out one or more attributes from either an object or a sequence of objects (projection).
@@ -1318,7 +1316,7 @@ declare module rethinkdb {
       // HACK: first one is not documented, but works on an array of objects
       <TPluck>(attr:r.stringLike): RArray<TPluck>;
     }
-    module without {
+    namespace without {
       interface array {
         /**
          * The opposite of pluck; takes an object or a sequence of objects, and returns them with the specified paths removed.
@@ -1368,7 +1366,7 @@ declare module rethinkdb {
         without<TWithout>(...selectors:Array<r.stringLike>): RObject<TWithout>;
       }
     }
-    module concatMap {
+    namespace concatMap {
       type ConcatFunction<TItem, TOut> = (item:RObject<TItem>)=>TOut;
       interface array<T> {
         /**
@@ -1410,7 +1408,7 @@ declare module rethinkdb {
         concatMap<ArrOfT>(concatFunction:ConcatFunction<T, RValue<ArrOfT>>): RStream<ArrOfT>;
       }
     }
-    module eqJoin {
+    namespace eqJoin {
       interface array<T> {
         /**
          * Join tables using a field or function on the left-hand sequence matching primary keys or secondary indexes on the right-hand table. `eqJoin` is more efficient than other ReQL join types, and operates much faster. Documents in the result set consist of pairs of left-hand and right-hand documents, matched when the field on the left-hand side exists and is non-null and an entry with that field's value exists in the specified index on the right-hand side.
@@ -1503,7 +1501,7 @@ declare module rethinkdb {
 
     type JoinPredicate<TLeft, TRight> = (left:RObject<TLeft>, right:RObject<TRight>)=>RBool;
 
-    module innerJoin {
+    namespace innerJoin {
       interface array<T> {
         /**
          * Returns an inner join of two sequences.
@@ -1554,7 +1552,7 @@ declare module rethinkdb {
 
     type MergeParam<T> = Object | ((item:RObject<T>)=>(RObject<any>|Object));
 
-    module merge {
+    namespace merge {
       interface array<T> {
         /**
          * Merge two or more objects together to construct a new object with properties from all. When there is a conflict between field names, preference is given to fields in the rightmost object in the argument list.
@@ -1624,7 +1622,7 @@ declare module rethinkdb {
         orderBy(keys_or_functions:KeyType|((item:RObject<T>)=>RValue<any>|KeyType), options?:{ index?: string }): TOut;
         orderBy(options:{ index: string }): TOut;
     }
-    module outerJoin {
+    namespace outerJoin {
       interface array<T> {
         /**
          * Returns a left outer join of two sequences.
@@ -1739,7 +1737,7 @@ declare module rethinkdb {
     }
 
     // sequence (stream)
-    module distinct {
+    namespace distinct {
       interface sequence<T> {
         /**
          * Remove duplicate elements from the sequence.
@@ -1774,7 +1772,7 @@ declare module rethinkdb {
         distinct(options?:{ index: string }): RStream<T>;
       }
     }
-    module getField {
+    namespace getField {
       interface stream {
         /**
          * Get a single field from an object. If called on a sequence, gets that field from every object in the sequence, skipping objects that lack it.
@@ -1791,7 +1789,7 @@ declare module rethinkdb {
         getField<TOut>(attr:r.stringLike): RStream<TOut>;
       }
     }
-    module includes {
+    namespace includes {
       interface stream {
         /**
          * Tests whether a geometry object is completely contained within another. When applied to a sequence of geometry objects, `includes` acts as a [filter](/api/javascript/filter), returning a sequence of objects from the sequence that include the argument.
@@ -1814,7 +1812,7 @@ declare module rethinkdb {
 
       }
     }
-    module intersects {
+    namespace intersects {
       interface stream {
         /**
          * Tests whether two geometry objects intersect with one another. When applied to a sequence of geometry objects, `intersects` acts as a [filter](/api/javascript/filter), returning a sequence of objects from the sequence that intersect with the argument.
@@ -1872,7 +1870,7 @@ declare module rethinkdb {
       contains(...functions_or_values:Array<((item:RValue<T> | RObject<T>)=>r.rLike<T>)|string>): RBool;
       // TODO: could query for contains that is a partial T object
     }
-    module count {
+    namespace count {
       interface sequence<T> {
         /**
          * Count the number of elements in the sequence. With a single argument, count the number of elements equal to it. If the argument is a function, it is equivalent to calling filter before count.
@@ -2025,7 +2023,7 @@ declare module rethinkdb {
       min<TOut>(options?:{ index:string }): RValue<TOut>;
       // TODO: do we need more `extends` ?
     }
-    module nth {
+    namespace nth {
       interface sequence {
         /**
          * Get the _nth_ element of a sequence, counting from zero. If the argument is negative, count from the last element.
@@ -2952,10 +2950,11 @@ declare module rethinkdb {
     row<T extends RObject<any>>(name:r.stringLike): T;
     row<T extends number>(name:r.stringLike): RNumber;
     row<T extends string>(name:r.stringLike): RString;
-    row<T extends Array<ArrOfT>, ArrOfT>(name:r.stringLike): RArray<ArrOfT>;
     row<T extends boolean>(name:r.stringLike): RBool;
     row<T extends Date>(name:r.stringLike): RTime;
     row<T extends Object>(name:r.stringLike): RObject<T>;
+    row<T extends Array<ArrOfT>, ArrOfT>(name:r.stringLike): RArray<ArrOfT>;
+    // row<T extends Array<T>>(name:r.stringLike): RArray<T>;
 
     /**
      * Create a time object for a specific time.
@@ -3131,13 +3130,14 @@ declare module rethinkdb {
     /**
      * Retrieve all results and pass them as an array to the given callback.
      *
-     * cursor.toArray(callback)array.toArray(callback)cursor.toArray() → promisearray.toArray() → promise
+     * cursor.toArray(callback)array.toArray(callback)
+     * cursor.toArray() → promisearray.toArray() → promise
      * **Example:** For small result sets it may be more convenient to process them at once as an array.
      *
      *     cursor.toArray(function(err, results) {
-    *         if (err) throw err;
-    *         processResults(results);
-    *     });
+     *         if (err) throw err;
+     *         processResults(results);
+     *     });
      *
      * http://rethinkdb.com/api/javascript/to_array
      */
@@ -3334,7 +3334,7 @@ declare module rethinkdb {
      * http://rethinkdb.com/api/javascript/coerce_to
      */
     //coerceTo: RGetField;
-    coerceTo<T>(type: 'array'): RArray<T>;
+    coerceTo<ArrayOfT>(type: 'array'): RArray<ArrayOfT>;
     // coerceTo(type: 'array'): RArray<this>;
     coerceTo<T>(type: 'object'): RObject<T>;
     coerceTo(type: 'string'): RString;
@@ -3354,7 +3354,7 @@ declare module rethinkdb {
     returnChanges: boolean | 'always';
     conflict: "error" | "replace" | "update";
     // { durability?: string, returnChanges?: string, conflict?: string }
-    // upsert: boolean; // true
+    upsert: boolean; // true
     durability: 'hard' | 'soft'; // 'soft'
     // return_vals: boolean; // false
   }
