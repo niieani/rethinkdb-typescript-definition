@@ -4,7 +4,6 @@
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // Reference: http://www.rethinkdb.com/api/#js
 
-/// <reference path="../node/node.d.ts" />
 /// <reference path="../rethinkdb/rethinkdb.d.ts" />
 
 declare module rethinkdbdash {
@@ -26,7 +25,7 @@ declare module rethinkdbdash {
       getConnection(): any;
       getPools(): any[];
   }
-  
+
   export interface Pool extends NodeJS.EventEmitter {
     id: any;
     options: any;
@@ -42,7 +41,7 @@ declare module rethinkdbdash {
     putConnection(connection: Connection): void;
     getConnection(): Promise<Connection>;
   }
-  
+
   export interface Connection extends NodeJS.EventEmitter {
     rejectMap: any;
     timeout: any;
@@ -113,47 +112,52 @@ declare module rethinkdbdash {
     prototype: Error;
     new (message?: string): ReqlClientError;
   }
-  
+
   export interface RDashConnect {
-    (options?:{ 
-      port?:number, 
-      host?:string, 
-      db?:string, 
-      discovery?:boolean, 
-      max?:number, 
-      buffer?:number, 
-      timeout?:number, 
-      timeoutError?:number, 
-      timeoutGb?:number, 
-      maxExponent?:number, 
-      silent?:boolean, 
-      servers?:Array<{host:string, port:number}>, 
-      optionalRun?:boolean, 
-      ssl?:boolean, 
-      pool?:boolean, 
-      cursor?:boolean 
+    (options?:{
+      port?:number,
+      host?:string,
+      db?:string,
+      discovery?:boolean,
+      max?:number,
+      buffer?:number,
+      timeout?:number,
+      timeoutError?:number,
+      timeoutGb?:number,
+      maxExponent?:number,
+      silent?:boolean,
+      servers?:Array<{host:string, port:number}>,
+      optionalRun?:boolean,
+      ssl?:boolean,
+      pool?:boolean,
+      cursor?:boolean
     }):RDash;
+  }
+  export interface RDashConnectionOptions extends rethinkdb.RConnectionOptions {
+    cursor: boolean;
   }
 }
 
 declare module rethinkdb {
-  // override RRunable to extend it with PromiseLike<T> 
+  // override RRunable to extend it with PromiseLike<T>
   export interface RRunable<T> extends PromiseLike<T> {
     run(connection:rethinkdbdash.Connection, cb:CallbackFunction<T>):void;
-    run(connection:rethinkdbdash.Connection, options:RConnectionOptions, cb:CallbackFunction<T>):void;
-    run(connection:rethinkdbdash.Connection, options?:RConnectionOptions):Promise<T>;
     run(cb:CallbackFunction<T>):void;
-    run(options:RConnectionOptions, cb:CallbackFunction<T>):void;
-    run(options?:RConnectionOptions):Promise<T>;
+    run(options:rethinkdbdash.RDashConnectionOptions, cb:CallbackFunction<T>):void;
+    run(connection:rethinkdbdash.Connection, options:rethinkdbdash.RDashConnectionOptions, cb:CallbackFunction<T>):void;
+
+    run(connection:rethinkdbdash.Connection, options?:rethinkdbdash.RDashConnectionOptions):Promise<T>;
+    run(options?:rethinkdbdash.RDashConnectionOptions):Promise<T>;
   }
-  
-  export interface RCursor<RemoteT> extends NodeJS.EventEmitter {
+
+  // note: extends RemoteT to accomodate for automatic coercing with { cursor: false } option
+  export interface RCursor<RemoteT> extends NodeJS.EventEmitter, RemoteT {
     eachAsync(process_function:(element:RemoteT) => any): Promise<void> & { error:(errorHandler:(error:Error)=>void)=>Promise<void> };
   }
 }
 
 declare module "rethinkdbdash" {
   var r:rethinkdbdash.RDashConnect;
-  
+
   export = r;
 }
